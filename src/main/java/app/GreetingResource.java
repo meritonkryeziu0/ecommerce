@@ -1,4 +1,4 @@
-package org.fiek;
+package app;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

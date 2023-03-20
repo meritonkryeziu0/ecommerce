@@ -14,7 +14,12 @@ dependencies {
     implementation 'io.quarkus:quarkus-resteasy-reactive'
     testImplementation 'io.quarkus:quarkus-junit5'
     testImplementation 'io.rest-assured:rest-assured'
-    implementation("io.quarkus:quarkus-smallrye-openapi")
+
+    implementation 'io.quarkus:quarkus-smallrye-openapi'
+    implementation 'io.quarkus:quarkus-mongodb-client'
+    implementation 'io.quarkus:quarkus-mutiny'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 group 'org.fiek'
