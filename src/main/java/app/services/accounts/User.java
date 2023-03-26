@@ -25,10 +25,9 @@ public class User extends BaseModel {
     private String phoneNumber;
     private List<ShippingAddress> shippingAddresses;
     private BillingAddress billingAddress;
-    private List<String> roles;
+    private String role;
     @JsonIgnore
     private String hashedPassword;
     @JsonIgnore private String salt;
-
 
 }
