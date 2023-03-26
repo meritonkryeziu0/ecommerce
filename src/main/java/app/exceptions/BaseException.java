@@ -5,7 +5,7 @@ import lombok.Getter;
 import javax.ws.rs.core.Response.Status;
 
 @Getter
-public class BaseException extends Exception {
+public class BaseException extends RuntimeException {
   private String message;
   private int statusCode;
   private Status status;

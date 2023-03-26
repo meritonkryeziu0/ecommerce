@@ -70,7 +70,7 @@ public class PasswordUtils {
             }
         }
 
-        public static String getSalt() throws NoSuchAlgorithmException {
+        public static String getSalt(){
             SecureRandom random = new SecureRandom();
             byte[] salt = new byte[16];
             random.nextBytes(salt);

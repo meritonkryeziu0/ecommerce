@@ -2,6 +2,7 @@ package app.services.auth;
 
 import app.services.accounts.User;
 import app.services.accounts.UserService;
+import app.services.accounts.models.CreateUser;
 import app.services.auth.exceptions.AuthenticationException;
 import app.utils.PasswordUtils;
 import io.smallrye.mutiny.Uni;
@@ -33,5 +34,9 @@ public class AuthenticationService {
                             new AuthenticationException.InvalidCredentialsException("Invalid credentials");
                     emitter.fail(authenticationException);
                 });
+    }
+
+    public Uni<User> add(CreateUser createUser) {
+        return userService.add(createUser);
     }
 }

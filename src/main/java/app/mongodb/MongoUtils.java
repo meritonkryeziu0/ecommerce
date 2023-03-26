@@ -1,7 +1,5 @@
 package app.mongodb;
 
-import app.helpers.PaginatedResponse;
-import app.helpers.PaginationWrapper;
 //import app.services.product.models.Product;
 import app.shared.BaseModel;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
@@ -9,13 +7,10 @@ import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.reactivestreams.client.ClientSession;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
-import org.bson.Document;
-import org.bson.conversions.Bson;
+        import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 public class MongoUtils {
     /*public static <T> Uni<PaginatedResponse<T>> getPaginatedItems(ReactiveMongoCollection<T> collection, PaginationWrapper paginationFilter) {
@@ -44,28 +39,28 @@ public class MongoUtils {
         });
     }*/
 
-    public static <T extends BaseModel> Uni<T> add(ReactiveMongoCollection<T> collection, T model) {
-        model.setId(new ObjectId().toString());
+    public static <E extends BaseModel> Uni<E> addEntity(ReactiveMongoCollection<E> collection, E entity) {
+        entity.setId(new ObjectId().toString());
 
-        model.setCreatedAt(LocalDateTime.now());
-        model.setModifiedAt(LocalDateTime.now());
-        return collection.insertOne(model).map(insertOneResult -> model);
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setModifiedAt(LocalDateTime.now());
+        return collection.insertOne(entity).map(insertOneResult -> entity);
     }
 
-    public static <T extends BaseModel> Uni<T> add(ClientSession session, ReactiveMongoCollection<T> collection, T model) {
-        model.setId(new ObjectId().toString());
-        model.setCreatedAt(LocalDateTime.now());
-        model.setModifiedAt(LocalDateTime.now());
-        return collection.insertOne(session, model).map(insertOneResult -> model);
+    public static <E extends BaseModel> Uni<E> addEntity(ClientSession session, ReactiveMongoCollection<E> collection, E entity) {
+        entity.setId(new ObjectId().toString());
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setModifiedAt(LocalDateTime.now());
+        return collection.insertOne(session, entity).map(insertOneResult -> entity);
     }
 
-    public static <T extends BaseModel> Uni<T> update(ReactiveMongoCollection<T> collection, Bson filter, T model) {
-        model.setModifiedAt(LocalDateTime.now());
-        return collection.findOneAndReplace(filter, model, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
+    public static <E extends BaseModel> Uni<E> updateEntity(ReactiveMongoCollection<E> collection, Bson filter, E entity) {
+        entity.setModifiedAt(LocalDateTime.now());
+        return collection.findOneAndReplace(filter, entity, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
     }
 
-    public static <T extends BaseModel> Uni<T> update(ClientSession session, ReactiveMongoCollection<T> collection, Bson filter, T model) {
-        model.setModifiedAt(LocalDateTime.now());
-        return collection.findOneAndReplace(session, filter, model, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
+    public static <E extends BaseModel> Uni<E> updateEntity(ClientSession session, ReactiveMongoCollection<E> collection, Bson filter, E entity) {
+        entity.setModifiedAt(LocalDateTime.now());
+        return collection.findOneAndReplace(session, filter, entity, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
     }
 }

@@ -16,6 +16,7 @@ public class GenerateToken {
     private final int EXPIRY_TIME = 3600*4;
 
     public Uni<String> generateToken(User user){
+
         String token = Jwt.issuer("app-auth")
                         .subject("app-auth")
                         .groups(user.getRole())

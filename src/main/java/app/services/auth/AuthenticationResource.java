@@ -1,14 +1,15 @@
 package app.services.auth;
 
+import app.services.accounts.User;
 import app.services.accounts.UserService;
+import app.services.accounts.models.CreateUser;
 import app.utils.PasswordUtils;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.unchecked.Unchecked;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.security.NoSuchAlgorithmException;
 
 @Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
@@ -19,23 +20,27 @@ public class AuthenticationResource {
 
     @Inject
     UserService userService;
+    @Inject
+    JsonWebToken jwt;
 
     @POST
     @Path("/password/{pass}")
     @Produces(MediaType.TEXT_PLAIN)
     public Uni<String> password(@PathParam("pass") String password){
         return Uni.createFrom().item("")
-                .map(Unchecked.function(str -> {
-                    try {
+                .map(str -> {
                         String salt = PasswordUtils.getSalt();
                         System.out.println(salt);
                         System.out.println(password);
                         String hash = PasswordUtils.hashPassword(password, salt);
                         return String.format("salt : %s \npassword : %s \nhash : %s" , salt, password, hash);
-                    } catch (NoSuchAlgorithmException e) {
-                        throw new RuntimeException(e);
-                    }
-                }));
+                });
+    }
+
+    @POST
+    @Path("/sign-in")
+    public Uni<User> createUser(CreateUser createUser) {
+        return authenticationService.add(createUser);
     }
 
     @POST
@@ -51,10 +56,4 @@ public class AuthenticationResource {
     public Uni<String> logout(){
         return Uni.createFrom().item("Logged out");
     }
-
-    //TOOD :Add user from CreateUser:
-    /*@POST
-    @Path("/sign-in")
-    public Uni<String> createUser(CreateUser createUser) {
-    }*/
 }
