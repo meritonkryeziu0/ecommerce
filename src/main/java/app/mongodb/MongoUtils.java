@@ -44,28 +44,28 @@ public class MongoUtils {
         });
     }*/
 
-    public static <T extends BaseModel> Uni<T> add(ReactiveMongoCollection<T> collection, T model) {
-        model.setId(new ObjectId().toString());
+  public static <T extends BaseModel> Uni<T> add(ReactiveMongoCollection<T> collection, T model) {
+    model.setId(new ObjectId().toString());
 
-        model.setCreatedAt(LocalDateTime.now());
-        model.setModifiedAt(LocalDateTime.now());
-        return collection.insertOne(model).map(insertOneResult -> model);
-    }
+    model.setCreatedAt(LocalDateTime.now());
+    model.setModifiedAt(LocalDateTime.now());
+    return collection.insertOne(model).map(insertOneResult -> model);
+  }
 
-    public static <T extends BaseModel> Uni<T> add(ClientSession session, ReactiveMongoCollection<T> collection, T model) {
-        model.setId(new ObjectId().toString());
-        model.setCreatedAt(LocalDateTime.now());
-        model.setModifiedAt(LocalDateTime.now());
-        return collection.insertOne(session, model).map(insertOneResult -> model);
-    }
+  public static <T extends BaseModel> Uni<T> add(ClientSession session, ReactiveMongoCollection<T> collection, T model) {
+    model.setId(new ObjectId().toString());
+    model.setCreatedAt(LocalDateTime.now());
+    model.setModifiedAt(LocalDateTime.now());
+    return collection.insertOne(session, model).map(insertOneResult -> model);
+  }
 
-    public static <T extends BaseModel> Uni<T> update(ReactiveMongoCollection<T> collection, Bson filter, T model) {
-        model.setModifiedAt(LocalDateTime.now());
-        return collection.findOneAndReplace(filter, model, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
-    }
+  public static <T extends BaseModel> Uni<T> update(ReactiveMongoCollection<T> collection, Bson filter, T model) {
+    model.setModifiedAt(LocalDateTime.now());
+    return collection.findOneAndReplace(filter, model, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
+  }
 
-    public static <T extends BaseModel> Uni<T> update(ClientSession session, ReactiveMongoCollection<T> collection, Bson filter, T model) {
-        model.setModifiedAt(LocalDateTime.now());
-        return collection.findOneAndReplace(session, filter, model, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
-    }
+  public static <T extends BaseModel> Uni<T> update(ClientSession session, ReactiveMongoCollection<T> collection, Bson filter, T model) {
+    model.setModifiedAt(LocalDateTime.now());
+    return collection.findOneAndReplace(session, filter, model, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
+  }
 }

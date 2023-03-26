@@ -16,7 +16,7 @@ public class BaseException extends Exception {
     this.status = Status.fromStatusCode(statusCode);
   }
 
-  public BaseException(String message, Status status){
+  public BaseException(String message, Status status) {
     this.message = message;
     this.status = status;
     this.statusCode = status.getStatusCode();

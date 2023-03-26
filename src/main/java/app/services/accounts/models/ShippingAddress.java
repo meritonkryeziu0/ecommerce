@@ -7,5 +7,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ShippingAddress extends BaseAddress {
-    public String id;
+  public String id;
 }

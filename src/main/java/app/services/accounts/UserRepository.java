@@ -12,18 +12,18 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class UserRepository {
 
-    @Inject
-    MongoCollectionWrapper mongoClient;
+  @Inject
+  MongoCollectionWrapper mongoClient;
 
-    public ReactiveMongoCollection<User> getCollection() {
-        return mongoClient.getCollection(MongoCollections.USERS_COLLECTION, User.class);
-    }
+  public ReactiveMongoCollection<User> getCollection() {
+    return mongoClient.getCollection(MongoCollections.USERS_COLLECTION, User.class);
+  }
 
-    public Uni<User> getById(String id) {
-        return getCollection().find(Filters.eq(User.FIELD_ID, id)).toUni();
-    }
+  public Uni<User> getById(String id) {
+    return getCollection().find(Filters.eq(User.FIELD_ID, id)).toUni();
+  }
 
-    public Uni<User> getWithEmail(String email) {
-        return getCollection().find(Filters.eq(User.FIELD_EMAIL, email)).toUni();
-    }
+  public Uni<User> getWithEmail(String email) {
+    return getCollection().find(Filters.eq(User.FIELD_EMAIL, email)).toUni();
+  }
 }

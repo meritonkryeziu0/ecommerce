@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 
-
 @Getter
 public class ValidationException extends ConstraintViolationException {
   private int code;

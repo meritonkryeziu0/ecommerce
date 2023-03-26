@@ -11,27 +11,27 @@ import javax.inject.Inject;
 
 @ApplicationScoped
 public class AuthenticationService {
-    @Inject
-    UserService userService;
-    @Inject
-    GenerateToken generateToken;
+  @Inject
+  UserService userService;
+  @Inject
+  GenerateToken generateToken;
 
-    public Uni<String> authenticate(String email, String password){
-        return userService.getWithEmail(email)
-                .flatMap(user -> this.verifySuccessfulLogin(password, user))
-                .flatMap(loggedInUser -> generateToken.generateToken(loggedInUser));
-    }
+  public Uni<String> authenticate(String email, String password) {
+    return userService.getWithEmail(email)
+        .flatMap(user -> this.verifySuccessfulLogin(password, user))
+        .flatMap(loggedInUser -> generateToken.generateToken(loggedInUser));
+  }
 
-    private Uni<User> verifySuccessfulLogin(String password, User user){
-        boolean passwordResult = PasswordUtils.verifyPassword(password, user);
-        if(passwordResult){
-            return Uni.createFrom().item(user);
-        }
-        return Uni.createFrom()
-                .emitter(emitter -> {
-                    AuthenticationException authenticationException =
-                            new AuthenticationException.InvalidCredentialsException("Invalid credentials");
-                    emitter.fail(authenticationException);
-                });
+  private Uni<User> verifySuccessfulLogin(String password, User user) {
+    boolean passwordResult = PasswordUtils.verifyPassword(password, user);
+    if (passwordResult) {
+      return Uni.createFrom().item(user);
     }
+    return Uni.createFrom()
+        .emitter(emitter -> {
+          AuthenticationException authenticationException =
+              new AuthenticationException.InvalidCredentialsException("Invalid credentials");
+          emitter.fail(authenticationException);
+        });
+  }
 }
