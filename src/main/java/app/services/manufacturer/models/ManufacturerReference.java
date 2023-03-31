@@ -1,4 +1,4 @@
-package app.services.product.models;
+package app.services.manufacturer.models;
 
 import app.shared.BaseAddress;
 import lombok.AllArgsConstructor;

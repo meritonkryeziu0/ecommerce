@@ -1,5 +1,6 @@
 package app.services.product.models;
 
+import app.services.manufacturer.models.ManufacturerReference;
 import lombok.Data;
 
 import javax.validation.Valid;

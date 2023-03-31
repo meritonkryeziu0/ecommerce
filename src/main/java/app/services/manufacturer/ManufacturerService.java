@@ -6,6 +6,7 @@ import app.common.CustomValidator;
 import app.mongodb.MongoUtils;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
+import app.services.manufacturer.exceptions.ManufacturerException;
 import app.services.manufacturer.models.CreateManufacturer;
 import app.services.manufacturer.models.Manufacturer;
 import app.services.manufacturer.models.UpdateManufacturer;
@@ -25,15 +26,13 @@ public class ManufacturerService {
     ManufacturerRepository repository;
     @Inject
     ProductService productService;
-    @Inject
-    MongoSessionWrapper sessionWrapper;
 
 //    public Uni<PaginatedResponse<Manufacturer>> getList(PaginationWrapper wrapper) {
 //        return MongoUtils.getPaginatedItems(repository.getCollection(), wrapper);
 //    }
 
     public Uni<Manufacturer> getById(String id) {
-        return repository.getById(id).onItem().ifNull().failWith(new ManufacturerException(ManufacturerException.MANUFACUTURE_NOT_FOUND, 404));
+        return repository.getById(id).onItem().ifNull().failWith(new ManufacturerException(ManufacturerException.MANUFACTURER_NOT_FOUND, 404));
     }
 
     public Uni<Manufacturer> add(CreateManufacturer createManufacturer) {
@@ -53,20 +52,20 @@ public class ManufacturerService {
 //                });
 //    }
 
-    public Uni<Manufacturer> update(String id, UpdateManufacturer updateManufacturer) {
-        return validator.validate(updateManufacturer)
-                .replaceWith(this.getById(id))
-                .onFailure().transform(transformToBadRequest())
-                .map(ManufacturerMapper.from(updateManufacturer))
-                .flatMap(repository.);
-    }
-
-    private Function<Throwable, Throwable> transformToBadRequest() {
-        return throwable -> {
-            if (throwable instanceof BaseException) {
-                return new ManufacturerException(ManufacturerException.MANUFACUTURE_NOT_FOUND, 404);
-            }
-            return throwable;
-        };
-    }
+//    public Uni<Manufacturer> update(String id, UpdateManufacturer updateManufacturer) {
+//        return validator.validate(updateManufacturer)
+//                .replaceWith(this.getById(id))
+//                .onFailure().transform(transformToBadRequest())
+//                .map(ManufacturerMapper.from(updateManufacturer))
+//                .flatMap(repository.);
+//    }
+//
+//    private Function<Throwable, Throwable> transformToBadRequest() {
+//        return throwable -> {
+//            if (throwable instanceof BaseException) {
+//                return new ManufacturerException(ManufacturerException.MANUFACUTURE_NOT_FOUND, 404);
+//            }
+//            return throwable;
+//        };
+//    }
 }

@@ -23,27 +23,27 @@ public class ManufacturerResource {
 //        return service.getList(wrapper);
 //    }
 
-    @GET
-    @Path("/{id}")
-    public Uni<Manufacturer> getById(@PathParam("id") String id) {
-        return service.getById(id);
-    }
+//    @GET
+//    @Path("/{id}")
+//    public Uni<Manufacturer> getById(@PathParam("id") String id) {
+//        return service.getById(id);
+//    }
 
     @POST
     public Uni<Manufacturer> add(CreateManufacturer createManufacturer) {
         return service.add(createManufacturer);
     }
 
-    @PUT
-    @Path("/{id}")
-    public Uni<Manufacturer> update(@PathParam("id") String id, UpdateManufacturer updateManufacturer) {
-        return service.update(id, updateManufacturer);
-    }
+//    @PUT
+//    @Path("/{id}")
+//    public Uni<Manufacturer> update(@PathParam("id") String id, UpdateManufacturer updateManufacturer) {
+//        return service.update(id, updateManufacturer);
+//    }
 
-    @DELETE
-    @Path("/{id}")
-    public Uni<SuccessResponse> delete(@PathParam("id") String id) {
-        return service.delete(id);
-    }
+//    @DELETE
+//    @Path("/{id}")
+//    public Uni<SuccessResponse> delete(@PathParam("id") String id) {
+//        return service.delete(id);
+//    }
 
 }
