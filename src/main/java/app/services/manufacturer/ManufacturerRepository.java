@@ -23,7 +23,7 @@ public class ManufacturerRepository {
     }
 
     public Uni<Manufacturer> add(Manufacturer manufacturer) {
-        return MongoUtils.add(getCollection(), manufacturer);
+        return MongoUtils.addEntity(getCollection(), manufacturer);
     }
 
     public Uni<Manufacturer> getById(String id) {
@@ -35,7 +35,7 @@ public class ManufacturerRepository {
     }
 
     public Uni<Manufacturer> update(ClientSession session, String id, Manufacturer manufacturer) {
-        return MongoUtils.update(session, getCollection(), Filters.eq(Manufacturer.FIELD_ID, id), manufacturer);
+        return MongoUtils.updateEntity(session, getCollection(), Filters.eq(Manufacturer.FIELD_ID, id), manufacturer);
     }
 
 }

@@ -37,11 +37,11 @@ public class ProductRepository {
     }
 
     public Uni<Product> add(Product product) {
-        return MongoUtils.add(getCollection(), product);
+        return MongoUtils.addEntity(getCollection(), product);
     }
 
     public Uni<Product> update(String id, Product product) {
-        return MongoUtils.update(getCollection(), Filters.eq(Product.FIELD_ID, id), product);
+        return MongoUtils.updateEntity(getCollection(), Filters.eq(Product.FIELD_ID, id), product);
     }
 
     public Uni<UpdateResult> updateManufactures(ManufacturerReference manufacturerReference) {
