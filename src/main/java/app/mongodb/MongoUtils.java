@@ -4,6 +4,8 @@ package app.mongodb;
 
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
+//import app.services.product.models.Product;
+import app.services.product.models.Product;
 import app.shared.BaseModel;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -19,7 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MongoUtils {
-    /*public static <T> Uni<PaginatedResponse<T>> getPaginatedItems(ReactiveMongoCollection<T> collection, PaginationWrapper paginationFilter) {
+    public static <T> Uni<PaginatedResponse<T>> getPaginatedItems(ReactiveMongoCollection<T> collection, PaginationWrapper paginationFilter) {
         PaginatedResponse<T> page = new PaginatedResponse<>();
 
         Uni<Long> count = collection.countDocuments(paginationFilter.toBson());
@@ -43,7 +45,7 @@ public class MongoUtils {
             page.setCurrentPage(paginationFilter.getPage());
             return page;
         });
-    }*/
+    }
 
     public static <T> Uni<PaginatedResponse<T>> getPaginatedItems(ReactiveMongoCollection<T> collection, PaginationWrapper paginationFilter) {
         PaginatedResponse<T> page = new PaginatedResponse<>();
