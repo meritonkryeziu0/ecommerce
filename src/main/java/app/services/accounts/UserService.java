@@ -34,11 +34,12 @@ public class UserService {
 
   public Uni<User> getById(String id) {
     return repository.getById(id)
-        .onFailure().transform(transformToBadRequest(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST));
+        .onItem().ifNull().failWith(new UserException(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST));
   }
 
   public Uni<User> getWithEmail(String email){
-    return repository.getWithEmail(email).onFailure().transform(transformToBadRequest(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST));
+    return repository.getWithEmail(email)
+        .onItem().ifNull().failWith(new UserException(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST));
   }
 
   public Uni<User> add(CreateUser createUser) {

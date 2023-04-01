@@ -12,9 +12,9 @@ public class AuthenticationException extends BaseException {
         super(message, status);
     }
 
-    public static class InvalidCredentialsException extends AuthenticationException {
-        public InvalidCredentialsException(String message) {
-            super(message, Response.Status.BAD_REQUEST);
-        }
+  public static class InvalidCredentialsException extends AuthenticationException {
+    public InvalidCredentialsException(String message) {
+      super(message, Response.Status.BAD_REQUEST);
     }
+  }
 }

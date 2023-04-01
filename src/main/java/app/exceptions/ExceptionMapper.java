@@ -24,5 +24,11 @@ public class ExceptionMapper {
         return Response.status(Response.Status.BAD_REQUEST).entity(reduced).build();
     }
 
+  @ServerExceptionMapper
+  public Response mapException(ValidationException validationException) {
+    JsonObject reduced = JsonObject.of("code", validationException.getCode(), "message",
+        validationException.getMessage(), "violations", validationException.getErrorMessages());
+    return Response.status(validationException.getCode()).entity(reduced).build();
+  }
 }
 

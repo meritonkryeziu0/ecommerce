@@ -12,16 +12,16 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 public class DateDeserializer extends JsonDeserializer<LocalDate> {
-    @Override
-    public LocalDate deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
+  @Override
+  public LocalDate deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
 
-        ObjectCodec oc = jp.getCodec();
-        TextNode node = oc.readTree(jp);
-        String dateString = node.textValue();
+    ObjectCodec oc = jp.getCodec();
+    TextNode node = oc.readTree(jp);
+    String dateString = node.textValue();
 
-        Instant instant = Instant.parse(dateString);
-        LocalDate dateTime = LocalDate.ofInstant(instant, ZoneId.systemDefault());
-        LocalDate date = LocalDate.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDayOfMonth());
-        return date;
-    }
+    Instant instant = Instant.parse(dateString);
+    LocalDate dateTime = LocalDate.ofInstant(instant, ZoneId.systemDefault());
+    LocalDate date = LocalDate.of(dateTime.getYear(), dateTime.getMonth(), dateTime.getDayOfMonth());
+    return date;
+  }
 }

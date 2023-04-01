@@ -18,8 +18,10 @@ import static app.utils.Utils.isNull;
 
 public class PasswordUtils {
 
-    public static Uni<Void> validatePassword(String password) {
-        HashSet<String> violations = new HashSet<>();
+  private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
+
+  public static Uni<Void> validatePassword(String password) {
+    HashSet<String> violations = new HashSet<>();
 
         if (password.length() > 20 || password.length() < 8) {
             violations.add("Password must be less than 20 and more than 8 characters in length.");
@@ -41,15 +43,15 @@ public class PasswordUtils {
             violations.add("Password must have at least one special character");
         }
 
-        if (violations.size() > 0) {
-            String message = String.join("; ", violations);
-            return Uni.createFrom()
-                    .failure(
-                            new CustomValidator.CustomValidationException(Map.of("password", message), "Invalid password"));
-        } else {
-            return Uni.createFrom().voidItem();
-        }
+    if (violations.size() > 0) {
+      String message = String.join("; ", violations);
+      return Uni.createFrom()
+          .failure(
+              new CustomValidator.CustomValidationException(Map.of("password", message), "Invalid password"));
+    } else {
+      return Uni.createFrom().voidItem();
     }
+  }
 
     public static boolean verifyPassword(String plainPassword, User user) {
         if (isNull(user)) return false;
@@ -82,20 +84,20 @@ public class PasswordUtils {
             return bytesToHex(salt);
         }
 
-        private static String bytesToHex(byte[] bytes) {
-            char[] chars = new char[bytes.length * 2];
-            for (int i = 0; i < bytes.length; i++) {
-                int x = 0xFF & bytes[i];
-                chars[i * 2] = HEX_CHARS[x >>> 4];
-                chars[1 + i * 2] = HEX_CHARS[0x0F & x];
-            }
-            return new String(chars);
-        }
+  private static String bytesToHex(byte[] bytes) {
+    char[] chars = new char[bytes.length * 2];
+    for (int i = 0; i < bytes.length; i++) {
+      int x = 0xFF & bytes[i];
+      chars[i * 2] = HEX_CHARS[x >>> 4];
+      chars[1 + i * 2] = HEX_CHARS[0x0F & x];
+    }
+    return new String(chars);
+  }
 
-        public static boolean verifyPassword(String plainPassword, String hashedPassword, String salt) {
-            if(isNull(plainPassword) || isBlank(plainPassword)) return false;
-            return MessageDigest.isEqual(
-                    hashedPassword.getBytes(StandardCharsets.UTF_8),
-                    hashPassword(plainPassword, salt).getBytes(StandardCharsets.UTF_8));
-        }
+  public static boolean verifyPassword(String plainPassword, String hashedPassword, String salt) {
+    if (isNull(plainPassword) || isBlank(plainPassword)) return false;
+    return MessageDigest.isEqual(
+        hashedPassword.getBytes(StandardCharsets.UTF_8),
+        hashPassword(plainPassword, salt).getBytes(StandardCharsets.UTF_8));
+  }
 }
