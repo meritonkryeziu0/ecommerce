@@ -1,5 +1,7 @@
 package app.mongodb;
 
+//import app.services.product.models.Product;
+
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
 //import app.services.product.models.Product;
@@ -45,28 +47,51 @@ public class MongoUtils {
         });
     }
 
-  public static <T extends BaseModel> Uni<T> add(ReactiveMongoCollection<T> collection, T model) {
-    model.setId(new ObjectId().toString());
+    public static <T> Uni<PaginatedResponse<T>> getPaginatedItems(ReactiveMongoCollection<T> collection, PaginationWrapper paginationFilter) {
+        PaginatedResponse<T> page = new PaginatedResponse<>();
 
-    model.setCreatedAt(LocalDateTime.now());
-    model.setModifiedAt(LocalDateTime.now());
-    return collection.insertOne(model).map(insertOneResult -> model);
-  }
+        Uni<Long> count = collection.countDocuments(paginationFilter.toBson());
+        Uni<List<T>> res = collection.aggregate(Arrays.asList(new Document("$match", paginationFilter.toBson()),
+            new Document("$sort", (paginationFilter.getSortAscending() != null)
+                ? new Document(paginationFilter.getSortAscending(), 1L)
+                : ((paginationFilter.getSortDescending() != null)
+                ? new Document(paginationFilter.getSortDescending(), -1L)
+                : new Document("_id", 1L))),
+            new Document("$skip", (paginationFilter.getPage() - 1) * paginationFilter.getLimit()),
+            new Document("$limit", paginationFilter.getLimit()))).collect().asList();
 
-  public static <T extends BaseModel> Uni<T> add(ClientSession session, ReactiveMongoCollection<T> collection, T model) {
-    model.setId(new ObjectId().toString());
-    model.setCreatedAt(LocalDateTime.now());
-    model.setModifiedAt(LocalDateTime.now());
-    return collection.insertOne(session, model).map(insertOneResult -> model);
-  }
+        return Uni.combine().all().unis(count, res).combinedWith((countValue, data) -> {
+            page.setTotalEntities(countValue.intValue());
+            page.setTotalPages((int) Math.ceil((double) countValue / paginationFilter.getLimit()));
+            page.setData(data);
+            page.setReturnedEntities(data.size());
+            page.setCurrentPage(paginationFilter.getPage());
+            return page;
+        });
+    }
 
-  public static <T extends BaseModel> Uni<T> update(ReactiveMongoCollection<T> collection, Bson filter, T model) {
-    model.setModifiedAt(LocalDateTime.now());
-    return collection.findOneAndReplace(filter, model, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
-  }
+    public static <E extends BaseModel> Uni<E> addEntity(ReactiveMongoCollection<E> collection, E entity) {
+        entity.setId(new ObjectId().toString());
 
-  public static <T extends BaseModel> Uni<T> update(ClientSession session, ReactiveMongoCollection<T> collection, Bson filter, T model) {
-    model.setModifiedAt(LocalDateTime.now());
-    return collection.findOneAndReplace(session, filter, model, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
-  }
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setModifiedAt(LocalDateTime.now());
+        return collection.insertOne(entity).map(insertOneResult -> entity);
+    }
+
+    public static <E extends BaseModel> Uni<E> addEntity(ClientSession session, ReactiveMongoCollection<E> collection, E entity) {
+        entity.setId(new ObjectId().toString());
+        entity.setCreatedAt(LocalDateTime.now());
+        entity.setModifiedAt(LocalDateTime.now());
+        return collection.insertOne(session, entity).map(insertOneResult -> entity);
+    }
+
+    public static <E extends BaseModel> Uni<E> updateEntity(ReactiveMongoCollection<E> collection, Bson filter, E entity) {
+        entity.setModifiedAt(LocalDateTime.now());
+        return collection.findOneAndReplace(filter, entity, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
+    }
+
+    public static <E extends BaseModel> Uni<E> updateEntity(ClientSession session, ReactiveMongoCollection<E> collection, Bson filter, E entity) {
+        entity.setModifiedAt(LocalDateTime.now());
+        return collection.findOneAndReplace(session, filter, entity, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
+    }
 }

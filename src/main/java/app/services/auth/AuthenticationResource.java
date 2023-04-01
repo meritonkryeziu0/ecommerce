@@ -1,60 +1,46 @@
 package app.services.auth;
 
-import app.services.accounts.UserService;
-import app.utils.PasswordUtils;
+import app.services.accounts.models.CreateUser;
+import app.services.accounts.models.User;
+import app.services.auth.models.AuthResponse;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.unchecked.Unchecked;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.security.NoSuchAlgorithmException;
 
 @Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthenticationResource {
-  @Inject
-  AuthenticationService authenticationService;
+    @Inject
+    AuthenticationService authenticationService;
+    @Inject
+    JsonWebToken jwt;
 
-  @Inject
-  UserService userService;
+    @POST
+    @Path("/register")
+    public Uni<User> createUser(CreateUser createUser) {
+        return authenticationService.add(createUser);
+    }
 
-  @POST
-  @Path("/password/{pass}")
-  @Produces(MediaType.TEXT_PLAIN)
-  public Uni<String> password(@PathParam("pass") String password) {
-    return Uni.createFrom().item("")
-        .map(Unchecked.function(str -> {
-          try {
-            String salt = PasswordUtils.getSalt();
-            System.out.println(salt);
-            System.out.println(password);
-            String hash = PasswordUtils.hashPassword(password, salt);
-            return String.format("salt : %s \npassword : %s \nhash : %s", salt, password, hash);
-          } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-          }
-        }));
-  }
+    @POST
+    @Path("/login")
+    @PermitAll
+    public Uni<AuthResponse> login(UserLoginModel userLoginModel){
+        return authenticationService.authenticate(userLoginModel.getEmail(), userLoginModel.getPassword());
+    }
 
-  @POST
-  @Path("/login")
-  @Consumes(MediaType.APPLICATION_JSON)
-  public Uni<String> login(UserLoginModel userLoginModel) {
-    return authenticationService.authenticate(userLoginModel.getEmail(), userLoginModel.getPassword());
-  }
-
-  @POST
-  @Path("/logout")
-  @Produces(MediaType.TEXT_PLAIN)
-  public Uni<String> logout() {
-    return Uni.createFrom().item("Logged out");
-  }
-
-  //TOOD :Add user from CreateUser:
-    /*@POST
-    @Path("/sign-in")
-    public Uni<String> createUser(CreateUser createUser) {
-    }*/
+    @POST
+    @Path("/logout")
+    @RolesAllowed({"Everyone"})
+    public Uni<AuthResponse> logout(){
+        return authenticationService.userLogOut(jwt).map(token -> new AuthResponse());
+    }
 }

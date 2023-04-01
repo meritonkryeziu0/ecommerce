@@ -1,4 +1,4 @@
-package app.services.accounts.exception;
+package app.services.accounts.exceptions;
 
 import app.exceptions.BaseException;
 
