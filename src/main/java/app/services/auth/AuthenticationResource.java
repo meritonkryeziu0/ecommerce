@@ -1,14 +1,18 @@
 package app.services.auth;
 
-import app.services.accounts.User;
-import app.services.accounts.UserService;
 import app.services.accounts.models.CreateUser;
-import app.utils.PasswordUtils;
+import app.services.accounts.models.User;
+import app.services.auth.models.AuthResponse;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 @Path("/auth")
@@ -17,25 +21,8 @@ import javax.ws.rs.core.MediaType;
 public class AuthenticationResource {
     @Inject
     AuthenticationService authenticationService;
-
-    @Inject
-    UserService userService;
     @Inject
     JsonWebToken jwt;
-
-    @POST
-    @Path("/password/{pass}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Uni<String> password(@PathParam("pass") String password){
-        return Uni.createFrom().item("")
-                .map(str -> {
-                        String salt = PasswordUtils.getSalt();
-                        System.out.println(salt);
-                        System.out.println(password);
-                        String hash = PasswordUtils.hashPassword(password, salt);
-                        return String.format("salt : %s \npassword : %s \nhash : %s" , salt, password, hash);
-                });
-    }
 
     @POST
     @Path("/sign-in")
@@ -45,15 +32,15 @@ public class AuthenticationResource {
 
     @POST
     @Path("/login")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Uni<String> login(UserLoginModel userLoginModel){
+    @PermitAll
+    public Uni<AuthResponse> login(UserLoginModel userLoginModel){
         return authenticationService.authenticate(userLoginModel.getEmail(), userLoginModel.getPassword());
     }
 
     @POST
     @Path("/logout")
-    @Produces(MediaType.TEXT_PLAIN)
-    public Uni<String> logout(){
-        return Uni.createFrom().item("Logged out");
+    @RolesAllowed({"Everyone"})
+    public Uni<AuthResponse> logout(){
+        return authenticationService.userLogOut(jwt).map(token -> new AuthResponse());
     }
 }

@@ -2,7 +2,7 @@ package app.utils;
 
 
 import app.common.CustomValidator;
-import app.services.accounts.User;
+import app.services.accounts.models.User;
 import io.smallrye.mutiny.Uni;
 
 import java.nio.charset.StandardCharsets;
@@ -24,7 +24,7 @@ public class PasswordUtils {
         if (password.length() > 20 || password.length() < 8) {
             violations.add("Password must be less than 20 and more than 8 characters in length.");
         }
-        String upperCaseChars = "(.*[A-Z].*a)";
+        String upperCaseChars = "(.*[A-Z].*)";
         if (!password.matches(upperCaseChars)) {
             violations.add("Password must have at least one uppercase character");
         }
@@ -52,6 +52,7 @@ public class PasswordUtils {
     }
 
     public static boolean verifyPassword(String plainPassword, User user) {
+        if (isNull(user)) return false;
         if (isBlank(user.getHashedPassword())) return false;
         return verifyPassword(plainPassword, user.getHashedPassword(), user.getSalt());
     }
@@ -60,10 +61,14 @@ public class PasswordUtils {
         private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 
         public static String hashPassword(String password, String salt) {
+            String concat = (salt == null ? "" : salt) + password;
+            return hashSha512(concat);
+        }
+
+        private static String hashSha512(String payload){
             try {
                 MessageDigest md = MessageDigest.getInstance("SHA-512");
-                String concat = (salt == null ? "" : salt) + password;
-                byte[] bHash = md.digest(concat.getBytes(StandardCharsets.UTF_8));
+                byte[] bHash = md.digest(payload.getBytes(StandardCharsets.UTF_8));
                 return bytesToHex(bHash);
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);

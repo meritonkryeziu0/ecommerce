@@ -2,8 +2,15 @@ package app.services.accounts;
 
 import app.common.CustomValidator;
 import app.exceptions.BaseException;
-import app.services.accounts.exception.UserException;
+import app.helpers.PaginatedResponse;
+import app.helpers.PaginationWrapper;
+import app.mongodb.MongoUtils;
+import app.services.accounts.exceptions.UserException;
 import app.services.accounts.models.CreateUser;
+import app.services.accounts.models.UpdateUser;
+import app.services.accounts.models.User;
+import app.services.auth.models.State;
+import app.shared.SuccessResponse;
 import app.utils.PasswordUtils;
 import app.utils.Utils;
 import io.smallrye.mutiny.Uni;
@@ -12,7 +19,6 @@ import io.smallrye.mutiny.unchecked.Unchecked;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import java.util.Map;
 import java.util.function.Function;
 
 @ApplicationScoped
@@ -22,13 +28,17 @@ public class UserService {
   @Inject
   UserRepository repository;
 
+  public Uni<PaginatedResponse<User>> getList(PaginationWrapper wrapper) {
+    return MongoUtils.getPaginatedItems(repository.getCollection(), wrapper);
+  }
+
   public Uni<User> getById(String id) {
     return repository.getById(id)
-        .onItem().ifNull().failWith(new UserException(UserException.USER_NOT_FOUND, Response.Status.NOT_FOUND));
+        .onFailure().transform(transformToBadRequest(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST));
   }
 
   public Uni<User> getWithEmail(String email){
-    return repository.getWithEmail(email).onItem().ifNull().failWith(new UserException(UserException.USER_NOT_FOUND, Response.Status.NOT_FOUND));
+    return repository.getWithEmail(email).onFailure().transform(transformToBadRequest(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST));
   }
 
   public Uni<User> add(CreateUser createUser) {
@@ -38,16 +48,18 @@ public class UserService {
         .flatMap(user -> repository.add(user));
   }
 
-  public static Uni<Void> validateEmail(CreateUser createUser) {
-    boolean isValid = Utils.isValidEmail(createUser.getEmail());
-    if (!isValid) {
-      String message = "Invalid email";
-      return Uni.createFrom()
-          .failure(
-              new CustomValidator.CustomValidationException(Map.of("password", message), message));
-    } else {
-      return Uni.createFrom().voidItem();
-    }
+  public Uni<User> update(String id, UpdateUser updateUser) {
+    return validator.validate(updateUser).replaceWith(this.getById(id))
+        .map(UserMapper.from(updateUser))
+        .flatMap(user -> repository.update(id, user));
+  }
+
+  public Uni<User> updateState(String id, State state) {
+    return repository.updateState(id, state);
+  }
+
+  public Uni<SuccessResponse> delete(String id) {
+    return repository.delete(id).replaceWith(SuccessResponse.toSuccessResponse());
   }
 
   private Function<CreateUser, Uni<? extends User>> verifyUserEmailAndMapToUser(){
