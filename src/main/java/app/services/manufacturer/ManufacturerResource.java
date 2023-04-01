@@ -1,16 +1,19 @@
 package app.services.manufacturer;
 
+import app.services.accounts.models.Roles;
 import app.services.manufacturer.models.CreateManufacturer;
 import app.services.manufacturer.models.Manufacturer;
 import app.services.manufacturer.models.UpdateManufacturer;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 @Path("/manufacturer")
+@RolesAllowed({Roles.Fields.Admin})
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ManufacturerResource {
