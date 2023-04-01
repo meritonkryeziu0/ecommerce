@@ -25,7 +25,7 @@ public class AuthenticationResource {
     JsonWebToken jwt;
 
     @POST
-    @Path("/sign-in")
+    @Path("/register")
     public Uni<User> createUser(CreateUser createUser) {
         return authenticationService.add(createUser);
     }
