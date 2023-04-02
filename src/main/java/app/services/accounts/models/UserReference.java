@@ -12,10 +12,10 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserReference {
-  @NotBlank
-  public String _id;
-  @NotBlank
-  private String firstName;
-  @NotBlank
-  private String lastName;
+    @NotBlank
+    public String _id;
+    @NotBlank
+    private String firstName;
+    @NotBlank
+    private String lastName;
 }
