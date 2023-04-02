@@ -1,7 +1,7 @@
 package app.services.product;
 
+import app.common.CustomValidator;
 import app.exceptions.BaseException;
-import app.exceptions.CustomValidator;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
 import app.mongodb.MongoUtils;
