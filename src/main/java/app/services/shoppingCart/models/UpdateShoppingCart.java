@@ -1,4 +1,4 @@
-package app.services.shoppingcart.models;
+package app.services.shoppingCart.models;
 
 import app.services.product.models.ProductReference;
 import lombok.Getter;
