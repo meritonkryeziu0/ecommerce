@@ -33,11 +33,11 @@ public class ShoppingCartRepository {
     }
 
     public Uni<ShoppingCart> add(ClientSession session, ShoppingCart shoppingCart) {
-        return MongoUtils.add(session, getCollection(), shoppingCart);
+        return MongoUtils.addEntity(session, getCollection(), shoppingCart);
     }
 
     public Uni<ShoppingCart> update(String userId, ShoppingCart shoppingCart) {
-        return MongoUtils.update(getCollection(), Filters.eq(ShoppingCart.FIELD_USER_ID, userId), shoppingCart);
+        return MongoUtils.updateEntity(getCollection(), Filters.eq(ShoppingCart.FIELD_USER_ID, userId), shoppingCart);
     }
 
     public Uni<Void> clearNotUpdatedCarts() {

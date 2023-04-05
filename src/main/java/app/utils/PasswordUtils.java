@@ -59,9 +59,6 @@ public class PasswordUtils {
         return verifyPassword(plainPassword, user.getHashedPassword(), user.getSalt());
     }
 
-
-        private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
-
         public static String hashPassword(String password, String salt) {
             String concat = (salt == null ? "" : salt) + password;
             return hashSha512(concat);

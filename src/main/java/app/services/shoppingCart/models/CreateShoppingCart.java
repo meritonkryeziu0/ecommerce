@@ -1,6 +1,5 @@
 package app.services.shoppingCart.models;
 
-import app.services.accounts.User;
 import app.services.accounts.models.UserReference;
 import app.services.product.models.ProductReference;
 import lombok.Getter;

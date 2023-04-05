@@ -1,6 +1,6 @@
 package app.services.shoppingCart;
 
-import app.exceptions.CustomValidator;
+import app.common.CustomValidator;
 import app.mongodb.MongoUtils;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
