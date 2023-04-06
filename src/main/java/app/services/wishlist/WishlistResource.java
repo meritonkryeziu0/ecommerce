@@ -31,14 +31,15 @@ public class WishlistResource {
   }
 
   @PUT
+  @Path("/to-cart")
   public Uni<Wishlist> addProductToCart(@PathParam("userId") String userId, ProductReference productReference) {
     return service.addProductToCart(userId, productReference);
   }
 
   @DELETE
-  @Path("{productId}")
-  public Uni<Wishlist> removeProductFromWishlist(@PathParam("userId") String userId, @PathParam("productId") String productId) {
-    return service.removeProductFromWishlist(userId, productId);
+  @Path("/remove")
+  public Uni<Wishlist> removeProductFromWishlist(@PathParam("userId") String userId, ProductReference productReference) {
+    return service.removeProductFromWishlist(userId, productReference);
   }
 
   @DELETE
