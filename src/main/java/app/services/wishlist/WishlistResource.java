@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/user/{userId}/wishlist")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-//@RolesAllowed({Roles.Fields.Everyone})
+@RolesAllowed({Roles.Fields.Everyone})
 public class WishlistResource {
 
   @Inject
