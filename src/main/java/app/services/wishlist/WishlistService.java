@@ -76,11 +76,12 @@ public class WishlistService {
         .replaceWith(productService.getById(productReference._id))
         .onFailure().transform(transformToBadRequest())
         .flatMap(product -> shoppingCartService.update(userId, productReference))
-        .replaceWith(this.removeProductFromWishlist(userId, productReference._id));
+        .replaceWith(this.removeProductFromWishlist(userId, productReference));
   }
 
-  public Uni<Wishlist> removeProductFromWishlist(String userId, String productId){
-    return productService.getById(productId)
+  public Uni<Wishlist> removeProductFromWishlist(String userId, ProductReference productReference){
+    return validator.validate(productReference)
+            .replaceWith(productService.getById(productReference._id))
         .flatMap(product -> repository.removeProductFromWishlist(userId, product));
   }
 
