@@ -1,11 +1,11 @@
 
 package app.services.manufacturer;
 
-import app.exceptions.BaseException;
 import app.common.CustomValidator;
-import app.mongodb.MongoUtils;
+import app.exceptions.BaseException;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
+import app.mongodb.MongoUtils;
 import app.services.manufacturer.exceptions.ManufacturerException;
 import app.services.manufacturer.models.CreateManufacturer;
 import app.services.manufacturer.models.Manufacturer;
@@ -27,9 +27,9 @@ public class ManufacturerService {
     @Inject
     ProductService productService;
 
-//    public Uni<PaginatedResponse<Manufacturer>> getList(PaginationWrapper wrapper) {
-//        return MongoUtils.getPaginatedItems(repository.getCollection(), wrapper);
-//    }
+    public Uni<PaginatedResponse<Manufacturer>> getList(PaginationWrapper wrapper) {
+        return MongoUtils.getPaginatedItems(repository.getCollection(), wrapper);
+    }
 
     public Uni<Manufacturer> getById(String id) {
         return repository.getById(id).onItem().ifNull().failWith(new ManufacturerException(ManufacturerException.MANUFACTURER_NOT_FOUND, 404));
@@ -41,31 +41,31 @@ public class ManufacturerService {
                 .flatMap(manufacture -> repository.add(manufacture));
     }
 
-//    public Uni<SuccessResponse> delete(String id) {
-//        return productService.getListByManufacturerId(id).onItem()
-//                .ifNull().failWith(new ManufacturerException(ManufacturerException.MANUFACUTURE_NOT_FOUND, 400))
-//                .flatMap(products -> {
-//                    if (products.size() == 0) {
-//                        return repository.delete(id).replaceWith(SuccessResponse.toSuccessResponse());
-//                    }
-//                    return Uni.createFrom().failure(new ManufacturerException(ManufacturerException.MANUFACUTURE_HAS_PRODUCTS, 400));
-//                });
-//    }
+    public Uni<SuccessResponse> delete(String id) {
+        return productService.getListByManufacturerId(id).onItem()
+                .ifNull().failWith(new ManufacturerException(ManufacturerException.MANUFACTURER_NOT_FOUND, 400))
+                .flatMap(products -> {
+                    if (products.size() == 0) {
+                        return repository.delete(id).replaceWith(SuccessResponse.toSuccessResponse());
+                    }
+                    return Uni.createFrom().failure(new ManufacturerException(ManufacturerException.MANUFACTURER_HAS_PRODUCTS, 400));
+                });
+    }
 
-//    public Uni<Manufacturer> update(String id, UpdateManufacturer updateManufacturer) {
-//        return validator.validate(updateManufacturer)
-//                .replaceWith(this.getById(id))
-//                .onFailure().transform(transformToBadRequest())
-//                .map(ManufacturerMapper.from(updateManufacturer))
-//                .flatMap(repository.);
-//    }
-//
-//    private Function<Throwable, Throwable> transformToBadRequest() {
-//        return throwable -> {
-//            if (throwable instanceof BaseException) {
-//                return new ManufacturerException(ManufacturerException.MANUFACUTURE_NOT_FOUND, 404);
-//            }
-//            return throwable;
-//        };
-//    }
+    public Uni<Manufacturer> update(String id, UpdateManufacturer updateManufacturer) {
+        return validator.validate(updateManufacturer)
+                .replaceWith(this.getById(id))
+                .onFailure().transform(transformToBadRequest())
+                .map(ManufacturerMapper.from(updateManufacturer))
+                .flatMap(manufacturer -> repository.update(id, manufacturer));
+    }
+
+    private Function<Throwable, Throwable> transformToBadRequest() {
+        return throwable -> {
+            if (throwable instanceof BaseException) {
+                return new ManufacturerException(ManufacturerException.MANUFACTURER_NOT_FOUND, 404);
+            }
+            return throwable;
+        };
+    }
 }
