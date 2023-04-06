@@ -1,10 +1,7 @@
 package app.services.accounts;
 
 import app.helpers.PaginatedResponse;
-import app.services.accounts.models.CreateUser;
-import app.services.accounts.models.UpdateUser;
-import app.services.accounts.models.User;
-import app.services.accounts.models.UserFilterWrapper;
+import app.services.accounts.models.*;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -25,41 +22,41 @@ public class UserResource {
   JsonWebToken token;
 
   @GET
-  @RolesAllowed({"Admin"})
+  @RolesAllowed({Roles.Fields.Admin})
   public Uni<PaginatedResponse<User>> getList(@BeanParam UserFilterWrapper wrapper) {
     return service.getList(wrapper);
   }
 
   @GET
   @Path("/{id}")
-  @RolesAllowed({"Everyone"})
+  @RolesAllowed({Roles.Fields.Everyone})
   public Uni<User> getById(@PathParam("id") String id) {
     return service.getById(id);
   }
 
   @POST
-  @RolesAllowed({"Admin"})
+  @RolesAllowed({Roles.Fields.Admin})
   public Uni<User> add(CreateUser createUser) {
     return service.add(createUser);
   }
 
   @PUT
   @Path("/{id}")
-  @RolesAllowed({"Admin"})
+  @RolesAllowed({Roles.Fields.Admin})
   public Uni<User> update(@PathParam("id") String id, UpdateUser updateUser) {
     return service.update(id, updateUser);
   }
 
   //Users can update themselves
   @PUT
-  @RolesAllowed({"Everyone"})
+  @RolesAllowed({Roles.Fields.Everyone})
   public Uni<User> update(UpdateUser updateUser) {
     return service.update(token.getClaim("userId"), updateUser);
   }
 
   @DELETE
   @Path("/{id}")
-  @RolesAllowed({"Admin"})
+  @RolesAllowed({Roles.Fields.Admin})
   public Uni<SuccessResponse> delete(@PathParam("id") String id) {
     return service.delete(id);
   }
