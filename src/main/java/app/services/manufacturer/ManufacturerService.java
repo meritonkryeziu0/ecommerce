@@ -57,7 +57,7 @@ public class ManufacturerService {
                 .replaceWith(this.getById(id))
                 .onFailure().transform(transformToBadRequest())
                 .map(ManufacturerMapper.from(updateManufacturer))
-                .flatMap(repository.);
+                .flatMap(manufacturer -> repository.update(id, manufacturer));
     }
 
     private Function<Throwable, Throwable> transformToBadRequest() {

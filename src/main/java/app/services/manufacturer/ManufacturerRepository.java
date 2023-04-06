@@ -34,6 +34,10 @@ public class ManufacturerRepository {
         return getCollection().deleteOne(Filters.eq(Manufacturer.FIELD_ID, id));
     }
 
+    public Uni<Manufacturer> update(String id, Manufacturer manufacturer) {
+        return MongoUtils.updateEntity(getCollection(), Filters.eq(Manufacturer.FIELD_ID, id), manufacturer);
+    }
+
     public Uni<Manufacturer> update(ClientSession session, String id, Manufacturer manufacturer) {
         return MongoUtils.updateEntity(session, getCollection(), Filters.eq(Manufacturer.FIELD_ID, id), manufacturer);
     }
