@@ -17,6 +17,6 @@ public class CreateWishlist {
   private List<ProductReference> products;
 
   public CreateWishlist(User user){
-    this.userReference = new UserReference(userReference._id, user.getFirstName(), user.getLastName());
+    this.userReference = new UserReference(user.id, user.getFirstName(), user.getLastName());
   }
 }
