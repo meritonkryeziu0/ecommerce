@@ -12,7 +12,9 @@ import java.util.List;
 @Setter
 public class Wishlist extends BaseModel {
   public static String FIELD_USER_ID = "userReference._id";
+  public static String FIELD_PRODUCT_ID = "products._id";
   public static String FIELD_PRODUCTS = "products";
+
 
   private UserReference userReference;
   private List<ProductReference> products;
