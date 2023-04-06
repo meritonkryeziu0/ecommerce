@@ -9,6 +9,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -33,7 +34,7 @@ public class AuthenticationResource {
     @POST
     @Path("/login")
     @PermitAll
-    public Uni<AuthResponse> login(UserLoginModel userLoginModel){
+    public Uni<AuthResponse> login(@Valid UserLoginModel userLoginModel){
         return authenticationService.authenticate(userLoginModel.getEmail(), userLoginModel.getPassword());
     }
 
