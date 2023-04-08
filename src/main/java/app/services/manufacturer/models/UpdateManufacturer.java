@@ -10,8 +10,8 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 public class UpdateManufacturer {
-    @NotBlank
-    private String name;
-    @Valid
-    private BaseAddress address;
+  @NotBlank
+  private String name;
+  @Valid
+  private BaseAddress address;
 }

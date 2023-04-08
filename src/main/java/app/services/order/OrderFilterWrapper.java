@@ -14,21 +14,21 @@ import java.util.List;
 import static app.utils.Utils.notBlank;
 
 public class OrderFilterWrapper extends PaginationWrapper {
-    @QueryParam("firstName")
-    String firstName;
+  @QueryParam("firstName")
+  String firstName;
 
-    @Override
-    public Bson toBson() {
-        List<Bson> filters = new ArrayList<>();
+  @Override
+  public Bson toBson() {
+    List<Bson> filters = new ArrayList<>();
 
-        if (notBlank(firstName)) {
-            filters.add(Filters.eq(User.FIELD_FIRSTNAME, firstName));
-        }
-
-        if (filters.isEmpty()) {
-            return new Document();
-        }
-
-        return Updates.combine(filters);
+    if (notBlank(firstName)) {
+      filters.add(Filters.eq(User.FIELD_FIRSTNAME, firstName));
     }
+
+    if (filters.isEmpty()) {
+      return new Document();
+    }
+
+    return Updates.combine(filters);
+  }
 }

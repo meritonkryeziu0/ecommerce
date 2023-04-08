@@ -1,4 +1,4 @@
-package app.services.shoppingCart.models;
+package app.services.shoppingcart.models;
 
 import app.services.product.models.ProductReference;
 import lombok.Getter;
@@ -10,6 +10,6 @@ import java.util.List;
 @Getter
 @Setter
 public class UpdateShoppingCart {
-    @Valid
-    private List<ProductReference> products;
+  @Valid
+  private List<ProductReference> products;
 }

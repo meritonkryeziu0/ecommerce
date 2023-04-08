@@ -14,15 +14,15 @@ import java.util.List;
 @Setter
 public class Order extends BaseModel {
 
-    public static String FIELD_STATUS = "status";
-    public static String FIELD_TRACKINGNUMBER = "tracking.trackingNumber";
-    public static String FIELD_USER_ID = "userReference._id";
+  public static String FIELD_STATUS = "status";
+  public static String FIELD_TRACKINGNUMBER = "tracking.trackingNumber";
+  public static String FIELD_USER_ID = "userReference._id";
 
-    private String status;
-    private UserReference userReference;
-    private BaseAddress shippingAddress;
-    private PaymentMethod paymentMethod;
-    private List<ProductReference> products;
-    private Double total;
-    private String shipmentType;
+  private String status;
+  private UserReference userReference;
+  private BaseAddress shippingAddress;
+  private PaymentMethod paymentMethod;
+  private List<ProductReference> products;
+  private Double total;
+  private String shipmentType;
 }

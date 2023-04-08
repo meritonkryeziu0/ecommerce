@@ -9,9 +9,9 @@ import javax.validation.constraints.Email;
 @Getter
 @Setter
 public class UserLoginModel {
-    @NotNull
-    @Email
-    String email;
-    @NotNull
-    String password;
+  @NotNull
+  @Email
+  String email;
+  @NotNull
+  String password;
 }

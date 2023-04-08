@@ -32,7 +32,7 @@ public class UserRepository {
     return getCollection().find(Filters.eq(User.FIELD_EMAIL, email)).toUni();
   }
 
-  public Uni<User> add(User user){
+  public Uni<User> add(User user) {
     return MongoUtils.addEntity(getCollection(), user);
   }
 

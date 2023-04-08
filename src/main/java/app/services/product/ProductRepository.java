@@ -21,50 +21,50 @@ import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class ProductRepository {
-    @Inject
-    MongoCollectionWrapper mongoCollectionWrapper;
+  @Inject
+  MongoCollectionWrapper mongoCollectionWrapper;
 
-    public ReactiveMongoCollection<Product> getCollection() {
-        return mongoCollectionWrapper.getCollection(MongoCollections.PRODUCTS_COLLECTION, Product.class);
-    }
+  public ReactiveMongoCollection<Product> getCollection() {
+    return mongoCollectionWrapper.getCollection(MongoCollections.PRODUCTS_COLLECTION, Product.class);
+  }
 
-    public Uni<List<Product>> getListByManufacturerId(String id) {
-        return getCollection().find(Filters.eq(Product.FIELD_MANUFACTURER_ID, id)).collect().asList();
-    }
+  public Uni<List<Product>> getListByManufacturerId(String id) {
+    return getCollection().find(Filters.eq(Product.FIELD_MANUFACTURER_ID, id)).collect().asList();
+  }
 
-    public Uni<Product> getById(String id) {
-        return getCollection().find(Filters.eq(Product.FIELD_ID, id)).toUni();
-    }
+  public Uni<Product> getById(String id) {
+    return getCollection().find(Filters.eq(Product.FIELD_ID, id)).toUni();
+  }
 
-    public Uni<Product> add(Product product) {
-        return MongoUtils.addEntity(getCollection(), product);
-    }
+  public Uni<Product> add(Product product) {
+    return MongoUtils.addEntity(getCollection(), product);
+  }
 
-    public Uni<Product> update(String id, Product product) {
-        return MongoUtils.updateEntity(getCollection(), Filters.eq(Product.FIELD_ID, id), product);
-    }
+  public Uni<Product> update(String id, Product product) {
+    return MongoUtils.updateEntity(getCollection(), Filters.eq(Product.FIELD_ID, id), product);
+  }
 
-    public Uni<UpdateResult> updateManufactures(ManufacturerReference manufacturerReference) {
-        return getCollection().updateMany(Filters.eq(Product.FIELD_MANUFACTURER_ID, manufacturerReference.getId()), Updates.set(Product.FIELD_MANUFACTURER, manufacturerReference));
-    }
+  public Uni<UpdateResult> updateManufactures(ManufacturerReference manufacturerReference) {
+    return getCollection().updateMany(Filters.eq(Product.FIELD_MANUFACTURER_ID, manufacturerReference.getId()), Updates.set(Product.FIELD_MANUFACTURER, manufacturerReference));
+  }
 
-    public Uni<Void> increaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
-        List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
-                Filters.eq(Product.FIELD_ID, productReference._id),
-                Updates.inc(Product.FIELD_STOCK_QUANTITY, productReference.getQuantity()))).collect(Collectors.toList());
+  public Uni<Void> increaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
+    List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
+        Filters.eq(Product.FIELD_ID, productReference._id),
+        Updates.inc(Product.FIELD_STOCK_QUANTITY, productReference.getQuantity()))).collect(Collectors.toList());
 
-        return getCollection().bulkWrite(session, updates).replaceWithVoid();
-    }
+    return getCollection().bulkWrite(session, updates).replaceWithVoid();
+  }
 
-    public Uni<Void> decreaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
-        List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
-                Filters.eq(Product.FIELD_ID, productReference._id),
-                Updates.inc(Product.FIELD_STOCK_QUANTITY, -productReference.getQuantity()))).collect(Collectors.toList());
+  public Uni<Void> decreaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
+    List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
+        Filters.eq(Product.FIELD_ID, productReference._id),
+        Updates.inc(Product.FIELD_STOCK_QUANTITY, -productReference.getQuantity()))).collect(Collectors.toList());
 
-        return getCollection().bulkWrite(session, updates).replaceWithVoid();
-    }
+    return getCollection().bulkWrite(session, updates).replaceWithVoid();
+  }
 
-    public Uni<Product> delete(String id) {
-        return getCollection().findOneAndDelete(Filters.eq(Product.FIELD_ID, id));
-    }
+  public Uni<Product> delete(String id) {
+    return getCollection().findOneAndDelete(Filters.eq(Product.FIELD_ID, id));
+  }
 }

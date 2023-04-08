@@ -13,15 +13,15 @@ import java.util.Map;
 @Getter
 @Setter
 public class UpdateProduct {
-    @NotBlank
-    @Size(max = 255)
-    private String name;
-    @Size(max = 1000)
-    private String description;
-    @DecimalMin(value = "0.0")
-    private Double price;
-    @Min(value = 1)
-    private Integer stockQuantity;
-    private ManufacturerReference manufacturer;
-    private Map<String, String> details;
+  @NotBlank
+  @Size(max = 255)
+  private String name;
+  @Size(max = 1000)
+  private String description;
+  @DecimalMin(value = "0.0")
+  private Double price;
+  @Min(value = 1)
+  private Integer stockQuantity;
+  private ManufacturerReference manufacturer;
+  private Map<String, String> details;
 }

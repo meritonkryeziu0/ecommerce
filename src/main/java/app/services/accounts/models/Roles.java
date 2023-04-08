@@ -7,4 +7,4 @@ public enum Roles {
   @FieldNameConstants.Include Admin,
   @FieldNameConstants.Include Everyone,
   @FieldNameConstants.Include User;
-  }
+}

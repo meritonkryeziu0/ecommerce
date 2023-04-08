@@ -15,20 +15,20 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateUser {
-    @NotBlank
-    @Size(max = 255)
-    private String firstName;
-    @NotBlank
-    @Size(max = 255)
-    private String lastName;
-    @NotBlank
-    @Email
-    private String email;
-    @NotBlank
-    private String password;
-    @NotBlank
-    private String phoneNumber;
-    private List<ShippingAddress> shippingAddresses;
-    private BillingAddress billingAddress;
+  @NotBlank
+  @Size(max = 255)
+  private String firstName;
+  @NotBlank
+  @Size(max = 255)
+  private String lastName;
+  @NotBlank
+  @Email
+  private String email;
+  @NotBlank
+  private String password;
+  @NotBlank
+  private String phoneNumber;
+  private List<ShippingAddress> shippingAddresses;
+  private BillingAddress billingAddress;
 
 }

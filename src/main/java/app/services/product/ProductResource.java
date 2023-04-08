@@ -17,38 +17,38 @@ import javax.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ProductResource {
-    @Inject
-    ProductService service;
+  @Inject
+  ProductService service;
 
-    @GET
-    public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
-        return service.getList(wrapper);
-    }
+  @GET
+  public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
+    return service.getList(wrapper);
+  }
 
-    @GET
-    @Path("/{id}")
-    public Uni<Product> getById(@PathParam("id") String id) {
-        return service.getById(id);
-    }
+  @GET
+  @Path("/{id}")
+  public Uni<Product> getById(@PathParam("id") String id) {
+    return service.getById(id);
+  }
 
-    @POST
-    @RolesAllowed({Roles.Fields.Admin})
-    public Uni<Product> add(CreateProduct createProduct) {
-        return service.add(createProduct);
-    }
+  @POST
+  @RolesAllowed({Roles.Fields.Admin})
+  public Uni<Product> add(CreateProduct createProduct) {
+    return service.add(createProduct);
+  }
 
-    @PUT
-    @Path("/{id}")
-    @RolesAllowed({Roles.Fields.Admin})
-    public Uni<Product> update(@PathParam("id") String id, UpdateProduct updateProduct) {
-        return service.update(id, updateProduct);
+  @PUT
+  @Path("/{id}")
+  @RolesAllowed({Roles.Fields.Admin})
+  public Uni<Product> update(@PathParam("id") String id, UpdateProduct updateProduct) {
+    return service.update(id, updateProduct);
 
-    }
+  }
 
-    @DELETE
-    @Path("/{id}")
-    @RolesAllowed({Roles.Fields.Admin})
-    public Uni<Void> delete(@PathParam("id") String id) {
-        return service.delete(id);
-    }
+  @DELETE
+  @Path("/{id}")
+  @RolesAllowed({Roles.Fields.Admin})
+  public Uni<Void> delete(@PathParam("id") String id) {
+    return service.delete(id);
+  }
 }

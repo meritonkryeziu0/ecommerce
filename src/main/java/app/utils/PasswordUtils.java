@@ -23,25 +23,25 @@ public class PasswordUtils {
   public static Uni<Void> validatePassword(String password) {
     HashSet<String> violations = new HashSet<>();
 
-        if (password.length() > 20 || password.length() < 8) {
-            violations.add("Password must be less than 20 and more than 8 characters in length.");
-        }
-        String upperCaseChars = "(.*[A-Z].*)";
-        if (!password.matches(upperCaseChars)) {
-            violations.add("Password must have at least one uppercase character");
-        }
-        String lowerCaseChars = "(.*[a-z].*)";
-        if (!password.matches(lowerCaseChars)) {
-            violations.add("Password must have at least one lowercase character");
-        }
-        String numbers = "(.*[0-9].*)";
-        if (!password.matches(numbers)) {
-            violations.add("Password must have at least one number");
-        }
-        Pattern specialChars = Pattern.compile("[$&+,:;=?@#|'<>.-^*()%!]");
-        if (!specialChars.matcher(password).find()) {
-            violations.add("Password must have at least one special character");
-        }
+    if (password.length() > 20 || password.length() < 8) {
+      violations.add("Password must be less than 20 and more than 8 characters in length.");
+    }
+    String upperCaseChars = "(.*[A-Z].*)";
+    if (!password.matches(upperCaseChars)) {
+      violations.add("Password must have at least one uppercase character");
+    }
+    String lowerCaseChars = "(.*[a-z].*)";
+    if (!password.matches(lowerCaseChars)) {
+      violations.add("Password must have at least one lowercase character");
+    }
+    String numbers = "(.*[0-9].*)";
+    if (!password.matches(numbers)) {
+      violations.add("Password must have at least one number");
+    }
+    Pattern specialChars = Pattern.compile("[$&+,:;=?@#|'<>.-^*()%!]");
+    if (!specialChars.matcher(password).find()) {
+      violations.add("Password must have at least one special character");
+    }
 
     if (violations.size() > 0) {
       String message = String.join("; ", violations);
@@ -53,33 +53,33 @@ public class PasswordUtils {
     }
   }
 
-    public static boolean verifyPassword(String plainPassword, User user) {
-        if (isNull(user)) return false;
-        if (isBlank(user.getHashedPassword())) return false;
-        return verifyPassword(plainPassword, user.getHashedPassword(), user.getSalt());
+  public static boolean verifyPassword(String plainPassword, User user) {
+    if (isNull(user)) return false;
+    if (isBlank(user.getHashedPassword())) return false;
+    return verifyPassword(plainPassword, user.getHashedPassword(), user.getSalt());
+  }
+
+  public static String hashPassword(String password, String salt) {
+    String concat = (salt == null ? "" : salt) + password;
+    return hashSha512(concat);
+  }
+
+  private static String hashSha512(String payload) {
+    try {
+      MessageDigest md = MessageDigest.getInstance("SHA-512");
+      byte[] bHash = md.digest(payload.getBytes(StandardCharsets.UTF_8));
+      return bytesToHex(bHash);
+    } catch (NoSuchAlgorithmException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-        public static String hashPassword(String password, String salt) {
-            String concat = (salt == null ? "" : salt) + password;
-            return hashSha512(concat);
-        }
-
-        private static String hashSha512(String payload){
-            try {
-                MessageDigest md = MessageDigest.getInstance("SHA-512");
-                byte[] bHash = md.digest(payload.getBytes(StandardCharsets.UTF_8));
-                return bytesToHex(bHash);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        public static String getSalt(){
-            SecureRandom random = new SecureRandom();
-            byte[] salt = new byte[16];
-            random.nextBytes(salt);
-            return bytesToHex(salt);
-        }
+  public static String getSalt() {
+    SecureRandom random = new SecureRandom();
+    byte[] salt = new byte[16];
+    random.nextBytes(salt);
+    return bytesToHex(salt);
+  }
 
   private static String bytesToHex(byte[] bytes) {
     char[] chars = new char[bytes.length * 2];

@@ -10,8 +10,8 @@ import javax.validation.Valid;
 @Getter
 @Setter
 public class UpdateOrder {
-    @Valid
-    private UserReference user;
-    @Valid
-    private ShippingAddress shippingAddress;
+  @Valid
+  private UserReference user;
+  @Valid
+  private ShippingAddress shippingAddress;
 }

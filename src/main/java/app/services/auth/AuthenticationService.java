@@ -19,49 +19,49 @@ import static app.utils.Utils.isBlank;
 
 @ApplicationScoped
 public class AuthenticationService {
-    @Inject
-    UserService userService;
-    @Inject
-    TokenService tokenService;
+  @Inject
+  UserService userService;
+  @Inject
+  TokenService tokenService;
 
 
-    public Uni<AuthResponse> authenticate(String email, String password){
-        return userService.getWithEmail(email)
-            .flatMap(user -> this.verifySuccessfulLogin(password, user))
-            .flatMap(user -> userService.updateState(user.getId(), State.LOGGED_IN))
-            .flatMap(loggedInUser -> tokenService.generateToken(loggedInUser)
-                .map(token -> Pair.create(loggedInUser, token)))
-            .map(userTokenPair -> new AuthResponse(State.LOGGED_IN, userTokenPair.getLeft().getEmail(), userTokenPair.getRight()));
+  public Uni<AuthResponse> authenticate(String email, String password) {
+    return userService.getWithEmail(email)
+        .flatMap(user -> this.verifySuccessfulLogin(password, user))
+        .flatMap(user -> userService.updateState(user.getId(), State.LOGGED_IN))
+        .flatMap(loggedInUser -> tokenService.generateToken(loggedInUser)
+            .map(token -> Pair.create(loggedInUser, token)))
+        .map(userTokenPair -> new AuthResponse(State.LOGGED_IN, userTokenPair.getLeft().getEmail(), userTokenPair.getRight()));
+  }
+
+  private Uni<User> verifySuccessfulLogin(String password, User user) {
+    boolean passwordResult = PasswordUtils.verifyPassword(password, user);
+    if (passwordResult) {
+      return Uni.createFrom().item(user);
     }
+    return Uni.createFrom()
+        .emitter(emitter -> {
+          AuthenticationException authenticationException =
+              new AuthenticationException.InvalidCredentialsException("Invalid credentials");
+          emitter.fail(authenticationException);
+        });
+  }
 
-    private Uni<User> verifySuccessfulLogin(String password, User user){
-        boolean passwordResult = PasswordUtils.verifyPassword(password, user);
-        if(passwordResult){
-            return Uni.createFrom().item(user);
-        }
-        return Uni.createFrom()
-                .emitter(emitter -> {
-                    AuthenticationException authenticationException =
-                            new AuthenticationException.InvalidCredentialsException("Invalid credentials");
-                    emitter.fail(authenticationException);
-                });
-    }
+  public Uni<User> add(CreateUser createUser) {
+    return userService.add(createUser);
+  }
 
-    public Uni<User> add(CreateUser createUser) {
-        return userService.add(createUser);
+  public Uni<AuthResponse> userLogOut(JsonWebToken jwt) {
+    if (isBlank(jwt.getRawToken())) {
+      return Uni.createFrom().failure(
+          new AuthenticationException(AuthenticationException.TOKEN_IS_NULL, Response.Status.BAD_REQUEST)
+      );
     }
-
-    public Uni<AuthResponse> userLogOut(JsonWebToken jwt){
-        if (isBlank(jwt.getRawToken())){
-            return Uni.createFrom().failure(
-                new AuthenticationException(AuthenticationException.TOKEN_IS_NULL, Response.Status.BAD_REQUEST)
-            );
-        }
-        String email = jwt.getClaim("email");
-        State state = State.LOGGED_OUT;
-        return userService.getWithEmail(email)
-            .flatMap(user -> userService.updateState(user.getId(), state))
-            .map(user -> new AuthResponse(state, user.getId(), null));
-    }
+    String email = jwt.getClaim("email");
+    State state = State.LOGGED_OUT;
+    return userService.getWithEmail(email)
+        .flatMap(user -> userService.updateState(user.getId(), state))
+        .map(user -> new AuthResponse(state, user.getId(), null));
+  }
 
 }

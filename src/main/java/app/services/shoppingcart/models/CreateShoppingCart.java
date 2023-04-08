@@ -1,4 +1,4 @@
-package app.services.shoppingCart.models;
+package app.services.shoppingcart.models;
 
 import app.services.accounts.models.UserReference;
 import app.services.product.models.ProductReference;
@@ -11,9 +11,9 @@ import java.util.List;
 @Getter
 @Setter
 public class CreateShoppingCart {
-    private UserReference userReference;
-    @Valid
-    List<ProductReference> products;
-    private Double total;
+  @Valid
+  List<ProductReference> products;
+  private UserReference userReference;
+  private Double total;
 
 }

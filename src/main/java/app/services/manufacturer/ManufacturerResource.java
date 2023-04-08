@@ -18,8 +18,8 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ManufacturerResource {
 
-    @Inject
-    ManufacturerService service;
+  @Inject
+  ManufacturerService service;
 
 //    @GET
 //    public Uni<PaginatedResponse<Manufacturer>> getList(@BeanParam ManufacturerFilterWrapper wrapper) {
@@ -32,10 +32,10 @@ public class ManufacturerResource {
 //        return service.getById(id);
 //    }
 
-    @POST
-    public Uni<Manufacturer> add(CreateManufacturer createManufacturer) {
-        return service.add(createManufacturer);
-    }
+  @POST
+  public Uni<Manufacturer> add(CreateManufacturer createManufacturer) {
+    return service.add(createManufacturer);
+  }
 
 //    @PUT
 //    @Path("/{id}")

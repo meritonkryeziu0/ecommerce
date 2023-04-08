@@ -37,7 +37,7 @@ public class UserService {
         .onItem().ifNull().failWith(new UserException(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST));
   }
 
-  public Uni<User> getWithEmail(String email){
+  public Uni<User> getWithEmail(String email) {
     return repository.getWithEmail(email)
         .onItem().ifNull().failWith(new UserException(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST));
   }
@@ -63,13 +63,12 @@ public class UserService {
     return repository.delete(id).replaceWith(SuccessResponse.toSuccessResponse());
   }
 
-  private Function<CreateUser, Uni<? extends User>> verifyUserEmailAndMapToUser(){
+  private Function<CreateUser, Uni<? extends User>> verifyUserEmailAndMapToUser() {
     return createUser -> repository.getWithEmail(createUser.getEmail()).onItemOrFailure()
         .transform(Unchecked.function((user, throwable) -> {
-          if(Utils.isNull(user)){
+          if (Utils.isNull(user)) {
             return UserMapper.from(createUser);
-          }
-          else {
+          } else {
             throw new UserException(UserException.USER_ALREADY_EXISTS, Response.Status.BAD_REQUEST);
           }
         }));
