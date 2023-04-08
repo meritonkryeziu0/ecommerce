@@ -1,5 +1,4 @@
-package app.services.shoppingcart.models;
-
+package app.services.shoppingCart.models;
 
 import app.services.accounts.models.User;
 import app.services.accounts.models.UserReference;

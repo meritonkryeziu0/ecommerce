@@ -4,12 +4,17 @@ import app.common.CustomValidator;
 import app.exceptions.BaseException;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
+import app.mongodb.MongoSessionWrapper;
 import app.mongodb.MongoUtils;
 import app.services.accounts.exceptions.UserException;
 import app.services.accounts.models.CreateUser;
 import app.services.accounts.models.UpdateUser;
 import app.services.accounts.models.User;
 import app.services.auth.models.State;
+import app.services.shoppingcart.ShoppingCartService;
+import app.services.shoppingcart.models.CreateShoppingCart;
+import app.services.wishlist.WishlistService;
+import app.services.wishlist.models.CreateWishlist;
 import app.shared.SuccessResponse;
 import app.utils.PasswordUtils;
 import app.utils.Utils;
@@ -27,6 +32,14 @@ public class UserService {
   CustomValidator validator;
   @Inject
   UserRepository repository;
+  @Inject
+  ShoppingCartService shoppingCartService;
+
+  @Inject
+  WishlistService wishlistService;
+
+  @Inject
+  MongoSessionWrapper sessionWrapper;
 
   public Uni<PaginatedResponse<User>> getList(PaginationWrapper wrapper) {
     return MongoUtils.getPaginatedItems(repository.getCollection(), wrapper);
@@ -46,7 +59,15 @@ public class UserService {
     return PasswordUtils.validatePassword(createUser.getPassword())
         .replaceWith(validator.validate(createUser))
         .flatMap(verifyUserEmailAndMapToUser())
-        .flatMap(user -> repository.add(user));
+        .flatMap(user -> sessionWrapper.getSession().flatMap(
+            session ->
+                repository.add(session, user)
+                    .replaceWith(shoppingCartService.add(session, new CreateShoppingCart(user)))
+                    .replaceWith(wishlistService.add(session, new CreateWishlist(user)))
+                    .replaceWith(Uni.createFrom().publisher(session.commitTransaction()))
+                    .replaceWith(user)
+                    .eventually(session::close)
+        ));
   }
 
   public Uni<User> update(String id, UpdateUser updateUser) {

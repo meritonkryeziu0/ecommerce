@@ -1,5 +1,6 @@
 package app.services.manufacturer;
 
+import app.helpers.PaginatedResponse;
 import app.services.accounts.models.Roles;
 import app.services.manufacturer.models.CreateManufacturer;
 import app.services.manufacturer.models.Manufacturer;
@@ -21,32 +22,32 @@ public class ManufacturerResource {
   @Inject
   ManufacturerService service;
 
-//    @GET
-//    public Uni<PaginatedResponse<Manufacturer>> getList(@BeanParam ManufacturerFilterWrapper wrapper) {
-//        return service.getList(wrapper);
-//    }
+    @GET
+    public Uni<PaginatedResponse<Manufacturer>> getList(@BeanParam ManufacturerFilterWrapper wrapper) {
+        return service.getList(wrapper);
+    }
 
-//    @GET
-//    @Path("/{id}")
-//    public Uni<Manufacturer> getById(@PathParam("id") String id) {
-//        return service.getById(id);
-//    }
+    @GET
+    @Path("/{id}")
+    public Uni<Manufacturer> getById(@PathParam("id") String id) {
+        return service.getById(id);
+    }
 
   @POST
   public Uni<Manufacturer> add(CreateManufacturer createManufacturer) {
     return service.add(createManufacturer);
   }
 
-//    @PUT
-//    @Path("/{id}")
-//    public Uni<Manufacturer> update(@PathParam("id") String id, UpdateManufacturer updateManufacturer) {
-//        return service.update(id, updateManufacturer);
-//    }
+    @PUT
+    @Path("/{id}")
+    public Uni<Manufacturer> update(@PathParam("id") String id, UpdateManufacturer updateManufacturer) {
+        return service.update(id, updateManufacturer);
+    }
 
-//    @DELETE
-//    @Path("/{id}")
-//    public Uni<SuccessResponse> delete(@PathParam("id") String id) {
-//        return service.delete(id);
-//    }
+    @DELETE
+    @Path("/{id}")
+    public Uni<SuccessResponse> delete(@PathParam("id") String id) {
+        return service.delete(id);
+    }
 
 }

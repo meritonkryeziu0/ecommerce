@@ -1,5 +1,4 @@
-package app.services.shoppingcart.models;
-
+package app.services.wishlist.models;
 
 import app.services.accounts.models.User;
 import app.services.accounts.models.UserReference;
@@ -12,13 +11,12 @@ import java.util.List;
 
 @Getter
 @Setter
-public class CreateShoppingCart {
+public class CreateWishlist {
   private UserReference userReference;
   @Valid
-  List<ProductReference> products;
-  private Double total;
+  private List<ProductReference> products;
 
-  public CreateShoppingCart(User user){
+  public CreateWishlist(User user){
     this.userReference = new UserReference(user.id, user.getFirstName(), user.getLastName());
   }
 }
