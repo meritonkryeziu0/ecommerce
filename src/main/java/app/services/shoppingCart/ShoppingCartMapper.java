@@ -2,7 +2,6 @@ package app.services.shoppingCart;
 
 //import app.services.order.models.CreateOrder;
 //import app.services.order.models.OrderDetails;
-import app.services.shoppingCart.models.CreateShoppingCart;
 import app.services.shoppingCart.models.ShoppingCart;
 
 import java.util.ArrayList;
