@@ -13,6 +13,7 @@ import com.mongodb.client.model.Updates;
 import com.mongodb.reactivestreams.client.ClientSession;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
+import org.bson.Document;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -45,11 +46,12 @@ public class WishlistRepository {
 
   public Uni<Wishlist> removeProductFromWishlist(String userId, ProductReference productReference) {
     return getCollection().findOneAndUpdate(Filters.eq(Wishlist.FIELD_USER_ID, userId),
-        Updates.pull(Wishlist.FIELD_PRODUCTS, Filters.eq(Wishlist.FIELD_PRODUCT_ID, productReference._id)), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
+        Updates.pull(Wishlist.FIELD_PRODUCTS, new Document(Product.FIELD_ID, productReference._id)), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
   }
+
   public Uni<Wishlist> removeProductFromWishlist(ClientSession session, String userId, ProductReference productReference) {
     return getCollection().findOneAndUpdate(session, Filters.eq(Wishlist.FIELD_USER_ID, userId),
-        Updates.pull(Wishlist.FIELD_PRODUCTS, Filters.eq(Wishlist.FIELD_PRODUCT_ID, productReference._id)), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
+        Updates.pull(Wishlist.FIELD_PRODUCTS, new Document(Product.FIELD_ID, productReference._id)), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
   }
 
   public Uni<Void> emptyWishlist(String userId) {
