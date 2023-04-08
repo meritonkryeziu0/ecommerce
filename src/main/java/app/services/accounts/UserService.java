@@ -12,6 +12,7 @@ import app.services.accounts.models.UpdateUser;
 import app.services.accounts.models.User;
 import app.services.auth.models.State;
 import app.services.shoppingCart.ShoppingCartService;
+import app.services.shoppingCart.models.CreateShoppingCart;
 import app.services.wishlist.WishlistService;
 import app.services.wishlist.models.CreateWishlist;
 import app.shared.SuccessResponse;

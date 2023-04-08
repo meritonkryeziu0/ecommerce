@@ -9,6 +9,7 @@ import app.services.product.ProductService;
 import app.services.product.exceptions.ProductException;
 import app.services.product.models.ProductReference;
 import app.services.shoppingCart.exceptions.ShoppingCartException;
+import app.services.shoppingCart.models.CreateShoppingCart;
 import app.services.shoppingCart.models.ShoppingCart;
 import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
