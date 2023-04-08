@@ -8,6 +8,7 @@ import app.services.auth.models.State;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.reactivestreams.client.ClientSession;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
 
@@ -32,8 +33,8 @@ public class UserRepository {
     return getCollection().find(Filters.eq(User.FIELD_EMAIL, email)).toUni();
   }
 
-  public Uni<User> add(User user){
-    return MongoUtils.addEntity(getCollection(), user);
+  public Uni<User> add(ClientSession session, User user){
+    return MongoUtils.addEntity(session, getCollection(), user);
   }
 
   public Uni<User> update(String id, User user) {
