@@ -2,6 +2,7 @@ package app.services.wishlist;
 
 import app.common.CustomValidator;
 import app.exceptions.BaseException;
+import app.mongodb.MongoSessionWrapper;
 import app.services.product.ProductService;
 import app.services.product.exceptions.ProductException;
 import app.services.product.models.ProductReference;
@@ -26,7 +27,8 @@ public class WishlistService {
   ShoppingCartService shoppingCartService;
   @Inject
   WishlistRepository repository;
-
+  @Inject
+  MongoSessionWrapper sessionWrapper;
   @Inject
   CustomValidator validator;
 
@@ -74,15 +76,23 @@ public class WishlistService {
     return validator.validate(productReference)
         .replaceWith(productService.getById(productReference._id))
         .onFailure().transform(transformToBadRequest())
-        .flatMap(product -> shoppingCartService.update(userId, productReference))
-        .replaceWith(this.removeProductFromWishlist(userId, productReference));
+        .flatMap(product -> sessionWrapper.getSession().flatMap(
+            session ->
+                shoppingCartService.update(session, userId, productReference)
+                    .replaceWith(this.removeProductFromWishlist(session, userId, productReference))
+                    .flatMap(updatedWishlist -> Uni.createFrom().publisher(session.commitTransaction()).replaceWith(updatedWishlist))
+                    .eventually(session::close)
+        ));
   }
 
-  public Uni<Wishlist> removeProductFromWishlist(String userId, ProductReference productReference){
-    return validator.validate(productReference)
-        .replaceWith(productService.getById(productReference._id))
-        .flatMap(product -> repository.removeProductFromWishlist(userId, product));
+  public Uni<Wishlist> removeProductFromWishlist(String userId, ProductReference productReference) {
+    return repository.removeProductFromWishlist(userId, productReference);
   }
+
+  public Uni<Wishlist> removeProductFromWishlist(ClientSession session, String userId, ProductReference productReference) {
+    return repository.removeProductFromWishlist(session, userId, productReference);
+  }
+
   public Uni<SuccessResponse> emptyWishlist(String userId) {
     return repository.emptyWishlist(userId)
         .onFailure().transform(transformToBadRequest())

@@ -15,6 +15,7 @@ import java.util.List;
 public class Wishlist extends BaseModel {
   public static String FIELD_USER_ID = "userReference._id";
   public static String FIELD_PRODUCTS = "products";
+  public static String FIELD_PRODUCT_ID = "products._id";
 
   private UserReference userReference;
   private List<ProductReference> products;

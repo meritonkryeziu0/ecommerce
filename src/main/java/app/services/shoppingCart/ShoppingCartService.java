@@ -11,7 +11,9 @@ import app.services.product.models.ProductReference;
 import app.services.shoppingCart.exceptions.ShoppingCartException;
 import app.services.shoppingCart.models.CreateShoppingCart;
 import app.services.shoppingCart.models.ShoppingCart;
+import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
+import io.smallrye.common.constraint.Nullable;
 import io.smallrye.mutiny.Uni;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -57,7 +59,7 @@ public class ShoppingCartService {
         return shoppingCart;
     }
 
-    public Uni<ShoppingCart> update(String userId, ProductReference productReference) {
+    public Uni<ShoppingCart> update(@Nullable ClientSession session, String userId, ProductReference productReference) {
         return validator.validate(productReference)
             .replaceWith(productService.getById(productReference._id))
             .onFailure().transform(transformToBadRequest())
@@ -70,7 +72,12 @@ public class ShoppingCartService {
             .replaceWith(this.getByUserId(userId))
             .onFailure().transform(transformToBadRequest())
             .map(shoppingCart -> this.updateShoppingCart(shoppingCart, productReference))
-            .flatMap(shoppingCart -> repository.update(userId, shoppingCart));
+            .flatMap(shoppingCart -> {
+                if(Utils.isNull(session)){
+                    return repository.update(userId, shoppingCart);
+                }
+                return repository.update(session, userId, shoppingCart);
+            });
     }
 
     private Function<Throwable, Throwable> transformToBadRequest() {
