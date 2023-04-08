@@ -19,45 +19,45 @@ import java.util.function.Function;
 
 @ApplicationScoped
 public class OrderService {
-    @Inject
-    CustomValidator validator;
-    @Inject
-    OrderRepository repository;
+  @Inject
+  CustomValidator validator;
+  @Inject
+  OrderRepository repository;
 
-    public Uni<List<Order>> getList() {
-        return repository.getList();
-    }
+  public Uni<List<Order>> getList() {
+    return repository.getList();
+  }
 
-    public Uni<PaginatedResponse<Order>> getList(PaginationWrapper wrapper) {
-        return MongoUtils.getPaginatedItems(repository.getCollection(), wrapper);
-    }
+  public Uni<PaginatedResponse<Order>> getList(PaginationWrapper wrapper) {
+    return MongoUtils.getPaginatedItems(repository.getCollection(), wrapper);
+  }
 
-    public Uni<Order> getById(String id) {
-        return repository.getById(id)
-                .onItem().ifNull().failWith(new OrderException(OrderException.ORDER_NOT_FOUND, 404));
-    }
+  public Uni<Order> getById(String id) {
+    return repository.getById(id)
+        .onItem().ifNull().failWith(new OrderException(OrderException.ORDER_NOT_FOUND, 404));
+  }
 
-    public Uni<Order> add(CreateOrder createOrder) {
-        return validator.validate(createOrder)
-                .replaceWith(OrderMapper.from(createOrder))
-                .flatMap(order -> repository.add(order));
-    }
+  public Uni<Order> add(CreateOrder createOrder) {
+    return validator.validate(createOrder)
+        .replaceWith(OrderMapper.from(createOrder))
+        .flatMap(order -> repository.add(order));
+  }
 
-    public Uni<SuccessResponse> delete(String id) {
-        return repository.delete(id).replaceWith(SuccessResponse.toSuccessResponse());
-    }
+  public Uni<SuccessResponse> delete(String id) {
+    return repository.delete(id).replaceWith(SuccessResponse.toSuccessResponse());
+  }
 
-    public Uni<Order> update(String id, UpdateOrder updateOrder) {
-        return validator.validate(updateOrder).replaceWith(this.getById(id))
-                .onFailure().transform(transformToBadRequest());
-    }
+  public Uni<Order> update(String id, UpdateOrder updateOrder) {
+    return validator.validate(updateOrder).replaceWith(this.getById(id))
+        .onFailure().transform(transformToBadRequest());
+  }
 
-    private Function<Throwable, Throwable> transformToBadRequest() {
-        return throwable -> {
-            if (throwable instanceof BaseException) {
-                return new OrderException(OrderException.ORDER_NOT_FOUND, 400);
-            }
-            return throwable;
-        };
-    }
+  private Function<Throwable, Throwable> transformToBadRequest() {
+    return throwable -> {
+      if (throwable instanceof BaseException) {
+        return new OrderException(OrderException.ORDER_NOT_FOUND, 400);
+      }
+      return throwable;
+    };
+  }
 }

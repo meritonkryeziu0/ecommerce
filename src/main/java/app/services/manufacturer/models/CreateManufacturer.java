@@ -15,9 +15,9 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateManufacturer {
-    @NotBlank
-    @Size(max = 255)
-    private String name;
-    @Valid
-    private BaseAddress address;
+  @NotBlank
+  @Size(max = 255)
+  private String name;
+  @Valid
+  private BaseAddress address;
 }

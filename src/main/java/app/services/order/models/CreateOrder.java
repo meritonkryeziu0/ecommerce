@@ -13,18 +13,18 @@ import java.util.List;
 @Getter
 @Setter
 public class CreateOrder {
-    private String shipmentType;
-    @NotNull
-    @Valid
-    private BaseAddress shippingAddress;
-    @Valid
-    private PaymentMethod paymentMethod;
-    @NotNull
-    @Valid
-    private UserReference userReference;
-    @NotNull
-    @Valid
-    private List<ProductReference> products;
-    @NotNull
-    private Double total;
+  private String shipmentType;
+  @NotNull
+  @Valid
+  private BaseAddress shippingAddress;
+  @Valid
+  private PaymentMethod paymentMethod;
+  @NotNull
+  @Valid
+  private UserReference userReference;
+  @NotNull
+  @Valid
+  private List<ProductReference> products;
+  @NotNull
+  private Double total;
 }

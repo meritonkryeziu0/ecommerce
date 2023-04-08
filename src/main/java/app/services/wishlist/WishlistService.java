@@ -6,7 +6,7 @@ import app.mongodb.MongoSessionWrapper;
 import app.services.product.ProductService;
 import app.services.product.exceptions.ProductException;
 import app.services.product.models.ProductReference;
-import app.services.shoppingCart.ShoppingCartService;
+import app.services.shoppingcart.ShoppingCartService;
 import app.services.wishlist.exceptions.WishlistException;
 import app.services.wishlist.models.CreateWishlist;
 import app.services.wishlist.models.Wishlist;
@@ -16,6 +16,7 @@ import io.smallrye.mutiny.Uni;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -33,7 +34,9 @@ public class WishlistService {
   CustomValidator validator;
 
   public Uni<Wishlist> getByUserId(String userId) {
-    return repository.getByUserId(userId);
+    return repository.getByUserId(userId)
+        .onItem().ifNull()
+        .failWith(new WishlistException(WishlistException.WISHLIST_NOT_FOUND, Response.Status.NOT_FOUND));
   }
 
   public Uni<Wishlist> add(ClientSession session, CreateWishlist createWishlist) {
@@ -45,14 +48,14 @@ public class WishlistService {
   public Uni<Wishlist> update(String userId, ProductReference productReference) {
     return validator.validate(productReference)
         .replaceWith(productService.getById(productReference._id))
-        .onFailure().transform(transformToBadRequest())
+        .onFailure().transform(transformToBadRequest(ProductException.PRODUCT_NOT_FOUND, Response.Status.NOT_FOUND))
         .flatMap(product -> {
           if (productReference.getQuantity() > product.getStockQuantity()) {
             return Uni.createFrom().failure(new ProductException(ProductException.NOT_ENOUGH_STOCK, 400));
           }
           return Uni.createFrom().item(product);
         })
-        .onFailure().transform(transformToBadRequest())
+        .onFailure().transform(transformToBadRequest(WishlistException.PRODUCT_NOT_ADDED, Response.Status.BAD_REQUEST))
         .replaceWith(this.getByUserId(userId))
         .map(wishlist -> this.updateWishlist(wishlist, productReference))
         .flatMap(wishlist -> repository.update(userId, wishlist));
@@ -75,7 +78,7 @@ public class WishlistService {
   public Uni<Wishlist> addProductToCart(String userId, ProductReference productReference) {
     return validator.validate(productReference)
         .replaceWith(productService.getById(productReference._id))
-        .onFailure().transform(transformToBadRequest())
+        .onFailure().transform(transformToBadRequest(WishlistException.PRODUCT_NOT_ADDED, Response.Status.BAD_REQUEST))
         .flatMap(product -> sessionWrapper.getSession().flatMap(
             session ->
                 shoppingCartService.update(session, userId, productReference)
@@ -99,17 +102,18 @@ public class WishlistService {
 
   public Uni<SuccessResponse> emptyWishlist(String userId) {
     return repository.emptyWishlist(userId)
-        .onFailure().transform(transformToBadRequest())
+        .onFailure().transform(transformToBadRequest(WishlistException.WISHLIST_NOT_CLEARED, Response.Status.BAD_REQUEST))
         .replaceWith(SuccessResponse.toSuccessResponse());
   }
 
 
-  private Function<Throwable, Throwable> transformToBadRequest() {
+  private Function<Throwable, Throwable> transformToBadRequest(String message, Response.Status status) {
     return throwable -> {
       if (throwable instanceof BaseException) {
-        return new WishlistException(WishlistException.PRODUCT_NOT_ADDED, 400);
+        return new WishlistException(message, status);
       }
       return throwable;
     };
   }
+
 }

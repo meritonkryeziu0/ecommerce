@@ -33,7 +33,7 @@ public class UserRepository {
     return getCollection().find(Filters.eq(User.FIELD_EMAIL, email)).toUni();
   }
 
-  public Uni<User> add(ClientSession session, User user){
+  public Uni<User> add(ClientSession session, User user) {
     return MongoUtils.addEntity(session, getCollection(), user);
   }
 

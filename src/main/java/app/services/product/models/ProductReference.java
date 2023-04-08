@@ -9,11 +9,11 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class ProductReference {
-    public static final String FIELD_QUANTITY = "quantity";
-    public String _id;
-    private String name;
-    private Double price;
-    @NotNull
-    @Min(value = 1)
-    private Integer quantity;
+  public static final String FIELD_QUANTITY = "quantity";
+  public String _id;
+  private String name;
+  private Double price;
+  @NotNull
+  @Min(value = 1)
+  private Integer quantity;
 }

@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentMethod {
-    private String cardNumber;
-    private String cardHolderName;
+  private String cardNumber;
+  private String cardHolderName;
 }

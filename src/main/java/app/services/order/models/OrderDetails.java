@@ -10,10 +10,10 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class OrderDetails {
-    @Valid
-    private BaseAddress shippingAddress;
-    @Valid
-    private PaymentMethod paymentMethod;
-    @NotNull
-    private String shipmentType;
+  @Valid
+  private BaseAddress shippingAddress;
+  @Valid
+  private PaymentMethod paymentMethod;
+  @NotNull
+  private String shipmentType;
 }

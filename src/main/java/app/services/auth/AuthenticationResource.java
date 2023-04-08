@@ -20,28 +20,28 @@ import javax.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthenticationResource {
-    @Inject
-    AuthenticationService authenticationService;
-    @Inject
-    JsonWebToken jwt;
+  @Inject
+  AuthenticationService authenticationService;
+  @Inject
+  JsonWebToken jwt;
 
-    @POST
-    @Path("/register")
-    public Uni<User> createUser(CreateUser createUser) {
-        return authenticationService.add(createUser);
-    }
+  @POST
+  @Path("/register")
+  public Uni<User> createUser(CreateUser createUser) {
+    return authenticationService.add(createUser);
+  }
 
-    @POST
-    @Path("/login")
-    @PermitAll
-    public Uni<AuthResponse> login(@Valid UserLoginModel userLoginModel){
-        return authenticationService.authenticate(userLoginModel.getEmail(), userLoginModel.getPassword());
-    }
+  @POST
+  @Path("/login")
+  @PermitAll
+  public Uni<AuthResponse> login(@Valid UserLoginModel userLoginModel) {
+    return authenticationService.authenticate(userLoginModel.getEmail(), userLoginModel.getPassword());
+  }
 
-    @POST
-    @Path("/logout")
-    @RolesAllowed({"Everyone"})
-    public Uni<AuthResponse> logout(){
-        return authenticationService.userLogOut(jwt).map(token -> new AuthResponse());
-    }
+  @POST
+  @Path("/logout")
+  @RolesAllowed({"Everyone"})
+  public Uni<AuthResponse> logout() {
+    return authenticationService.userLogOut(jwt).map(token -> new AuthResponse());
+  }
 }

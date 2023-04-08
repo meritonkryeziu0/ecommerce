@@ -15,31 +15,31 @@ import javax.inject.Inject;
 
 @ApplicationScoped
 public class ManufacturerRepository {
-    @Inject
-    MongoCollectionWrapper mongoClient;
+  @Inject
+  MongoCollectionWrapper mongoClient;
 
-    public ReactiveMongoCollection<Manufacturer> getCollection() {
-        return mongoClient.getCollection(MongoCollections.MANUFACTURERS_COLLECTION, Manufacturer.class);
-    }
+  public ReactiveMongoCollection<Manufacturer> getCollection() {
+    return mongoClient.getCollection(MongoCollections.MANUFACTURERS_COLLECTION, Manufacturer.class);
+  }
 
-    public Uni<Manufacturer> add(Manufacturer manufacturer) {
-        return MongoUtils.addEntity(getCollection(), manufacturer);
-    }
+  public Uni<Manufacturer> add(Manufacturer manufacturer) {
+    return MongoUtils.addEntity(getCollection(), manufacturer);
+  }
 
-    public Uni<Manufacturer> getById(String id) {
-        return getCollection().find(Filters.eq(Manufacturer.FIELD_ID, id)).toUni();
-    }
+  public Uni<Manufacturer> getById(String id) {
+    return getCollection().find(Filters.eq(Manufacturer.FIELD_ID, id)).toUni();
+  }
 
-    public Uni<DeleteResult> delete(String id) {
-        return getCollection().deleteOne(Filters.eq(Manufacturer.FIELD_ID, id));
-    }
+  public Uni<DeleteResult> delete(String id) {
+    return getCollection().deleteOne(Filters.eq(Manufacturer.FIELD_ID, id));
+  }
 
-    public Uni<Manufacturer> update(String id, Manufacturer manufacturer) {
-        return MongoUtils.updateEntity(getCollection(), Filters.eq(Manufacturer.FIELD_ID, id), manufacturer);
-    }
+  public Uni<Manufacturer> update(String id, Manufacturer manufacturer) {
+    return MongoUtils.updateEntity(getCollection(), Filters.eq(Manufacturer.FIELD_ID, id), manufacturer);
+  }
 
-    public Uni<Manufacturer> update(ClientSession session, String id, Manufacturer manufacturer) {
-        return MongoUtils.updateEntity(session, getCollection(), Filters.eq(Manufacturer.FIELD_ID, id), manufacturer);
-    }
+  public Uni<Manufacturer> update(ClientSession session, String id, Manufacturer manufacturer) {
+    return MongoUtils.updateEntity(session, getCollection(), Filters.eq(Manufacturer.FIELD_ID, id), manufacturer);
+  }
 
 }

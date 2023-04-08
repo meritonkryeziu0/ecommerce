@@ -12,32 +12,33 @@ import io.smallrye.mutiny.Uni;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
+
 @ApplicationScoped
 public class OrderRepository {
-    @Inject
-    MongoCollectionWrapper mongoClient;
+  @Inject
+  MongoCollectionWrapper mongoClient;
 
-    public ReactiveMongoCollection<Order> getCollection() {
-        return mongoClient.getCollection(MongoCollections.ORDERS_COLLECTION, Order.class);
-    }
+  public ReactiveMongoCollection<Order> getCollection() {
+    return mongoClient.getCollection(MongoCollections.ORDERS_COLLECTION, Order.class);
+  }
 
-    public Uni<List<Order>> getList() {
-        return getCollection().find().collect().asList();
-    }
+  public Uni<List<Order>> getList() {
+    return getCollection().find().collect().asList();
+  }
 
-    public Uni<Order> getById(String id) {
-        return getCollection().find(Filters.eq(Order.FIELD_ID, id)).toUni();
-    }
+  public Uni<Order> getById(String id) {
+    return getCollection().find(Filters.eq(Order.FIELD_ID, id)).toUni();
+  }
 
-    public Uni<Order> add(Order order) {
-        return MongoUtils.addEntity(getCollection(), order);
-    }
+  public Uni<Order> add(Order order) {
+    return MongoUtils.addEntity(getCollection(), order);
+  }
 
-    public Uni<Order> update(String id, Order order) {
-        return MongoUtils.updateEntity(getCollection(), Filters.eq(Order.FIELD_ID, id), order);
-    }
+  public Uni<Order> update(String id, Order order) {
+    return MongoUtils.updateEntity(getCollection(), Filters.eq(Order.FIELD_ID, id), order);
+  }
 
-    public Uni<DeleteResult> delete(String id) {
-        return getCollection().deleteOne(Filters.eq(Order.FIELD_ID, id));
-    }
+  public Uni<DeleteResult> delete(String id) {
+    return getCollection().deleteOne(Filters.eq(Order.FIELD_ID, id));
+  }
 }

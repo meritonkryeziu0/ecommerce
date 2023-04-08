@@ -1,4 +1,4 @@
-package app.services.shoppingCart.exceptions;
+package app.services.shoppingcart.exceptions;
 
 
 import app.exceptions.BaseException;
