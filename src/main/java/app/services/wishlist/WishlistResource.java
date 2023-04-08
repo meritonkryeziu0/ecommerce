@@ -2,7 +2,6 @@ package app.services.wishlist;
 
 import app.services.accounts.models.Roles;
 import app.services.product.models.ProductReference;
-import app.services.shoppingCart.models.ShoppingCart;
 import app.services.wishlist.models.Wishlist;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
@@ -29,6 +28,12 @@ public class WishlistResource {
   @PUT
   public Uni<Wishlist> update(@PathParam("userId") String id, ProductReference productReference) {
     return service.update(id, productReference);
+  }
+
+  @PUT
+  @Path("/update-quantity")
+  public Uni<Wishlist> updateProductQuantity(@PathParam("userId") String id, ProductReference productReference){
+    return service.updateProductQuantity(id, productReference);
   }
 
   @PUT

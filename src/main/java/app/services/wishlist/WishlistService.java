@@ -85,6 +85,10 @@ public class WishlistService {
         ));
   }
 
+  public Uni<Wishlist> updateProductQuantity(String id, ProductReference productReference) {
+    return repository.updateProductQuantity(id, productReference._id, productReference.getQuantity());
+  }
+
   public Uni<Wishlist> removeProductFromWishlist(String userId, ProductReference productReference) {
     return repository.removeProductFromWishlist(userId, productReference);
   }
