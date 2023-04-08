@@ -5,9 +5,12 @@ import app.exceptions.BaseException;
 import app.services.product.ProductService;
 import app.services.product.exceptions.ProductException;
 import app.services.product.models.ProductReference;
+import app.services.shoppingCart.ShoppingCartService;
 import app.services.wishlist.exceptions.WishlistException;
+import app.services.wishlist.models.CreateWishlist;
 import app.services.wishlist.models.Wishlist;
 import app.shared.SuccessResponse;
+import com.mongodb.reactivestreams.client.ClientSession;
 import io.smallrye.mutiny.Uni;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -20,6 +23,8 @@ public class WishlistService {
   @Inject
   ProductService productService;
   @Inject
+  ShoppingCartService shoppingCartService;
+  @Inject
   WishlistRepository repository;
 
   @Inject
@@ -27,6 +32,12 @@ public class WishlistService {
 
   public Uni<Wishlist> getByUserId(String userId) {
     return repository.getByUserId(userId);
+  }
+
+  public Uni<Wishlist> add(ClientSession session, CreateWishlist createWishlist) {
+    return validator.validate(createWishlist)
+        .replaceWith(WishlistMapper.from(createWishlist))
+        .flatMap(wishlist -> repository.add(session, wishlist));
   }
 
   public Uni<Wishlist> update(String userId, ProductReference productReference) {
@@ -57,6 +68,20 @@ public class WishlistService {
     }
 
     return wishlist;
+  }
+
+
+  public Uni<Wishlist> addProductToCart(String userId, ProductReference productReference) {
+    return validator.validate(productReference)
+        .replaceWith(productService.getById(productReference._id))
+        .onFailure().transform(transformToBadRequest())
+        .flatMap(product -> shoppingCartService.update(userId, productReference))
+        .replaceWith(this.removeProductFromWishlist(userId, productReference._id));
+  }
+
+  public Uni<Wishlist> removeProductFromWishlist(String userId, String productId){
+    return productService.getById(productId)
+        .flatMap(product -> repository.removeProductFromWishlist(userId, product));
   }
 
   public Uni<SuccessResponse> emptyWishlist(String userId) {

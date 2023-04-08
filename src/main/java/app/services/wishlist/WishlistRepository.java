@@ -3,8 +3,11 @@ package app.services.wishlist;
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
 import app.mongodb.MongoUtils;
+import app.services.product.models.Product;
 import app.services.wishlist.models.Wishlist;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Updates;
 import com.mongodb.reactivestreams.client.ClientSession;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
@@ -20,7 +23,7 @@ public class WishlistRepository {
   MongoCollectionWrapper mongoCollectionWrapper;
 
   public ReactiveMongoCollection<Wishlist> getCollection() {
-    return mongoCollectionWrapper.getCollection(MongoCollections.SHOPPING_CARTS_COLLECTION, Wishlist.class);
+    return mongoCollectionWrapper.getCollection(MongoCollections.WISHLIST_COLLECTION, Wishlist.class);
   }
 
   public Uni<Wishlist> getById(String id) {
@@ -37,6 +40,11 @@ public class WishlistRepository {
 
   public Uni<Wishlist> update(String userId, Wishlist wishlist) {
     return MongoUtils.updateEntity(getCollection(), Filters.eq(Wishlist.FIELD_USER_ID, userId), wishlist);
+  }
+
+  public Uni<Wishlist> removeProductFromWishlist(String userId, Product product) {
+    return getCollection().findOneAndUpdate(Filters.eq(Wishlist.FIELD_USER_ID.equals(userId)),
+        Updates.pull(Wishlist.FIELD_PRODUCTS, product), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
   }
 
   public Uni<Void> emptyWishlist(String userId) {
