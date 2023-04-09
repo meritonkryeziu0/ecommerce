@@ -7,13 +7,13 @@ import app.services.product.models.Product;
 import app.services.product.models.UpdateProduct;
 import io.smallrye.mutiny.Uni;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 @Path("/products")
-@RolesAllowed({Roles.Fields.Everyone})
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ProductResource {
@@ -21,12 +21,14 @@ public class ProductResource {
   ProductService service;
 
   @GET
+  @PermitAll
   public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
     return service.getList(wrapper);
   }
 
   @GET
   @Path("/{id}")
+  @PermitAll
   public Uni<Product> getById(@PathParam("id") String id) {
     return service.getById(id);
   }
