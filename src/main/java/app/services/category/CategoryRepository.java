@@ -11,8 +11,10 @@ import com.mongodb.client.result.DeleteResult;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+@ApplicationScoped
 public class CategoryRepository {
   @Inject
   MongoCollectionWrapper mongoCollectionWrapper;
