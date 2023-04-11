@@ -26,7 +26,7 @@ public class UserRepository {
   }
 
   public Uni<User> getById(String id) {
-    return getCollection().find(Filters.eq(User.FIELD_ID, id)).toUni();
+    return MongoUtils.getEntityById(getCollection(), id);
   }
 
   public Uni<User> getWithEmail(String email) {

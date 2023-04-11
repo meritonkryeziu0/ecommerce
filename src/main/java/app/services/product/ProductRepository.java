@@ -33,7 +33,7 @@ public class ProductRepository {
   }
 
   public Uni<Product> getById(String id) {
-    return getCollection().find(Filters.eq(Product.FIELD_ID, id)).toUni();
+    return MongoUtils.getEntityById(getCollection(), id);
   }
 
   public Uni<Product> add(Product product) {

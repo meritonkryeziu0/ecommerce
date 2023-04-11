@@ -25,7 +25,7 @@ public class ShoppingCartRepository {
   }
 
   public Uni<ShoppingCart> getById(String id) {
-    return getCollection().find(Filters.eq(ShoppingCart.FIELD_ID, id)).toUni();
+    return MongoUtils.getEntityById(getCollection(), id);
   }
 
   public Uni<ShoppingCart> getByUserId(String userId) {

@@ -7,4 +7,5 @@ public class MongoCollections {
   public static String ORDERS_COLLECTION = "orders";
   public static String SHOPPING_CARTS_COLLECTION = "shopping-carts";
   public static String WISHLIST_COLLECTION = "wishlists";
+  public static String CATEGORY_COLLECTION = "categories";
 }

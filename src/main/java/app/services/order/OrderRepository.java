@@ -27,7 +27,7 @@ public class OrderRepository {
   }
 
   public Uni<Order> getById(String id) {
-    return getCollection().find(Filters.eq(Order.FIELD_ID, id)).toUni();
+    return MongoUtils.getEntityById(getCollection(), id);
   }
 
   public Uni<Order> add(Order order) {

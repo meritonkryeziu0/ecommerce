@@ -4,6 +4,7 @@ import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
 import app.services.product.models.Product;
 import app.shared.BaseModel;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.reactivestreams.client.ClientSession;
@@ -42,6 +43,10 @@ public class MongoUtils {
       page.setCurrentPage(paginationFilter.getPage());
       return page;
     });
+  }
+
+  public static <E extends BaseModel> Uni<E> getEntityById(ReactiveMongoCollection<E> collection, String id) {
+    return collection.find(Filters.eq(E.FIELD_ID, id)).toUni();
   }
 
   public static <E extends BaseModel> Uni<E> addEntity(ReactiveMongoCollection<E> collection, E entity) {

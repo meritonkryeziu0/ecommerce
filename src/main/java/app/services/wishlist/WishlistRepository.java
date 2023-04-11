@@ -27,7 +27,7 @@ public class WishlistRepository {
   }
 
   public Uni<Wishlist> getById(String id) {
-    return getCollection().find(Filters.eq(Wishlist.FIELD_ID, id)).toUni();
+    return MongoUtils.getEntityById(getCollection(), id);
   }
 
   public Uni<Wishlist> getByUserId(String userId) {
@@ -43,7 +43,7 @@ public class WishlistRepository {
   }
 
   public Uni<Wishlist> updateProductQuantity(String userId, String productId, int quantity) {
-    if(quantity > 0) {
+    if (quantity > 0) {
       return incrementProductQuantity(userId, productId, quantity);
     }
     return decrementProductQuantity(userId, productId, quantity);
