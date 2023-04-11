@@ -1,5 +1,6 @@
 package app.services.product.models;
 
+import app.services.category.models.CategoryReference;
 import app.services.manufacturer.models.ManufacturerReference;
 import app.shared.BaseModel;
 import lombok.Getter;
@@ -29,4 +30,5 @@ public class Product extends BaseModel {
   private Map<String, String> details;
   private ManufacturerReference manufacturer;
   private CreateProduct.PackageDetails packageDetails;
+  private CategoryReference category;
 }

@@ -1,9 +1,6 @@
 package app.services.category;
 
-import app.services.category.models.Category;
-import app.services.category.models.CategoryType;
-import app.services.category.models.CreateCategory;
-import app.services.category.models.UpdateCategory;
+import app.services.category.models.*;
 
 import java.util.function.Function;
 
@@ -22,6 +19,14 @@ public class CategoryMapper {
     }
 
     return category;
+  }
+
+  public static CategoryReference toCategoryReference(Category category){
+    CategoryReference categoryReference = new CategoryReference();
+    categoryReference._id = category.id;
+    categoryReference.setName(category.getName());
+    categoryReference.setDescription(category.getDescription());
+    return categoryReference;
   }
 
   public static Function<Category, Category> from(UpdateCategory updateCategory){

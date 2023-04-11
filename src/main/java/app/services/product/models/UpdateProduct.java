@@ -1,5 +1,6 @@
 package app.services.product.models;
 
+import app.services.category.models.CategoryReference;
 import app.services.manufacturer.models.ManufacturerReference;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,5 +24,6 @@ public class UpdateProduct {
   @Min(value = 1)
   private Integer stockQuantity;
   private ManufacturerReference manufacturer;
+  private CategoryReference category;
   private Map<String, String> details;
 }
