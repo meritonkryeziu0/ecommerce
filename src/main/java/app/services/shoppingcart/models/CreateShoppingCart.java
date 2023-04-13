@@ -19,6 +19,6 @@ public class CreateShoppingCart {
   private Double total;
 
   public CreateShoppingCart(User user){
-    this.userReference = new UserReference(user.id, user.getFirstName(), user.getLastName());
+    this.userReference = new UserReference(user.id, user.getFirstName(), user.getLastName(), user.getEmail());
   }
 }
