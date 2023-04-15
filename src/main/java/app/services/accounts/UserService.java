@@ -4,6 +4,8 @@ import app.common.CustomValidator;
 import app.exceptions.BaseException;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
+import app.mongodb.MongoCollectionWrapper;
+import app.mongodb.MongoCollections;
 import app.mongodb.MongoSessionWrapper;
 import app.mongodb.MongoUtils;
 import app.services.accounts.exceptions.UserException;
@@ -18,6 +20,7 @@ import app.services.wishlist.models.CreateWishlist;
 import app.shared.SuccessResponse;
 import app.utils.PasswordUtils;
 import app.utils.Utils;
+import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 
@@ -41,20 +44,24 @@ public class UserService {
   @Inject
   MongoSessionWrapper sessionWrapper;
 
+
   public Uni<PaginatedResponse<User>> getList(PaginationWrapper wrapper) {
     return MongoUtils.getPaginatedItems(repository.getCollection(), wrapper);
   }
 
   public Uni<User> getById(String id) {
-    return repository.getById(id)
-        .onItem().ifNull().failWith(new UserException(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST));
+    return User.findById(id)
+        .onItem().ifNull().failWith(new UserException(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST))
+        .map(Utils.mapTo(User.class));
   }
 
   public Uni<User> getWithEmail(String email) {
-    return repository.getWithEmail(email)
-        .onItem().ifNull().failWith(new UserException(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST));
+    return User.find(User.FIELD_EMAIL, email).firstResult()
+        .onItem().ifNull().failWith(new UserException(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST))
+        .map(Utils.mapTo(User.class));
   }
 
+  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<User> add(CreateUser createUser) {
     return PasswordUtils.validatePassword(createUser.getPassword())
         .replaceWith(validator.validate(createUser))
@@ -73,7 +80,7 @@ public class UserService {
   public Uni<User> update(String id, UpdateUser updateUser) {
     return validator.validate(updateUser).replaceWith(this.getById(id))
         .map(UserMapper.from(updateUser))
-        .flatMap(user -> repository.update(id, user));
+        .call(MongoUtils::updateEntity);
   }
 
   public Uni<User> updateState(String id, State state) {

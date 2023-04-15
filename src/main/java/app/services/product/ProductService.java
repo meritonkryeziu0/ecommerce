@@ -4,14 +4,19 @@ import app.common.CustomValidator;
 import app.exceptions.BaseException;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
+import app.mongodb.MongoCollectionWrapper;
+import app.mongodb.MongoCollections;
+import app.mongodb.MongoSessionWrapper;
 import app.mongodb.MongoUtils;
 import app.services.manufacturer.ManufacturerService;
 import app.services.product.exceptions.ProductException;
 import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
 import app.services.product.models.UpdateProduct;
+import app.utils.Utils;
 import com.mongodb.client.model.Filters;
 import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
+import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.quarkus.panache.common.Page;
 import io.smallrye.mutiny.Uni;
 import org.bson.Document;
@@ -28,20 +33,26 @@ public class ProductService {
   CustomValidator validator;
   @Inject
   ManufacturerService manufactureService;
+  @Inject
+  MongoCollectionWrapper mongoCollectionWrapper;
+
+  public ReactiveMongoCollection<Product> getCollection() {
+    return mongoCollectionWrapper.getCollection(MongoCollections.PRODUCTS_COLLECTION, Product.class);
+  }
 
   public Uni<Product> getById(String id) {
     return Product.findById(id)
         .onItem().ifNull()
         .failWith(new ProductException(ProductException.PRODUCT_NOT_FOUND, Response.Status.NOT_FOUND))
-        .map(ProductMapper.mapToProduct());
+        .map(Utils.mapTo(Product.class));
   }
 
-  public Uni<List<Product>> getList(PaginationWrapper wrapper) {
-    return Product.listAll();
+  public Uni<PaginatedResponse<Product>> getList(PaginationWrapper wrapper) {
+    return MongoUtils.getPaginatedItems(getCollection(), wrapper);
   }
 
   public Uni<List<Product>> getListByManufacturerId(String id) {
-    return Product.list((Document) Filters.eq(Product.FIELD_MANUFACTURER_ID, id));
+    return Product.find(Product.FIELD_MANUFACTURER_ID, id).list();
   }
 
   public Uni<Product> add(CreateProduct createProduct) {

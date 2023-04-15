@@ -2,6 +2,8 @@ package app.services.shoppingcart;
 
 import app.common.CustomValidator;
 import app.exceptions.BaseException;
+import app.mongodb.MongoCollectionWrapper;
+import app.mongodb.MongoCollections;
 import app.mongodb.MongoUtils;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
@@ -13,6 +15,7 @@ import app.services.shoppingcart.models.CreateShoppingCart;
 import app.services.shoppingcart.models.ShoppingCart;
 import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
+import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.common.constraint.Nullable;
 import io.smallrye.mutiny.Uni;
 
@@ -33,19 +36,28 @@ public class ShoppingCartService {
   @Inject
   ProductService productService;
 
+  @Inject
+  MongoCollectionWrapper mongoCollectionWrapper;
+
+  public ReactiveMongoCollection<ShoppingCart> getCollection() {
+    return mongoCollectionWrapper.getCollection(MongoCollections.SHOPPING_CARTS_COLLECTION, ShoppingCart.class);
+  }
+
   public Uni<PaginatedResponse<ShoppingCart>> getList(PaginationWrapper wrapper) {
-    return MongoUtils.getPaginatedItems(repository.getCollection(), wrapper);
+    return MongoUtils.getPaginatedItems(getCollection(), wrapper);
   }
 
   public Uni<ShoppingCart> getByUserId(String userId) {
-    return repository.getByUserId(userId)
-        .onItem().ifNull().failWith(new ShoppingCartException(ShoppingCartException.SHOPPING_CART_NOT_FOUND, 404));
+    return ShoppingCart.find(ShoppingCart.FIELD_USER_ID, userId).firstResult()
+        .onItem().ifNull().failWith(new ShoppingCartException(ShoppingCartException.SHOPPING_CART_NOT_FOUND, Response.Status.NOT_FOUND))
+        .map(Utils.mapTo(ShoppingCart.class));
   }
 
+  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<ShoppingCart> add(ClientSession session, CreateShoppingCart createShoppingCart) {
     return validator.validate(createShoppingCart)
         .replaceWith(ShoppingCartMapper.from(createShoppingCart))
-        .flatMap(shoppingCart -> repository.add(session, shoppingCart));
+        .call(shoppingCart -> repository.add(session, shoppingCart));
   }
 
   private ShoppingCart updateShoppingCart(ShoppingCart shoppingCart, ProductReference productReference) {
@@ -60,6 +72,7 @@ public class ShoppingCartService {
     return shoppingCart;
   }
 
+  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<ShoppingCart> update(@Nullable ClientSession session, String userId, ProductReference productReference) {
     return validator.validate(productReference)
         .replaceWith(productService.getById(productReference._id))
@@ -84,7 +97,7 @@ public class ShoppingCartService {
   private Function<Throwable, Throwable> transformToBadRequest() {
     return throwable -> {
       if (throwable instanceof BaseException) {
-        return new ShoppingCartException(ShoppingCartException.PRODUCT_NOT_ADDED, 400);
+        return new ShoppingCartException(ShoppingCartException.PRODUCT_NOT_ADDED, Response.Status.BAD_REQUEST);
       }
       return throwable;
     };

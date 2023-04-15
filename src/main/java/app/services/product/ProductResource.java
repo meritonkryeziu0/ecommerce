@@ -23,7 +23,7 @@ public class ProductResource {
 
   @GET
   @PermitAll
-  public Uni<List<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
+  public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
     return service.getList(wrapper);
   }
 

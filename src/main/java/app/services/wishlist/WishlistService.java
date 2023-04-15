@@ -3,6 +3,7 @@ package app.services.wishlist;
 import app.common.CustomValidator;
 import app.exceptions.BaseException;
 import app.mongodb.MongoSessionWrapper;
+import app.mongodb.MongoUtils;
 import app.services.product.ProductService;
 import app.services.product.exceptions.ProductException;
 import app.services.product.models.ProductReference;
@@ -39,6 +40,7 @@ public class WishlistService {
         .failWith(new WishlistException(WishlistException.WISHLIST_NOT_FOUND, Response.Status.NOT_FOUND));
   }
 
+  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<Wishlist> add(ClientSession session, CreateWishlist createWishlist) {
     return validator.validate(createWishlist)
         .replaceWith(WishlistMapper.from(createWishlist))
@@ -58,8 +60,10 @@ public class WishlistService {
         .onFailure().transform(transformToBadRequest(WishlistException.PRODUCT_NOT_ADDED, Response.Status.BAD_REQUEST))
         .replaceWith(this.getByUserId(userId))
         .map(wishlist -> this.updateWishlist(wishlist, productReference))
-        .flatMap(wishlist -> repository.update(userId, wishlist));
+        .call(MongoUtils::updateEntity);
   }
+
+  // TODO: 15.4.23 check for possibility to remove repository pattern
 
   private Wishlist updateWishlist(Wishlist wishlist, ProductReference productReference) {
     Optional<ProductReference> optionalProductReference = wishlist.getProducts().stream()
@@ -75,6 +79,7 @@ public class WishlistService {
     return wishlist;
   }
 
+  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<Wishlist> addProductToCart(String userId, ProductReference productReference) {
     return validator.validate(productReference)
         .replaceWith(productService.getById(productReference._id))
