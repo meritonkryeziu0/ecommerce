@@ -1,11 +1,11 @@
 package app.mongodb;
 
 public class MongoCollections {
-  public static String USERS_COLLECTION = "users";
-  public static String MANUFACTURERS_COLLECTION = "manufacturers";
-  public static String PRODUCTS_COLLECTION = "products";
-  public static String ORDERS_COLLECTION = "orders";
-  public static String SHOPPING_CARTS_COLLECTION = "shopping-carts";
-  public static String WISHLIST_COLLECTION = "wishlists";
-  public static String CATEGORY_COLLECTION = "categories";
+  public static final String USERS_COLLECTION = "users";
+  public static final String MANUFACTURERS_COLLECTION = "manufacturers";
+  public static final String PRODUCTS_COLLECTION = "products";
+  public static final String ORDERS_COLLECTION = "orders";
+  public static final String SHOPPING_CARTS_COLLECTION = "shopping-carts";
+  public static final String WISHLIST_COLLECTION = "wishlists";
+  public static final String CATEGORY_COLLECTION = "categories";
 }

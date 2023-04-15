@@ -37,15 +37,15 @@ public class ProductRepository {
   }
 
   public Uni<Product> add(Product product) {
-    return MongoUtils.addEntity(getCollection(), product);
+    return MongoUtils.addEntity(product);
   }
 
   public Uni<Product> update(String id, Product product) {
-    return MongoUtils.updateEntity(getCollection(), Filters.eq(Product.FIELD_ID, id), product);
+    return MongoUtils.updateEntity(product);
   }
 
   public Uni<UpdateResult> updateManufactures(ManufacturerReference manufacturerReference) {
-    return getCollection().updateMany(Filters.eq(Product.FIELD_MANUFACTURER_ID, manufacturerReference.getId()), Updates.set(Product.FIELD_MANUFACTURER, manufacturerReference));
+    return getCollection().updateMany(Filters.eq(Product.FIELD_MANUFACTURER_ID, manufacturerReference.get_id()), Updates.set(Product.FIELD_MANUFACTURER, manufacturerReference));
   }
 
   public Uni<Void> increaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {

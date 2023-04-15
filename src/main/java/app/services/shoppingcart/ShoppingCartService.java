@@ -18,6 +18,7 @@ import io.smallrye.mutiny.Uni;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -65,7 +66,7 @@ public class ShoppingCartService {
         .onFailure().transform(transformToBadRequest())
         .flatMap(product -> {
           if (productReference.getQuantity() > product.getStockQuantity()) {
-            return Uni.createFrom().failure(new ProductException(ProductException.NOT_ENOUGH_STOCK, 400));
+            return Uni.createFrom().failure(new ProductException(ProductException.NOT_ENOUGH_STOCK, Response.Status.BAD_REQUEST));
           }
           return Uni.createFrom().item(product);
         })

@@ -14,7 +14,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 @Path("/manufacturer")
-@RolesAllowed({Roles.Fields.Admin})
+//@RolesAllowed({Roles.Fields.Admin})
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ManufacturerResource {

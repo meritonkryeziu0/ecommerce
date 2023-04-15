@@ -4,7 +4,9 @@ import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
 import app.services.product.models.ProductReference;
 import app.services.product.models.UpdateProduct;
+import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
 
+import java.time.LocalDateTime;
 import java.util.function.Function;
 
 public class ProductMapper {
@@ -27,6 +29,10 @@ public class ProductMapper {
     productReference.setName(product.getName());
     productReference.setPrice(product.getPrice());
     return productReference;
+  }
+
+  public static Function<ReactivePanacheMongoEntityBase, Product> mapToProduct(){
+    return reactivePanacheMongoEntityBase -> (Product) reactivePanacheMongoEntityBase;
   }
 
   public static Function<Product, Product> from(UpdateProduct updateProduct) {

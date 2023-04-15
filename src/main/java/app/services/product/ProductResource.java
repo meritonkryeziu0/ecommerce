@@ -12,6 +12,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 @Path("/products")
 @Produces(MediaType.APPLICATION_JSON)
@@ -22,7 +23,7 @@ public class ProductResource {
 
   @GET
   @PermitAll
-  public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
+  public Uni<List<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
     return service.getList(wrapper);
   }
 

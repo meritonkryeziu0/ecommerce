@@ -51,7 +51,7 @@ public class WishlistService {
         .onFailure().transform(transformToBadRequest(ProductException.PRODUCT_NOT_FOUND, Response.Status.NOT_FOUND))
         .flatMap(product -> {
           if (productReference.getQuantity() > product.getStockQuantity()) {
-            return Uni.createFrom().failure(new ProductException(ProductException.NOT_ENOUGH_STOCK, 400));
+            return Uni.createFrom().failure(new ProductException(ProductException.NOT_ENOUGH_STOCK, Response.Status.BAD_REQUEST));
           }
           return Uni.createFrom().item(product);
         })
