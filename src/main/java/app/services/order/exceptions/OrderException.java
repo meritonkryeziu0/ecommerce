@@ -1,4 +1,4 @@
-package app.services.order;
+package app.services.order.exceptions;
 
 import app.exceptions.BaseException;
 

@@ -34,4 +34,5 @@ public class Product extends BaseModel {
   private ManufacturerReference manufacturer;
   private CreateProduct.PackageDetails packageDetails;
   private CategoryReference category;
+  private String typetTest;
 }
