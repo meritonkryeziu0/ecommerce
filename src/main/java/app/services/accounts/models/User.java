@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -26,19 +24,20 @@ public class User extends BaseModel {
   private String phoneNumber;
   private List<ShippingAddress> shippingAddresses;
   private BillingAddress billingAddress;
-  private List<Roles> roles;
+//  private List<Roles> roles;
+  private Roles role;
   private String state;
   @JsonIgnore
   private String hashedPassword;
   @JsonIgnore
   private String salt;
 
-  public void addRole(Roles role) {
-    this.roles.add(role);
-  }
+//  public void addRole(Roles role) {
+//    this.roles.add(role);
+//  }
 
-  public Set<String> fetchRolesString() {
-    return this.roles.stream().map(Enum::name).collect(Collectors.toSet());
-  }
+//  public Set<String> fetchRolesString() {
+//    return this.roles.stream().map(Enum::name).collect(Collectors.toSet());
+//  }
 
 }

@@ -14,7 +14,7 @@ public class UserMapper {
     String salt = PasswordUtils.getSalt();
     String hashedPassword = PasswordUtils.hashPassword(createUser.getPassword(), salt);
     User user = new User();
-    user.setRoles(List.of(Roles.Everyone)); //Initial role is Everyone
+//    user.setRoles(List.of(Roles.Everyone)); //Initial role is Everyone
     user.setFirstName(createUser.getFirstName());
     user.setLastName(createUser.getLastName());
     user.setEmail(createUser.getEmail());

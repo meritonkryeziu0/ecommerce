@@ -2,6 +2,9 @@ package app.services.product;
 
 import app.helpers.PaginatedResponse;
 import app.services.accounts.models.Roles;
+import app.services.authorization.ActionAbility;
+import app.services.authorization.CRUD;
+import app.services.authorization.Modules;
 import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
 import app.services.product.models.UpdateProduct;
@@ -23,6 +26,7 @@ public class ProductResource {
 
   @GET
   @PermitAll
+  @ActionAbility(action = CRUD.LIST, module = Modules.Product)
   public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
     return service.getList(wrapper);
   }

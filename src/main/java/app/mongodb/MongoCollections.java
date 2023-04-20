@@ -8,4 +8,5 @@ public class MongoCollections {
   public static final String SHOPPING_CARTS_COLLECTION = "shopping-carts";
   public static final String WISHLIST_COLLECTION = "wishlists";
   public static final String CATEGORY_COLLECTION = "categories";
+  public static final String ROLES_COLLECTION = "roles";
 }
