@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class ProductReference {
   public static final String FIELD_QUANTITY = "quantity";
-  public String _id;
+  public String id;
   private String name;
   private Double price;
   @NotNull

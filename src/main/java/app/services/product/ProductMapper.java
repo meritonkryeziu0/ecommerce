@@ -25,14 +25,10 @@ public class ProductMapper {
 
   public static ProductReference toProductReference(Product product) {
     ProductReference productReference = new ProductReference();
-    productReference.set_id(product.getId());
+    productReference.setId(product.getId());
     productReference.setName(product.getName());
     productReference.setPrice(product.getPrice());
     return productReference;
-  }
-
-  public static Function<ReactivePanacheMongoEntityBase, Product> mapToProduct(){
-    return reactivePanacheMongoEntityBase -> (Product) reactivePanacheMongoEntityBase;
   }
 
   public static Function<Product, Product> from(UpdateProduct updateProduct) {

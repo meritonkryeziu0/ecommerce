@@ -55,12 +55,12 @@ public class WishlistRepository {
 
   public Uni<Wishlist> removeProductFromWishlist(String userId, ProductReference productReference) {
     return getCollection().findOneAndUpdate(Filters.eq(Wishlist.FIELD_USER_ID, userId),
-        Updates.pull(Wishlist.FIELD_PRODUCTS, new Document(Product.FIELD_ID, productReference._id)), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
+        Updates.pull(Wishlist.FIELD_PRODUCTS, new Document(Product.FIELD_ID, productReference.id)), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
   }
 
   public Uni<Wishlist> removeProductFromWishlist(ClientSession session, String userId, ProductReference productReference) {
     return getCollection().findOneAndUpdate(session, Filters.eq(Wishlist.FIELD_USER_ID, userId),
-        Updates.pull(Wishlist.FIELD_PRODUCTS, new Document(Product.FIELD_ID, productReference._id)), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
+        Updates.pull(Wishlist.FIELD_PRODUCTS, new Document(Product.FIELD_ID, productReference.id)), new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
   }
 
   public Uni<Void> emptyWishlist(String userId) {

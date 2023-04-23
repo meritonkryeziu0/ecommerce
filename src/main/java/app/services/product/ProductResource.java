@@ -35,7 +35,7 @@ public class ProductResource {
   }
 
   @POST
-  @RolesAllowed({Roles.Fields.Admin})
+//  @RolesAllowed({Roles.Fields.Admin})
   public Uni<Product> add(CreateProduct createProduct) {
     return service.add(createProduct);
   }

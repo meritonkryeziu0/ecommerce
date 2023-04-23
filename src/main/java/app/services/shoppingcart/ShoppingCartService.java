@@ -61,7 +61,7 @@ public class ShoppingCartService {
 
   private ShoppingCart updateShoppingCart(ShoppingCart shoppingCart, ProductReference productReference) {
     Optional<ProductReference> optionalProductReference = shoppingCart.getProducts().stream()
-        .filter(p -> p._id.equals(productReference._id)).findFirst();
+        .filter(p -> p.id.equals(productReference.id)).findFirst();
     if (optionalProductReference.isPresent()) {
       optionalProductReference.get().setQuantity(optionalProductReference.get().getQuantity() + productReference.getQuantity());
     } else {
@@ -73,7 +73,7 @@ public class ShoppingCartService {
 
   public Uni<ShoppingCart> update(@Nullable ClientSession session, String userId, ProductReference productReference) {
     return validator.validate(productReference)
-        .replaceWith(productService.getById(productReference._id))
+        .replaceWith(productService.getById(productReference.id))
         .onFailure().transform(transformToBadRequest())
         .flatMap(product -> {
           if (productReference.getQuantity() > product.getStockQuantity()) {

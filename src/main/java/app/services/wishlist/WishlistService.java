@@ -50,7 +50,7 @@ public class WishlistService {
 
   public Uni<Wishlist> update(String userId, ProductReference productReference) {
     return validator.validate(productReference)
-        .replaceWith(productService.getById(productReference._id))
+        .replaceWith(productService.getById(productReference.id))
         .onFailure().transform(transformToBadRequest(ProductException.PRODUCT_NOT_FOUND, Response.Status.NOT_FOUND))
         .flatMap(product -> {
           if (productReference.getQuantity() > product.getStockQuantity()) {
@@ -66,7 +66,7 @@ public class WishlistService {
 
   private Wishlist updateWishlist(Wishlist wishlist, ProductReference productReference) {
     Optional<ProductReference> optionalProductReference = wishlist.getProducts().stream()
-        .filter(p -> p._id.equalsIgnoreCase(productReference._id)).findFirst();
+        .filter(p -> p.id.equalsIgnoreCase(productReference.id)).findFirst();
 
     if(optionalProductReference.isPresent()){
       optionalProductReference.get().setQuantity(optionalProductReference.get().getQuantity() + productReference.getQuantity());
@@ -80,7 +80,7 @@ public class WishlistService {
 
   public Uni<Wishlist> addProductToCart(String userId, ProductReference productReference) {
     return validator.validate(productReference)
-        .replaceWith(productService.getById(productReference._id))
+        .replaceWith(productService.getById(productReference.id))
         .onFailure().transform(transformToBadRequest(WishlistException.PRODUCT_NOT_ADDED, Response.Status.BAD_REQUEST))
         .flatMap(product -> sessionWrapper.getSession().flatMap(
             session ->
@@ -92,7 +92,7 @@ public class WishlistService {
   }
 
   public Uni<Wishlist> updateProductQuantity(String id, ProductReference productReference) {
-    return repository.updateProductQuantity(id, productReference._id, productReference.getQuantity());
+    return repository.updateProductQuantity(id, productReference.id, productReference.getQuantity());
   }
 
   public Uni<Wishlist> removeProductFromWishlist(String userId, ProductReference productReference) {
