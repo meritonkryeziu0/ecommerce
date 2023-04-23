@@ -6,6 +6,7 @@ import app.services.wishlist.models.Wishlist;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -21,6 +22,7 @@ public class WishlistResource {
   WishlistService service;
 
   @GET
+  @PermitAll
   public Uni<Wishlist> getWishlistByUserId(@PathParam("userId") String userId) {
     return service.getByUserId(userId);
   }

@@ -24,7 +24,6 @@ public class Product extends BaseModel {
   public static final String FIELD_MANUFACTURER = "manufacturer";
   public static final String FIELD_MANUFACTURER_ID = "manufacturer._id";
 
-
   private String name;
   private Double price;
   private String description;

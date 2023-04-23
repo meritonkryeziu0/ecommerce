@@ -13,7 +13,7 @@ public class User extends BaseModel {
   public static String FIELD_FIRSTNAME = "firstName";
   public static String FIELD_PHONE_NUMBER = "phoneNumber";
   public static String FIELD_SHIPPING_ADDRESSES = "shippingAddresses";
-  public static String FIELD_SHIPPING_ADDRESSES_ID = "_id";
+  public static String FIELD_SHIPPING_ADDRESSES_ID = "shippingAddresses._id";
   public static String FILED_BILLING_ADDRESS = "billingAddress";
   public static String FIELD_EMAIL = "email";
   public static String FIELD_HASHEDPASSWORD = "hashedPassword";

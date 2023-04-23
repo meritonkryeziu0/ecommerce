@@ -2,10 +2,14 @@ package app.services.accounts;
 
 import app.helpers.PaginatedResponse;
 import app.services.accounts.models.*;
+import app.services.authorization.ActionAbility;
+import app.services.authorization.CRUD;
+import app.services.authorization.Modules;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -22,14 +26,17 @@ public class UserResource {
   JsonWebToken token;
 
   @GET
-  @RolesAllowed({Roles.Fields.Admin})
+//  @RolesAllowed({Roles.Fields.Admin})
+//  @ActionAbility(role = app.services.authorization.Roles.ADMIN, action = CRUD.LIST, module = Modules.User)
+  @PermitAll
   public Uni<PaginatedResponse<User>> getList(@BeanParam UserFilterWrapper wrapper) {
     return service.getList(wrapper);
   }
 
   @GET
   @Path("/{id}")
-  @RolesAllowed({Roles.Fields.Everyone})
+//  @RolesAllowed({Roles.Fields.Everyone})
+  @PermitAll
   public Uni<User> getById(@PathParam("id") String id) {
     return service.getById(id);
   }

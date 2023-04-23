@@ -8,6 +8,7 @@ import app.services.manufacturer.models.UpdateManufacturer;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -29,6 +30,7 @@ public class ManufacturerResource {
 
     @GET
     @Path("/{id}")
+    @PermitAll
     public Uni<Manufacturer> getById(@PathParam("id") String id) {
         return service.getById(id);
     }
