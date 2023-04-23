@@ -23,7 +23,7 @@ public class CategoryMapper {
 
   public static CategoryReference toCategoryReference(Category category){
     CategoryReference categoryReference = new CategoryReference();
-    categoryReference._id = category.id;
+    categoryReference.id = category.id;
     categoryReference.setName(category.getName());
     categoryReference.setDescription(category.getDescription());
     return categoryReference;
