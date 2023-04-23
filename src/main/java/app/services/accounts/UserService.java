@@ -61,7 +61,6 @@ public class UserService {
         .map(Utils.mapTo(User.class));
   }
 
-  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<User> add(CreateUser createUser) {
     return PasswordUtils.validatePassword(createUser.getPassword())
         .replaceWith(validator.validate(createUser))
@@ -78,7 +77,8 @@ public class UserService {
   }
 
   public Uni<User> update(String id, UpdateUser updateUser) {
-    return validator.validate(updateUser).replaceWith(this.getById(id))
+    return validator.validate(updateUser)
+        .replaceWith(this.getById(id))
         .map(UserMapper.from(updateUser))
         .call(MongoUtils::updateEntity);
   }
@@ -88,11 +88,11 @@ public class UserService {
   }
 
   public Uni<SuccessResponse> delete(String id) {
-    return repository.delete(id).replaceWith(SuccessResponse.toSuccessResponse());
+    return User.deleteById(id).replaceWith(SuccessResponse.toSuccessResponse());
   }
 
   private Function<CreateUser, Uni<? extends User>> verifyUserEmailAndMapToUser() {
-    return createUser -> repository.getWithEmail(createUser.getEmail()).onItemOrFailure()
+    return createUser -> User.find(User.FIELD_EMAIL, createUser.getEmail()).firstResult().onItemOrFailure()
         .transform(Unchecked.function((user, throwable) -> {
           if (Utils.isNull(user)) {
             return UserMapper.from(createUser);

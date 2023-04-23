@@ -1,6 +1,5 @@
 package app.services.product;
 
-import app.mongodb.MongoUtils;
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
 import app.services.manufacturer.models.ManufacturerReference;
@@ -30,18 +29,6 @@ public class ProductRepository {
 
   public Uni<List<Product>> getListByManufacturerId(String id) {
     return getCollection().find(Filters.eq(Product.FIELD_MANUFACTURER_ID, id)).collect().asList();
-  }
-
-  public Uni<Product> getById(String id) {
-    return MongoUtils.getEntityById(getCollection(), id);
-  }
-
-  public Uni<Product> add(Product product) {
-    return MongoUtils.addEntity(product);
-  }
-
-  public Uni<Product> update(String id, Product product) {
-    return MongoUtils.updateEntity(product);
   }
 
   public Uni<UpdateResult> updateManufactures(ManufacturerReference manufacturerReference) {

@@ -49,17 +49,6 @@ public class MongoUtils {
     });
   }
 
-  public static <E extends BaseModel> Uni<E> getEntityById(ReactiveMongoCollection<E> collection, String id) {
-    return collection.find(Filters.eq(E.FIELD_ID, id)).toUni();
-  }
-
-  public static <E extends BaseModel> Uni<E> addEntity(ReactiveMongoCollection<E> collection, E entity) {
-    entity.setId(new ObjectId().toString());
-    entity.setCreatedAt(LocalDateTime.now());
-    entity.setModifiedAt(LocalDateTime.now());
-    return collection.insertOne(entity).map(insertOneResult -> entity);
-  }
-
   public static <E extends BaseModel> Uni<E> addEntity(E entity) {
     entity.setId(new ObjectId().toString());
     entity.setCreatedAt(LocalDateTime.now());
@@ -77,11 +66,6 @@ public class MongoUtils {
   public static <E extends BaseModel> Uni<E> updateEntity(E entity) {
     entity.setModifiedAt(LocalDateTime.now());
     return entity.update();
-  }
-
-  public static <E extends BaseModel> Uni<E> updateEntity(ReactiveMongoCollection<E> collection, Bson filter, E entity) {
-    entity.setModifiedAt(LocalDateTime.now());
-    return collection.findOneAndReplace(filter, entity, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
   }
 
   public static <E extends BaseModel> Uni<E> updateEntity(ClientSession session, ReactiveMongoCollection<E> collection, Bson filter, E entity) {

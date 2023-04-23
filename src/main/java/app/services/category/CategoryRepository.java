@@ -22,23 +22,4 @@ public class CategoryRepository {
     return mongoCollectionWrapper.getCollection(MongoCollections.CATEGORY_COLLECTION, Category.class);
   }
 
-  public Uni<Category> getById(String id){
-    return MongoUtils.getEntityById(getCollection(), id);
-  }
-
-  public Uni<Category> getByName(String name){
-    return getCollection().find(Filters.eq(Category.FIELD_NAME, name)).toUni();
-  }
-
-  public Uni<Category> add(Category category){
-    return MongoUtils.addEntity(getCollection(), category);
-  }
-
-  public Uni<Category> update(String id, Category category){
-    return MongoUtils.updateEntity(getCollection(), Filters.eq(Category.FIELD_ID, id), category);
-  }
-
-  public Uni<DeleteResult> delete(String id) {
-    return getCollection().deleteOne(Filters.eq(Category.FIELD_ID, id));
-  }
 }

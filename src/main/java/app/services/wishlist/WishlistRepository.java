@@ -26,20 +26,9 @@ public class WishlistRepository {
     return mongoCollectionWrapper.getCollection(MongoCollections.WISHLIST_COLLECTION, Wishlist.class);
   }
 
-  public Uni<Wishlist> getById(String id) {
-    return MongoUtils.getEntityById(getCollection(), id);
-  }
-
-  public Uni<Wishlist> getByUserId(String userId) {
-    return getCollection().find(Filters.eq(Wishlist.FIELD_USER_ID, userId)).toUni();
-  }
 
   public Uni<Wishlist> add(ClientSession session, Wishlist wishlist) {
     return MongoUtils.addEntity(session, getCollection(), wishlist);
-  }
-
-  public Uni<Wishlist> update(String userId, Wishlist wishlist) {
-    return MongoUtils.updateEntity(getCollection(), Filters.eq(Wishlist.FIELD_USER_ID, userId), wishlist);
   }
 
   public Uni<Wishlist> updateProductQuantity(String userId, String productId, int quantity) {

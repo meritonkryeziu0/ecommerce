@@ -29,7 +29,7 @@ public class UserResource {
 
   @GET
   @Path("/{id}")
-  @RolesAllowed({Roles.Fields.Everyone})
+//  @RolesAllowed({Roles.Fields.Everyone})
   public Uni<User> getById(@PathParam("id") String id) {
     return service.getById(id);
   }

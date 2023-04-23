@@ -27,7 +27,7 @@ public class ManufacturerRepository {
   }
 
   public Uni<Manufacturer> getById(String id) {
-    return MongoUtils.getEntityById(getCollection(), id);
+    return Manufacturer.findById(id);
   }
 
   public Uni<DeleteResult> delete(String id) {

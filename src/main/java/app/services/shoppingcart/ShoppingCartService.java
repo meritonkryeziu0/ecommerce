@@ -53,7 +53,6 @@ public class ShoppingCartService {
         .map(Utils.mapTo(ShoppingCart.class));
   }
 
-  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<ShoppingCart> add(ClientSession session, CreateShoppingCart createShoppingCart) {
     return validator.validate(createShoppingCart)
         .replaceWith(ShoppingCartMapper.from(createShoppingCart))
@@ -72,7 +71,6 @@ public class ShoppingCartService {
     return shoppingCart;
   }
 
-  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<ShoppingCart> update(@Nullable ClientSession session, String userId, ProductReference productReference) {
     return validator.validate(productReference)
         .replaceWith(productService.getById(productReference._id))
@@ -88,7 +86,7 @@ public class ShoppingCartService {
         .map(shoppingCart -> this.updateShoppingCart(shoppingCart, productReference))
         .flatMap(shoppingCart -> {
           if(Utils.isNull(session)){
-            return repository.update(userId, shoppingCart);
+            return MongoUtils.updateEntity(shoppingCart);
           }
           return repository.update(session, userId, shoppingCart);
         });

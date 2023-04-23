@@ -12,6 +12,7 @@ import app.services.wishlist.exceptions.WishlistException;
 import app.services.wishlist.models.CreateWishlist;
 import app.services.wishlist.models.Wishlist;
 import app.shared.SuccessResponse;
+import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
 import io.smallrye.mutiny.Uni;
 
@@ -35,12 +36,12 @@ public class WishlistService {
   CustomValidator validator;
 
   public Uni<Wishlist> getByUserId(String userId) {
-    return repository.getByUserId(userId)
+    return Wishlist.find(Wishlist.FIELD_USER_ID, userId).firstResult()
         .onItem().ifNull()
-        .failWith(new WishlistException(WishlistException.WISHLIST_NOT_FOUND, Response.Status.NOT_FOUND));
+        .failWith(new WishlistException(WishlistException.WISHLIST_NOT_FOUND, Response.Status.NOT_FOUND))
+        .map(Utils.mapTo(Wishlist.class));
   }
 
-  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<Wishlist> add(ClientSession session, CreateWishlist createWishlist) {
     return validator.validate(createWishlist)
         .replaceWith(WishlistMapper.from(createWishlist))
@@ -63,8 +64,6 @@ public class WishlistService {
         .call(MongoUtils::updateEntity);
   }
 
-  // TODO: 15.4.23 check for possibility to remove repository pattern
-
   private Wishlist updateWishlist(Wishlist wishlist, ProductReference productReference) {
     Optional<ProductReference> optionalProductReference = wishlist.getProducts().stream()
         .filter(p -> p._id.equalsIgnoreCase(productReference._id)).findFirst();
@@ -79,7 +78,6 @@ public class WishlistService {
     return wishlist;
   }
 
-  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<Wishlist> addProductToCart(String userId, ProductReference productReference) {
     return validator.validate(productReference)
         .replaceWith(productService.getById(productReference._id))
