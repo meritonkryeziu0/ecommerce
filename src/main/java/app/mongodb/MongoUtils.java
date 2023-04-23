@@ -4,10 +4,15 @@ import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
 import app.services.product.models.Product;
 import app.shared.BaseModel;
+import app.utils.Utils;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.reactivestreams.client.ClientSession;
+import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
+import io.quarkus.panache.common.Page;
+import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -44,12 +49,11 @@ public class MongoUtils {
     });
   }
 
-  public static <E extends BaseModel> Uni<E> addEntity(ReactiveMongoCollection<E> collection, E entity) {
+  public static <E extends BaseModel> Uni<E> addEntity(E entity) {
     entity.setId(new ObjectId().toString());
-
     entity.setCreatedAt(LocalDateTime.now());
     entity.setModifiedAt(LocalDateTime.now());
-    return collection.insertOne(entity).map(insertOneResult -> entity);
+    return entity.persist();
   }
 
   public static <E extends BaseModel> Uni<E> addEntity(ClientSession session, ReactiveMongoCollection<E> collection, E entity) {
@@ -59,9 +63,9 @@ public class MongoUtils {
     return collection.insertOne(session, entity).map(insertOneResult -> entity);
   }
 
-  public static <E extends BaseModel> Uni<E> updateEntity(ReactiveMongoCollection<E> collection, Bson filter, E entity) {
+  public static <E extends BaseModel> Uni<E> updateEntity(E entity) {
     entity.setModifiedAt(LocalDateTime.now());
-    return collection.findOneAndReplace(filter, entity, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
+    return entity.update();
   }
 
   public static <E extends BaseModel> Uni<E> updateEntity(ClientSession session, ReactiveMongoCollection<E> collection, Bson filter, E entity) {

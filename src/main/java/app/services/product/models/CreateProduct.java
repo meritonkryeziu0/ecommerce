@@ -1,5 +1,6 @@
 package app.services.product.models;
 
+import app.services.category.models.CategoryReference;
 import app.services.manufacturer.models.ManufacturerReference;
 import lombok.Data;
 
@@ -24,6 +25,8 @@ public class CreateProduct {
   private String type;
   @Valid
   private ManufacturerReference manufacturer;
+  @Valid
+  private CategoryReference category;
   private Map<String, String> details;
   @Valid
   private PackageDetails packageDetails;

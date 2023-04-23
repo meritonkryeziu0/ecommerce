@@ -3,6 +3,7 @@ package app.services.wishlist;
 import app.common.CustomValidator;
 import app.exceptions.BaseException;
 import app.mongodb.MongoSessionWrapper;
+import app.mongodb.MongoUtils;
 import app.services.product.ProductService;
 import app.services.product.exceptions.ProductException;
 import app.services.product.models.ProductReference;
@@ -11,6 +12,7 @@ import app.services.wishlist.exceptions.WishlistException;
 import app.services.wishlist.models.CreateWishlist;
 import app.services.wishlist.models.Wishlist;
 import app.shared.SuccessResponse;
+import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
 import io.smallrye.mutiny.Uni;
 
@@ -34,9 +36,10 @@ public class WishlistService {
   CustomValidator validator;
 
   public Uni<Wishlist> getByUserId(String userId) {
-    return repository.getByUserId(userId)
+    return Wishlist.find(Wishlist.FIELD_USER_ID, userId).firstResult()
         .onItem().ifNull()
-        .failWith(new WishlistException(WishlistException.WISHLIST_NOT_FOUND, Response.Status.NOT_FOUND));
+        .failWith(new WishlistException(WishlistException.WISHLIST_NOT_FOUND, Response.Status.NOT_FOUND))
+        .map(Utils.mapTo(Wishlist.class));
   }
 
   public Uni<Wishlist> add(ClientSession session, CreateWishlist createWishlist) {
@@ -47,23 +50,23 @@ public class WishlistService {
 
   public Uni<Wishlist> update(String userId, ProductReference productReference) {
     return validator.validate(productReference)
-        .replaceWith(productService.getById(productReference._id))
+        .replaceWith(productService.getById(productReference.id))
         .onFailure().transform(transformToBadRequest(ProductException.PRODUCT_NOT_FOUND, Response.Status.NOT_FOUND))
         .flatMap(product -> {
           if (productReference.getQuantity() > product.getStockQuantity()) {
-            return Uni.createFrom().failure(new ProductException(ProductException.NOT_ENOUGH_STOCK, 400));
+            return Uni.createFrom().failure(new ProductException(ProductException.NOT_ENOUGH_STOCK, Response.Status.BAD_REQUEST));
           }
           return Uni.createFrom().item(product);
         })
         .onFailure().transform(transformToBadRequest(WishlistException.PRODUCT_NOT_ADDED, Response.Status.BAD_REQUEST))
         .replaceWith(this.getByUserId(userId))
         .map(wishlist -> this.updateWishlist(wishlist, productReference))
-        .flatMap(wishlist -> repository.update(userId, wishlist));
+        .call(MongoUtils::updateEntity);
   }
 
   private Wishlist updateWishlist(Wishlist wishlist, ProductReference productReference) {
     Optional<ProductReference> optionalProductReference = wishlist.getProducts().stream()
-        .filter(p -> p._id.equalsIgnoreCase(productReference._id)).findFirst();
+        .filter(p -> p.id.equalsIgnoreCase(productReference.id)).findFirst();
 
     if(optionalProductReference.isPresent()){
       optionalProductReference.get().setQuantity(optionalProductReference.get().getQuantity() + productReference.getQuantity());
@@ -77,7 +80,7 @@ public class WishlistService {
 
   public Uni<Wishlist> addProductToCart(String userId, ProductReference productReference) {
     return validator.validate(productReference)
-        .replaceWith(productService.getById(productReference._id))
+        .replaceWith(productService.getById(productReference.id))
         .onFailure().transform(transformToBadRequest(WishlistException.PRODUCT_NOT_ADDED, Response.Status.BAD_REQUEST))
         .flatMap(product -> sessionWrapper.getSession().flatMap(
             session ->
@@ -89,7 +92,7 @@ public class WishlistService {
   }
 
   public Uni<Wishlist> updateProductQuantity(String id, ProductReference productReference) {
-    return repository.updateProductQuantity(id, productReference._id, productReference.getQuantity());
+    return repository.updateProductQuantity(id, productReference.id, productReference.getQuantity());
   }
 
   public Uni<Wishlist> removeProductFromWishlist(String userId, ProductReference productReference) {

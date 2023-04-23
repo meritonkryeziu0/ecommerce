@@ -25,9 +25,6 @@ public class UserRepository {
     return mongoClient.getCollection(MongoCollections.USERS_COLLECTION, User.class);
   }
 
-  public Uni<User> getById(String id) {
-    return getCollection().find(Filters.eq(User.FIELD_ID, id)).toUni();
-  }
 
   public Uni<User> getWithEmail(String email) {
     return getCollection().find(Filters.eq(User.FIELD_EMAIL, email)).toUni();
@@ -35,10 +32,6 @@ public class UserRepository {
 
   public Uni<User> add(ClientSession session, User user) {
     return MongoUtils.addEntity(session, getCollection(), user);
-  }
-
-  public Uni<User> update(String id, User user) {
-    return MongoUtils.updateEntity(getCollection(), Filters.eq(User.FIELD_ID, id), user);
   }
 
   public Uni<User> updateState(String id, State state) {

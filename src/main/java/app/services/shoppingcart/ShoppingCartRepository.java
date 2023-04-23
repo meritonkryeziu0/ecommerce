@@ -24,20 +24,8 @@ public class ShoppingCartRepository {
     return mongoCollectionWrapper.getCollection(MongoCollections.SHOPPING_CARTS_COLLECTION, ShoppingCart.class);
   }
 
-  public Uni<ShoppingCart> getById(String id) {
-    return getCollection().find(Filters.eq(ShoppingCart.FIELD_ID, id)).toUni();
-  }
-
-  public Uni<ShoppingCart> getByUserId(String userId) {
-    return getCollection().find(Filters.eq(ShoppingCart.FIELD_USER_ID, userId)).toUni();
-  }
-
   public Uni<ShoppingCart> add(ClientSession session, ShoppingCart shoppingCart) {
     return MongoUtils.addEntity(session, getCollection(), shoppingCart);
-  }
-
-  public Uni<ShoppingCart> update(String userId, ShoppingCart shoppingCart) {
-    return MongoUtils.updateEntity(getCollection(), Filters.eq(ShoppingCart.FIELD_USER_ID, userId), shoppingCart);
   }
 
   public Uni<ShoppingCart> update(ClientSession session, String userId, ShoppingCart shoppingCart) {

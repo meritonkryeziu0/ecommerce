@@ -4,16 +4,26 @@ import app.common.CustomValidator;
 import app.exceptions.BaseException;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
+import app.mongodb.MongoCollectionWrapper;
+import app.mongodb.MongoCollections;
+import app.mongodb.MongoSessionWrapper;
 import app.mongodb.MongoUtils;
 import app.services.manufacturer.ManufacturerService;
 import app.services.product.exceptions.ProductException;
 import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
 import app.services.product.models.UpdateProduct;
+import app.utils.Utils;
+import com.mongodb.client.model.Filters;
+import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
+import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
+import io.quarkus.panache.common.Page;
 import io.smallrye.mutiny.Uni;
+import org.bson.Document;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.function.Function;
 
@@ -22,27 +32,34 @@ public class ProductService {
   @Inject
   CustomValidator validator;
   @Inject
-  ProductRepository repository;
-  @Inject
   ManufacturerService manufactureService;
+  @Inject
+  MongoCollectionWrapper mongoCollectionWrapper;
+
+  public ReactiveMongoCollection<Product> getCollection() {
+    return mongoCollectionWrapper.getCollection(MongoCollections.PRODUCTS_COLLECTION, Product.class);
+  }
 
   public Uni<Product> getById(String id) {
-    return repository.getById(id).onItem().ifNull().failWith(new ProductException(ProductException.PRODUCT_NOT_FOUND, 404));
+    return Product.findById(id)
+        .onItem().ifNull()
+        .failWith(new ProductException(ProductException.PRODUCT_NOT_FOUND, Response.Status.NOT_FOUND))
+        .map(Utils.mapTo(Product.class));
   }
 
   public Uni<PaginatedResponse<Product>> getList(PaginationWrapper wrapper) {
-    return MongoUtils.getPaginatedItems(repository.getCollection(), wrapper);
+    return MongoUtils.getPaginatedItems(getCollection(), wrapper);
   }
 
   public Uni<List<Product>> getListByManufacturerId(String id) {
-    return repository.getListByManufacturerId(id);
+    return Product.find(Product.FIELD_MANUFACTURER_ID, id).list();
   }
 
   public Uni<Product> add(CreateProduct createProduct) {
     return validator.validate(createProduct)
         .replaceWith(manufactureService.getById(createProduct.getManufacturer().getId()))
         .replaceWith(ProductMapper.from(createProduct))
-        .flatMap(product -> repository.add(product));
+        .call(MongoUtils::addEntity);
   }
 
   public Uni<Product> update(String id, UpdateProduct updateProduct) {
@@ -50,17 +67,17 @@ public class ProductService {
         .replaceWith(this.getById(id))
         .onFailure().transform(transformToBadRequest(ProductException.PRODUCT_NOT_FOUND))
         .map(ProductMapper.from(updateProduct))
-        .flatMap(product -> repository.update(id, product));
+        .call(MongoUtils::updateEntity);
   }
 
   public Uni<Void> delete(String id) {
-    return repository.delete(id).replaceWithVoid();
+    return Product.deleteById(id).replaceWithVoid();
   }
 
   private Function<Throwable, Throwable> transformToBadRequest(String message) {
     return throwable -> {
       if (throwable instanceof BaseException) {
-        return new ProductException(message, 400);
+        return new ProductException(message, Response.Status.BAD_REQUEST);
       }
       return throwable;
     };

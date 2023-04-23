@@ -12,6 +12,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 @Path("/products")
 @Produces(MediaType.APPLICATION_JSON)
@@ -34,7 +35,7 @@ public class ProductResource {
   }
 
   @POST
-  @RolesAllowed({Roles.Fields.Admin})
+//  @RolesAllowed({Roles.Fields.Admin})
   public Uni<Product> add(CreateProduct createProduct) {
     return service.add(createProduct);
   }

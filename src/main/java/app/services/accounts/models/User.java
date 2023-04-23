@@ -1,7 +1,9 @@
 package app.services.accounts.models;
 
+import app.mongodb.MongoCollections;
 import app.shared.BaseModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@MongoEntity(collection = MongoCollections.USERS_COLLECTION)
 public class User extends BaseModel {
   public static String FIELD_FIRSTNAME = "firstName";
   public static String FIELD_PHONE_NUMBER = "phoneNumber";

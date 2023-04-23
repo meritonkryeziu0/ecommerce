@@ -1,8 +1,11 @@
 package app.utils;
 
+import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,4 +67,7 @@ public class Utils {
     return new String(bytes, StandardCharsets.UTF_8);
   }
 
+  public static <T extends ReactivePanacheMongoEntityBase, R> Function<T, R> mapTo(Class<R> clazz){
+    return clazz::cast;
+  }
 }

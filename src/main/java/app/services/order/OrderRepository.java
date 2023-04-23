@@ -18,27 +18,5 @@ public class OrderRepository {
   @Inject
   MongoCollectionWrapper mongoClient;
 
-  public ReactiveMongoCollection<Order> getCollection() {
-    return mongoClient.getCollection(MongoCollections.ORDERS_COLLECTION, Order.class);
-  }
 
-  public Uni<List<Order>> getList() {
-    return getCollection().find().collect().asList();
-  }
-
-  public Uni<Order> getById(String id) {
-    return getCollection().find(Filters.eq(Order.FIELD_ID, id)).toUni();
-  }
-
-  public Uni<Order> add(Order order) {
-    return MongoUtils.addEntity(getCollection(), order);
-  }
-
-  public Uni<Order> update(String id, Order order) {
-    return MongoUtils.updateEntity(getCollection(), Filters.eq(Order.FIELD_ID, id), order);
-  }
-
-  public Uni<DeleteResult> delete(String id) {
-    return getCollection().deleteOne(Filters.eq(Order.FIELD_ID, id));
-  }
 }

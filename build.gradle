@@ -22,6 +22,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
     implementation 'io.quarkus:quarkus-hibernate-validator'
+    implementation("io.quarkus:quarkus-mongodb-panache")
 
     implementation 'io.quarkus:quarkus-smallrye-jwt'
     implementation 'io.quarkus:quarkus-smallrye-jwt-build'

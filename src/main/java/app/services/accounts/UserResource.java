@@ -29,7 +29,7 @@ public class UserResource {
 
   @GET
   @Path("/{id}")
-  @RolesAllowed({Roles.Fields.Everyone})
+//  @RolesAllowed({Roles.Fields.Everyone})
   public Uni<User> getById(@PathParam("id") String id) {
     return service.getById(id);
   }
@@ -42,7 +42,7 @@ public class UserResource {
 
   @PUT
   @Path("/{id}")
-  @RolesAllowed({Roles.Fields.Admin})
+//  @RolesAllowed({Roles.Fields.Admin})
   public Uni<User> update(@PathParam("id") String id, UpdateUser updateUser) {
     return service.update(id, updateUser);
   }
