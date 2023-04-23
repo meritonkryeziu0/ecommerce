@@ -1,6 +1,6 @@
 package app.services.authorization;
 
-import app.services.accounts.models.Roles;
+import app.utils.Utils;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import org.jboss.logging.Logger;
@@ -23,14 +23,13 @@ public class RolesService {
     logger.info("Intializing roles");
     RoleWithAbilities.listAll().subscribe()
         .with(reactivePanacheMongoEntityBase -> {
-            this.roleWithAbilities = reactivePanacheMongoEntityBase.stream().map(reactivePanacheMongoEntityBase1 -> {
-              return (RoleWithAbilities) reactivePanacheMongoEntityBase1;
-            }).collect(Collectors.toMap(RoleWithAbilities::getRole, RoleWithAbilities::getAbilities));
+          this.roleWithAbilities = reactivePanacheMongoEntityBase.stream()
+              .map(Utils.mapTo(RoleWithAbilities.class))
+              .collect(Collectors.toMap(RoleWithAbilities::getRole, RoleWithAbilities::getAbilities));
         });
   }
 
   public Map<String, List<Ability>> getRoles(){
     return this.roleWithAbilities;
   }
-
 }

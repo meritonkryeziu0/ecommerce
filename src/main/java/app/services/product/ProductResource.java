@@ -25,8 +25,7 @@ public class ProductResource {
   ProductService service;
 
   @GET
-//  @ActionAbility(role = app.services.authorization.Roles.USER, action = CRUD.LIST, module = Modules.Product)
-  @PermitAll
+  @ActionAbility(role = app.services.authorization.Roles.USER, action = CRUD.LIST, module = Modules.Product)
   public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
     return service.getList(wrapper);
   }

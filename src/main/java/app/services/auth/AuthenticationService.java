@@ -26,13 +26,7 @@ public class AuthenticationService {
 
 
   public Uni<AuthResponse> authenticate(String email, String password) {
-//    return userService.getWithEmail(email)
-//        .flatMap(user -> this.verifySuccessfulLogin(password, user))
-//        .flatMap(user -> userService.updateState(user.getId(), State.LOGGED_IN))
-//        .flatMap(loggedInUser -> tokenService.generateToken(loggedInUser)
-//            .map(token -> Pair.create(loggedInUser, token)))
-//        .map(userTokenPair -> new AuthResponse(State.LOGGED_IN, userTokenPair.getLeft().getEmail(), userTokenPair.getRight()));
-    return userService.getById("6420294456146e33436917c2")
+    return userService.getWithEmail(email)
         .flatMap(user -> this.verifySuccessfulLogin(password, user))
         .flatMap(user -> userService.updateState(user.getId(), State.LOGGED_IN))
         .flatMap(loggedInUser -> tokenService.generateToken(loggedInUser)

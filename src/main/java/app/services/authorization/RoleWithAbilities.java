@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 @MongoEntity(collection = MongoCollections.ROLES_COLLECTION)
 public class RoleWithAbilities extends BaseModel {
-  @BsonId
   private String role;
   private List<Ability> abilities;
 }
