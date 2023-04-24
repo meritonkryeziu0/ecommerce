@@ -12,12 +12,10 @@ import app.services.manufacturer.models.CreateManufacturer;
 import app.services.manufacturer.models.Manufacturer;
 import app.services.manufacturer.models.UpdateManufacturer;
 import app.services.product.ProductService;
-import app.services.product.models.Product;
 import app.shared.SuccessResponse;
 import app.utils.Utils;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
-import jdk.jshell.Snippet;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -50,7 +48,7 @@ public class ManufacturerService {
 
   public Uni<Manufacturer> add(CreateManufacturer createManufacturer) {
     return validator.validate(createManufacturer)
-        .replaceWith(ManufacturerMapper.from(createManufacturer))
+        .replaceWith(ManufacturerMapper.INSTANCE.from(createManufacturer))
         .call(MongoUtils::addEntity);
   }
 

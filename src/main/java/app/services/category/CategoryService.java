@@ -9,11 +9,8 @@ import app.mongodb.MongoCollections;
 import app.mongodb.MongoUtils;
 import app.services.category.exceptions.CategoryException;
 import app.services.category.models.Category;
-import app.services.category.models.CategoryReference;
 import app.services.category.models.CreateCategory;
 import app.services.category.models.UpdateCategory;
-import app.services.product.models.Product;
-import app.services.wishlist.exceptions.WishlistException;
 import app.utils.Utils;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
@@ -46,7 +43,7 @@ public class CategoryService {
 
   public Uni<Category> add(CreateCategory createCategory) {
     return validator.validate(createCategory)
-        .replaceWith(CategoryMapper.from(createCategory))
+        .replaceWith(CategoryMapper.INSTANCE.from(createCategory))
         .call(MongoUtils::addEntity);
   }
 

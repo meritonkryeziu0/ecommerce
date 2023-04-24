@@ -3,6 +3,8 @@ package app.services.shoppingcart;
 import app.common.CustomValidator;
 import app.exceptions.BaseException;
 import app.helpers.ProductUpdateHelper;
+import app.helpers.PaginatedResponse;
+import app.helpers.PaginationWrapper;
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
 import app.mongodb.MongoSessionWrapper;
@@ -66,7 +68,7 @@ public class ShoppingCartService {
 
   public Uni<ShoppingCart> add(ClientSession session, CreateShoppingCart createShoppingCart) {
     return validator.validate(createShoppingCart)
-        .replaceWith(ShoppingCartMapper.from(createShoppingCart))
+        .replaceWith(ShoppingCartMapper.INSTANCE.from(createShoppingCart))
         .flatMap(shoppingCart -> repository.add(session, shoppingCart));
   }
 

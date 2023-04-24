@@ -1,23 +1,19 @@
 package app.services.shoppingcart;
 
-//import app.services.order.models.CreateOrder;
-//import app.services.order.models.OrderDetails;
-
-import app.services.order.models.CreateOrder;
-import app.services.order.models.OrderDetails;
 import app.services.shoppingcart.models.CreateShoppingCart;
 import app.services.shoppingcart.models.ShoppingCart;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
-import java.util.ArrayList;
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface ShoppingCartMapper {
+  ShoppingCartMapper INSTANCE = Mappers.getMapper(ShoppingCartMapper.class);
 
-public class ShoppingCartMapper {
-  public static ShoppingCart from(CreateShoppingCart createShoppingCart) {
-    ShoppingCart shoppingCart = new ShoppingCart();
-    shoppingCart.setUserReference(createShoppingCart.getUserReference());
-    shoppingCart.setTotal(0.0);
-    shoppingCart.setProducts(new ArrayList<>());
-    return shoppingCart;
-  }
+  @Mapping(target = "total", constant = "0.0")
+  @Mapping(target = "products", expression = "java(new java.util.ArrayList<>())")
+  ShoppingCart from(CreateShoppingCart createShoppingCart);
 
   public static CreateOrder from(ShoppingCart shoppingCart, OrderDetails orderDetails) {
     CreateOrder createOrder = new CreateOrder();

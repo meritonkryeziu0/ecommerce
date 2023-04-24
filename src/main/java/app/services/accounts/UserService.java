@@ -4,8 +4,6 @@ import app.common.CustomValidator;
 import app.exceptions.BaseException;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
-import app.mongodb.MongoCollectionWrapper;
-import app.mongodb.MongoCollections;
 import app.mongodb.MongoSessionWrapper;
 import app.mongodb.MongoUtils;
 import app.services.accounts.exceptions.UserException;
@@ -20,7 +18,6 @@ import app.services.wishlist.models.CreateWishlist;
 import app.shared.SuccessResponse;
 import app.utils.PasswordUtils;
 import app.utils.Utils;
-import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
 
@@ -79,7 +76,7 @@ public class UserService {
   public Uni<User> update(String id, UpdateUser updateUser) {
     return validator.validate(updateUser)
         .replaceWith(this.getById(id))
-        .map(UserMapper.from(updateUser))
+        .map(UserMapper.fromUpdateUser(updateUser))
         .call(MongoUtils::updateEntity);
   }
 
@@ -95,7 +92,7 @@ public class UserService {
     return createUser -> User.find(User.FIELD_EMAIL, createUser.getEmail()).firstResult().onItemOrFailure()
         .transform(Unchecked.function((user, throwable) -> {
           if (Utils.isNull(user)) {
-            return UserMapper.from(createUser);
+            return UserMapper.INSTANCE.from(createUser);
           } else {
             throw new UserException(UserException.USER_ALREADY_EXISTS, Response.Status.BAD_REQUEST);
           }

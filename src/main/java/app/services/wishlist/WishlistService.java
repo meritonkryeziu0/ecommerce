@@ -44,7 +44,7 @@ public class WishlistService {
 
   public Uni<Wishlist> add(ClientSession session, CreateWishlist createWishlist) {
     return validator.validate(createWishlist)
-        .replaceWith(WishlistMapper.from(createWishlist))
+        .replaceWith(WishlistMapper.INSTANCE.from(createWishlist))
         .flatMap(wishlist -> repository.add(session, wishlist));
   }
 
