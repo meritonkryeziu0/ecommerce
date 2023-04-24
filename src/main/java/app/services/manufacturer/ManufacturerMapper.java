@@ -3,16 +3,17 @@ package app.services.manufacturer;
 import app.services.manufacturer.models.CreateManufacturer;
 import app.services.manufacturer.models.Manufacturer;
 import app.services.manufacturer.models.UpdateManufacturer;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
 import java.util.function.Function;
 
-public class ManufacturerMapper {
-  public static Manufacturer from(CreateManufacturer createManufacturer) {
-    Manufacturer manufacturer = new Manufacturer();
-    manufacturer.setName(createManufacturer.getName());
-    manufacturer.setAddress(createManufacturer.getAddress());
-    return manufacturer;
-  }
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface ManufacturerMapper {
+  ManufacturerMapper INSTANCE = Mappers.getMapper(ManufacturerMapper.class);
+
+  Manufacturer from(CreateManufacturer createManufacturer);
 
   public static Function<Manufacturer, Manufacturer> from(UpdateManufacturer updateManufacturer) {
     return manufacture -> {

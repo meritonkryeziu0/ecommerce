@@ -51,7 +51,7 @@ public class OrderService {
 
   public Uni<Order> add(CreateOrder createOrder) {
     return validator.validate(createOrder)
-        .replaceWith(OrderMapper.from(createOrder))
+        .replaceWith(OrderMapper.INSTANCE.from(createOrder))
         .call(MongoUtils::addEntity);
   }
 

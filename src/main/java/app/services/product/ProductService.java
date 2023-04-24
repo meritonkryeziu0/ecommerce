@@ -6,7 +6,6 @@ import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
-import app.mongodb.MongoSessionWrapper;
 import app.mongodb.MongoUtils;
 import app.services.manufacturer.ManufacturerService;
 import app.services.product.exceptions.ProductException;
@@ -14,12 +13,8 @@ import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
 import app.services.product.models.UpdateProduct;
 import app.utils.Utils;
-import com.mongodb.client.model.Filters;
-import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
-import io.quarkus.panache.common.Page;
 import io.smallrye.mutiny.Uni;
-import org.bson.Document;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -58,7 +53,7 @@ public class ProductService {
   public Uni<Product> add(CreateProduct createProduct) {
     return validator.validate(createProduct)
         .replaceWith(manufactureService.getById(createProduct.getManufacturer().getId()))
-        .replaceWith(ProductMapper.from(createProduct))
+        .replaceWith(ProductMapper.INSTANCE.from(createProduct))
         .call(MongoUtils::addEntity);
   }
 
