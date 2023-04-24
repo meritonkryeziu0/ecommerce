@@ -32,7 +32,6 @@ public class ProductResource {
 
   @GET
   @Path("/{id}")
-  @PermitAll
   public Uni<Product> getById(@PathParam("id") String id) {
     return service.getById(id);
   }

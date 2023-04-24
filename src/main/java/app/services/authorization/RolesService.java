@@ -29,7 +29,7 @@ public class RolesService {
         });
   }
 
-  public Map<String, List<Ability>> getRoles(){
+  public Map<String, List<Ability>> getRolesWithAbilities(){
     return this.roleWithAbilities;
   }
 }

@@ -5,8 +5,8 @@ import app.services.context.UserContext;
 import io.quarkus.arc.Arc;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.server.ServerRequestFilter;
-import org.jose4j.jwk.Use;
 
 import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
@@ -14,7 +14,6 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Response;
 
-import java.util.List;
 import java.util.Optional;
 
 import static app.utils.Utils.isNull;
@@ -30,13 +29,15 @@ public class AuthorizationFilter {
   @ServerRequestFilter
   public Uni<Void> filter(ContainerRequestContext requestContext, ResourceInfo resourceInfo){
     ActionAbility action = resourceInfo.getResourceMethod().getAnnotation(ActionAbility.class);
-    if(isNull(action) && isNull(resourceInfo.getResourceMethod().getAnnotation(PermitAll.class))){
-      return Uni.createFrom().failure(new BaseException("Unauthorized", Response.Status.UNAUTHORIZED));
+    PermitAll permitAll = resourceInfo.getResourceMethod().getAnnotation(PermitAll.class);
+    if(notNull(permitAll)){
+      //Permit
+      return Uni.createFrom().voidItem();
     }
-    if(requestContext.getSecurityContext().getUserPrincipal() instanceof DefaultJWTCallerPrincipal){
+    if(notNull(action) && requestContext.getSecurityContext().getUserPrincipal() instanceof DefaultJWTCallerPrincipal){
       UserContext userContext = Arc.container().instance(UserContext.class).get();
       Ability actionAbility = new Ability(action);
-      Optional<Ability> allowedAbility =  rolesService.getRoles().get(userContext.getRole())
+      Optional<Ability> allowedAbility =  rolesService.getRolesWithAbilities().get(userContext.getRole())
           .stream().filter(roleAbility -> roleAbility.getId().equals(actionAbility.constructId()))
           .findAny();
       if(allowedAbility.isEmpty()){

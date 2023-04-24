@@ -1,35 +1,28 @@
 package app.services.authorization;
 
 import app.services.context.UserContext;
-import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.List;
 
-@Path("authorization")
+@Path("/authorization/permissions")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Authorization")
+@RequestScoped
 public class AuthorizationResource {
   @Inject
   UserContext userContext;
-  @Inject RolesService rolesService;
+  @Inject AuthorizationService service;
 
-  @GET
-  public Uni<AuthorizationResult> isAuthorized(String actionAbilityId){
-    Ability ability = Ability.fromShortId(actionAbilityId);
-    Optional<Ability> rolesAbility = rolesService.getRoles().get(userContext.getRole())
-        .stream().filter(roleAbility -> roleAbility.getId().equals(ability.constructId())).findAny();
-    AuthorizationResult.AuthorizationResultBuilder authorizationResult = AuthorizationResult.builder()
-        .isAuthorized(false)
-        .module(ability.getModule())
-        .action(ability.getAction());
-    if(rolesAbility.isPresent()){
-      authorizationResult.isAuthorized(true);
-    }
-    return authorizationResult.build().asUni();
+  @POST
+  public Uni<HashMap<String, IsAuthorizedResult>> isAuthorized(List<String> actionAbilityIds){
+    return service.isAuthorized(userContext, actionAbilityIds);
   }
 }
