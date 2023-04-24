@@ -11,8 +11,10 @@ import app.services.order.exceptions.OrderException;
 import app.services.order.models.CreateOrder;
 import app.services.order.models.Order;
 import app.services.order.models.UpdateOrder;
+import app.shared.BaseAddress;
 import app.shared.SuccessResponse;
 import app.utils.Utils;
+import com.mongodb.reactivestreams.client.ClientSession;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
 
@@ -55,8 +57,19 @@ public class OrderService {
         .call(MongoUtils::addEntity);
   }
 
+  public Uni<Order> add(ClientSession session, CreateOrder createOrder) {
+    return validator.validate(createOrder)
+        .replaceWith(OrderMapper.from(createOrder))
+        .flatMap(order -> repository.add(session, order));
+  }
+
   public Uni<SuccessResponse> delete(String id) {
     return Order.deleteById(id).replaceWith(SuccessResponse.toSuccessResponse());
+  }
+
+  // will be changed on tracking service implementation
+  public Uni<SuccessResponse> cancelOrder(String id) {
+    return Order.deleteById(id).replaceWith(SuccessResponse::toSuccessResponse);
   }
 
   public Uni<Order> update(String id, UpdateOrder updateOrder) {
@@ -65,6 +78,15 @@ public class OrderService {
         .onFailure().transform(transformToBadRequest())
         .map(OrderMapper.from(updateOrder))
         .call(MongoUtils::updateEntity);
+  }
+
+  public Uni<Order> editShippingAddress(String id, BaseAddress shippingAddress) {
+    return validator.validate(shippingAddress).replaceWith(this.getById(id))
+        .onFailure().transform(transformToBadRequest())
+        .map(order -> {
+          order.setShippingAddress(shippingAddress);
+          return order;
+        }).flatMap(MongoUtils::updateEntity);
   }
 
   private Function<Throwable, Throwable> transformToBadRequest() {

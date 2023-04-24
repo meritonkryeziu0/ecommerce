@@ -3,16 +3,14 @@ package app.services.order;
 import app.helpers.PaginatedResponse;
 import app.services.order.models.Order;
 import app.services.order.models.UpdateOrder;
+import app.shared.BaseAddress;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 
 @Path("/order")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class OrderResource {
   @Inject
   OrderService service;
@@ -32,6 +30,19 @@ public class OrderResource {
   @Path("/{id}")
   public Uni<Order> update(@PathParam("id") String id, UpdateOrder updateOrder) {
     return service.update(id, updateOrder);
+  }
+
+  @PUT
+  @Path("/{id}/shipping-address/")
+  public Uni<Order> editShippingAddress(@PathParam("id") String id, BaseAddress shippingAddress) {
+    return service.editShippingAddress(id, shippingAddress);
+  }
+
+
+  @DELETE
+  @Path("/{id}/cancel")
+  public Uni<SuccessResponse> cancelOrder(@PathParam("id") String id){
+    return service.cancelOrder(id);
   }
 
   @DELETE
