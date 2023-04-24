@@ -59,7 +59,7 @@ public class OrderService {
 
   public Uni<Order> add(ClientSession session, CreateOrder createOrder) {
     return validator.validate(createOrder)
-        .replaceWith(OrderMapper.from(createOrder))
+        .replaceWith(OrderMapper.INSTANCE.from(createOrder))
         .flatMap(order -> repository.add(session, order));
   }
 
