@@ -1,5 +1,7 @@
 package app.services.shoppingcart;
 
+import app.services.order.models.CreateOrder;
+import app.services.order.models.OrderDetails;
 import app.services.shoppingcart.models.CreateShoppingCart;
 import app.services.shoppingcart.models.ShoppingCart;
 import org.mapstruct.Mapper;
@@ -15,7 +17,7 @@ public interface ShoppingCartMapper {
   @Mapping(target = "products", expression = "java(new java.util.ArrayList<>())")
   ShoppingCart from(CreateShoppingCart createShoppingCart);
 
-  public static CreateOrder from(ShoppingCart shoppingCart, OrderDetails orderDetails) {
+  static CreateOrder from(ShoppingCart shoppingCart, OrderDetails orderDetails) {
     CreateOrder createOrder = new CreateOrder();
     createOrder.setUserReference(shoppingCart.getUserReference());
     createOrder.setTotal(shoppingCart.getTotal());
