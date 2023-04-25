@@ -76,7 +76,7 @@ public class UserService {
   public Uni<User> update(String id, UpdateUser updateUser) {
     return validator.validate(updateUser)
         .replaceWith(this.getById(id))
-        .map(UserMapper.fromUpdateUser(updateUser))
+        .map(UserMapper.from(updateUser))
         .call(MongoUtils::updateEntity);
   }
 
