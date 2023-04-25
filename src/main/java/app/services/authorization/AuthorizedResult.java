@@ -5,14 +5,14 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class IsAuthorizedResult {
+public class AuthorizedResult {
   private boolean isAuthorized;
 
-  public IsAuthorizedResult(){
+  public AuthorizedResult(){
     this.isAuthorized = false;
   }
 
-  public IsAuthorizedResult(boolean isAuthorized){
+  public AuthorizedResult(boolean isAuthorized){
     this.isAuthorized = isAuthorized;
   }
 }

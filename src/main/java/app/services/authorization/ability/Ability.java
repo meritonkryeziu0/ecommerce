@@ -1,4 +1,4 @@
-package app.services.authorization;
+package app.services.authorization.ability;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

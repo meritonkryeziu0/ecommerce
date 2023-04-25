@@ -27,20 +27,11 @@ public class User extends BaseModel {
   private String phoneNumber;
   private List<ShippingAddress> shippingAddresses;
   private BillingAddress billingAddress;
-//  private List<Roles> roles;
-  private Roles role;
+  private String role;
   private String state;
   @JsonIgnore
   private String hashedPassword;
   @JsonIgnore
   private String salt;
-
-//  public void addRole(Roles role) {
-//    this.roles.add(role);
-//  }
-
-//  public Set<String> fetchRolesString() {
-//    return this.roles.stream().map(Enum::name).collect(Collectors.toSet());
-//  }
 
 }

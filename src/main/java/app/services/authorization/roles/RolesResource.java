@@ -1,5 +1,6 @@
-package app.services.authorization;
+package app.services.authorization.roles;
 
+import app.services.authorization.ability.RoleWithAbilities;
 import io.smallrye.mutiny.Uni;
 
 import javax.ws.rs.Consumes;

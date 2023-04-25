@@ -1,11 +1,11 @@
-package app.services.authorization;
+package app.services.authorization.ability;
 
 import app.mongodb.MongoCollections;
+import app.services.authorization.ability.Ability;
 import app.shared.BaseModel;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.codecs.pojo.annotations.BsonId;
 
 import java.util.List;
 

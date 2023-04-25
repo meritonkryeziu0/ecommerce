@@ -1,11 +1,13 @@
 package app.services.authorization;
 
 import app.exceptions.BaseException;
-import app.services.context.UserContext;
+import app.context.UserContext;
+import app.services.authorization.ability.Ability;
+import app.services.authorization.ability.ActionAbility;
+import app.services.authorization.roles.RolesService;
 import io.quarkus.arc.Arc;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import io.smallrye.mutiny.Uni;
-import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.resteasy.reactive.server.ServerRequestFilter;
 
 import javax.annotation.security.PermitAll;
@@ -13,17 +15,11 @@ import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 
-import java.util.Optional;
-
-import static app.utils.Utils.isNull;
 import static app.utils.Utils.notNull;
 
 public class AuthorizationFilter {
-
-  private ContainerRequestContext requestContext;
-  private ResourceInfo resourceInfo;
-
   @Inject
   RolesService rolesService;
   @ServerRequestFilter
@@ -31,20 +27,30 @@ public class AuthorizationFilter {
     ActionAbility action = resourceInfo.getResourceMethod().getAnnotation(ActionAbility.class);
     PermitAll permitAll = resourceInfo.getResourceMethod().getAnnotation(PermitAll.class);
     if(notNull(permitAll)){
-      //Permit
       return Uni.createFrom().voidItem();
     }
     if(notNull(action) && requestContext.getSecurityContext().getUserPrincipal() instanceof DefaultJWTCallerPrincipal){
       UserContext userContext = Arc.container().instance(UserContext.class).get();
       Ability actionAbility = new Ability(action);
-      Optional<Ability> allowedAbility =  rolesService.getRolesWithAbilities().get(userContext.getRole())
-          .stream().filter(roleAbility -> roleAbility.getId().equals(actionAbility.constructId()))
-          .findAny();
-      if(allowedAbility.isEmpty()){
-        return Uni.createFrom().failure(new BaseException("Unauthorized", Response.Status.UNAUTHORIZED));
+      if(roleMatchesUserContext(userContext, action)){
+        if(abilityNotAllowed(userContext, actionAbility)){
+          return Uni.createFrom().failure(new AuthorizationException(AuthorizationException.FORBIDDEN, Response.Status.FORBIDDEN));
+        }
+      }
+      else {
+        return Uni.createFrom().failure(new AuthorizationException(AuthorizationException.UNAUTHORIZED, Response.Status.UNAUTHORIZED));
       }
     }
     return Uni.createFrom().voidItem();
+  }
+
+  private boolean roleMatchesUserContext(UserContext userContext, ActionAbility action){
+    return Arrays.stream(action.role()).anyMatch(role -> role.equals(userContext.getRole()));
+  }
+
+  private boolean abilityNotAllowed(UserContext userContext, Ability actionAbility){
+    return rolesService.getRolesWithAbilities().get(userContext.getRole())
+        .stream().noneMatch(roleAbility -> roleAbility.getId().equals(actionAbility.constructId()));
   }
 
 }

@@ -1,6 +1,8 @@
 package app.services.authorization;
 
-import app.services.context.UserContext;
+import app.context.UserContext;
+import app.services.authorization.ability.Ability;
+import app.services.authorization.roles.RolesService;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.graalvm.collections.Pair;
@@ -25,8 +27,8 @@ public class AuthorizationService {
   @Inject
   Logger logger;
 
-  public Uni<HashMap<String, IsAuthorizedResult>> isAuthorized(UserContext userContext, List<String> actionAbilities){
-    List<Multi<Pair<String, IsAuthorizedResult>>> concatUnis = actionAbilities.stream()
+  public Uni<HashMap<String, AuthorizedResult>> isAuthorized(UserContext userContext, List<String> actionAbilities){
+    List<Multi<Pair<String, AuthorizedResult>>> concatUnis = actionAbilities.stream()
         .map(actionAbility -> isAuthorized(userContext, actionAbility)
             .map(result -> Pair.create(actionAbility, result)))
         .map(Uni::toMulti).collect(Collectors.toList());
@@ -36,31 +38,31 @@ public class AuthorizationService {
         .collect()
         .asList()
         .map(pairs -> {
-          HashMap<String, IsAuthorizedResult> permissionsMap = new HashMap<>(pairs.size());
+          HashMap<String, AuthorizedResult> permissionsMap = new HashMap<>(pairs.size());
           pairs.forEach(pair -> permissionsMap.put(pair.getLeft(), pair.getRight()));
           return permissionsMap;
     });
   }
 
-  public Uni<IsAuthorizedResult> isAuthorized(UserContext userContext, String actionAbility){
+  public Uni<AuthorizedResult> isAuthorized(UserContext userContext, String actionAbility){
     Ability ability = Ability.fromShortId(actionAbility);
     return isAuthorized(userContext, ability);
   }
 
-  public Uni<IsAuthorizedResult> isAuthorized(UserContext userContext, Ability ability){
-    IsAuthorizedResult authorizedResult = new IsAuthorizedResult(false);
+  public Uni<AuthorizedResult> isAuthorized(UserContext userContext, Ability ability){
+    AuthorizedResult authorizedResult = new AuthorizedResult(false);
     if(notBlank(userContext.getRole())){
       Optional<Ability> matchedAbility =  rolesService.getRolesWithAbilities()
           .get(userContext.getRole()).stream()
           .filter(roleAbility -> roleAbility.getId().equals(ability.constructId()))
           .findFirst();
       if(matchedAbility.isEmpty()){
-        return Uni.createFrom().item(new IsAuthorizedResult());
+        return Uni.createFrom().item(new AuthorizedResult());
       }
       authorizedResult.setAuthorized(true);
       return Uni.createFrom().item(authorizedResult);
     }
     logger.warn("UserContext role is null");
-    return Uni.createFrom().failure(new AuthorizationException(AuthorizationException.USERCONTEX_ROLE_NOT_SET, Response.Status.BAD_REQUEST));
+    return Uni.createFrom().failure(new AuthorizationException(AuthorizationException.USERCONTEXT_ROLE_NOT_SET, Response.Status.BAD_REQUEST));
   }
 }

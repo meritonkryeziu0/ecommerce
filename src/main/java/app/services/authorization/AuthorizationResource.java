@@ -1,6 +1,6 @@
 package app.services.authorization;
 
-import app.services.context.UserContext;
+import app.context.UserContext;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -22,7 +22,7 @@ public class AuthorizationResource {
   @Inject AuthorizationService service;
 
   @POST
-  public Uni<HashMap<String, IsAuthorizedResult>> isAuthorized(List<String> actionAbilityIds){
+  public Uni<HashMap<String, AuthorizedResult>> isAuthorized(List<String> actionAbilityIds){
     return service.isAuthorized(userContext, actionAbilityIds);
   }
 }

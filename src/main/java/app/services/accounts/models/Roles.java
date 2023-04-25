@@ -1,10 +1,7 @@
 package app.services.accounts.models;
 
-import lombok.experimental.FieldNameConstants;
+public class Roles {
+  public static final String ADMIN = "Admin";
+  public static final String USER = "User";
 
-@FieldNameConstants(onlyExplicitlyIncluded = true)
-public enum Roles {
-  @FieldNameConstants.Include Admin,
-  @FieldNameConstants.Include Everyone,
-  @FieldNameConstants.Include User;
 }

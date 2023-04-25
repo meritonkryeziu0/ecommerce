@@ -1,4 +1,4 @@
-package app.services.context;
+package app.context;
 
 import app.services.auth.TokenService;
 import io.quarkus.arc.Unremovable;
@@ -30,5 +30,8 @@ public class UserContext {
 
   public String getRole(){
     return this.role;
+  }
+  public String getUserId(){
+    return this.userId;
   }
 }

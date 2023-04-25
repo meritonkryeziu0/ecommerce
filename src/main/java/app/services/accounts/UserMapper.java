@@ -1,12 +1,10 @@
 package app.services.accounts;
 
 import app.services.accounts.models.CreateUser;
-import app.services.accounts.models.Roles;
 import app.services.accounts.models.UpdateUser;
 import app.services.accounts.models.User;
 import app.utils.PasswordUtils;
 
-import java.util.List;
 import java.util.function.Function;
 
 public class UserMapper {

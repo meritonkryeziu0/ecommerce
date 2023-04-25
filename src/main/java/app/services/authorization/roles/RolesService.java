@@ -1,5 +1,7 @@
-package app.services.authorization;
+package app.services.authorization.roles;
 
+import app.services.authorization.ability.Ability;
+import app.services.authorization.ability.RoleWithAbilities;
 import app.utils.Utils;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;

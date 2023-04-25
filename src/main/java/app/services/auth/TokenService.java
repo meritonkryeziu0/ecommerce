@@ -16,8 +16,7 @@ public class TokenService {
   public Uni<String> generateToken(User user) {
     String token = Jwt.issuer("app-auth")
         .subject("app-auth")
-//        .groups(user.fetchRolesString())
-        .groups(user.getRole().name())
+        .groups(user.getRole())
         .expiresAt(System.currentTimeMillis() / 1000 + EXPIRY_TIME)
         .claim("userId", user.getId())
         .claim("email", user.getEmail())

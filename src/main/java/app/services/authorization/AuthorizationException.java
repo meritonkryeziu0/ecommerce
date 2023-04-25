@@ -6,7 +6,10 @@ import javax.ws.rs.core.Response;
 
 public class AuthorizationException extends BaseException {
 
-  public static final String USERCONTEX_ROLE_NOT_SET = "UserContext role not set";
+  public static final String USERCONTEXT_ROLE_NOT_SET = "UserContext role not set";
+  public static final String UNAUTHORIZED = "Unauthorized";
+  public static final String FORBIDDEN = "Action is forbidden";
+
   @Override
   public String getMessage() {
     return super.getMessage();
