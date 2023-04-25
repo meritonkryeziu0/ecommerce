@@ -3,25 +3,20 @@ package app.services.order;
 import app.services.order.models.CreateOrder;
 import app.services.order.models.Order;
 import app.services.order.models.UpdateOrder;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
 import java.util.function.Function;
-import java.util.regex.Pattern;
 
-public class OrderMapper {
-  public static Order from(CreateOrder createOrder) {
-    Order order = new Order();
-    order.setUserReference(createOrder.getUserReference());
-    order.setProducts(createOrder.getProducts());
-    order.setShippingAddress(createOrder.getShippingAddress());
-    order.setPaymentMethod(createOrder.getPaymentMethod());
-    order.setTotal(createOrder.getTotal());
-    order.setStatus("open-order");
-    order.setShipmentType(createOrder.getShipmentType());
-    if (!Pattern.compile("standard|express").matcher(order.getShipmentType()).matches()) {
-      order.setShipmentType("standard");
-    }
-    return order;
-  }
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface OrderMapper {
+  OrderMapper INSTANCE = Mappers.getMapper(OrderMapper.class);
+
+  @Mapping(target = "status", constant = "open-order")
+  @Mapping(target = "shipmentType", expression = "java(!java.util.regex.Pattern.compile(\"standard|express\").matcher(createOrder.getShipmentType()).matches() ? \"standard\" : createOrder.getShipmentType())")
+  Order from(CreateOrder createOrder);
 
   public static Function<Order, Order> from(UpdateOrder updateOrder) {
     return order -> {
