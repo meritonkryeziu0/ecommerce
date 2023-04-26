@@ -1,6 +1,5 @@
 package app.services.authorization;
 
-import app.exceptions.BaseException;
 import app.context.UserContext;
 import app.services.authorization.ability.Ability;
 import app.services.authorization.ability.ActionAbility;
@@ -9,13 +8,11 @@ import io.quarkus.arc.Arc;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import io.smallrye.mutiny.Uni;
 import org.jboss.resteasy.reactive.server.ServerRequestFilter;
-
 import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
 
 import static app.utils.Utils.notNull;
 
@@ -32,21 +29,24 @@ public class AuthorizationFilter {
     if(notNull(action) && requestContext.getSecurityContext().getUserPrincipal() instanceof DefaultJWTCallerPrincipal){
       UserContext userContext = Arc.container().instance(UserContext.class).get();
       Ability actionAbility = new Ability(action);
-      if(roleMatchesUserContext(userContext, action)){
+      /*if(roleMatchesUserContext(userContext, action)){
         if(abilityNotAllowed(userContext, actionAbility)){
           return Uni.createFrom().failure(new AuthorizationException(AuthorizationException.FORBIDDEN, Response.Status.FORBIDDEN));
         }
       }
       else {
         return Uni.createFrom().failure(new AuthorizationException(AuthorizationException.UNAUTHORIZED, Response.Status.UNAUTHORIZED));
+      }*/
+      if(abilityNotAllowed(userContext, actionAbility)){
+        return Uni.createFrom().failure(new AuthorizationException(AuthorizationException.FORBIDDEN, Response.Status.FORBIDDEN));
       }
     }
     return Uni.createFrom().voidItem();
   }
 
-  private boolean roleMatchesUserContext(UserContext userContext, ActionAbility action){
-    return Arrays.stream(action.role()).anyMatch(role -> role.equals(userContext.getRole()));
-  }
+//  private boolean roleMatchesUserContext(UserContext userContext, ActionAbility action){
+//    return Arrays.stream(action.role()).anyMatch(role -> role.equals(userContext.getRole()));
+//  }
 
   private boolean abilityNotAllowed(UserContext userContext, Ability actionAbility){
     return rolesService.getRolesWithAbilities().get(userContext.getRole())

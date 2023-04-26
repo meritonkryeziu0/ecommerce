@@ -24,66 +24,41 @@ public class UserResource {
   UserContext userContext;
 
   @GET
-  @ActionAbility(
-      role = {
-          Roles.ADMIN
-      },
-      action = Operation.LIST, module = Modules.User)
+  @ActionAbility(action = Operation.LIST, module = Modules.User)
   public Uni<PaginatedResponse<User>> getList(@BeanParam UserFilterWrapper wrapper) {
     return service.getList(wrapper);
   }
 
   @GET
   @Path("/{id}")
-  @ActionAbility(
-      role = {
-          Roles.ADMIN
-      },
-      action = Operation.READ, module = Modules.User)
+  @ActionAbility(action = Operation.READ, module = Modules.User)
   public Uni<User> getById(@PathParam("id") String id) {
     return service.getById(id);
   }
 
   @POST
-  @ActionAbility(
-      role = {
-          Roles.ADMIN
-      },
-      action = Operation.CREATE, module = Modules.User)
+  @ActionAbility(action = Operation.CREATE, module = Modules.User)
   public Uni<User> add(CreateUser createUser) {
     return service.add(createUser);
   }
 
   @PUT
   @Path("/{id}")
-  @ActionAbility(
-      role = {
-          Roles.ADMIN
-      },
-      action = Operation.UPDATE, module = Modules.User)
+  @ActionAbility(action = Operation.UPDATE, module = Modules.User)
   public Uni<User> update(@PathParam("id") String id, UpdateUser updateUser) {
     return service.update(id, updateUser);
   }
 
   //Users can update themselves
   @PUT
-  @ActionAbility(
-      role = {
-          Roles.USER,
-          Roles.ADMIN
-      },
-      action = Operation.SELF_UPDATE, module = Modules.User)
+  @ActionAbility(action = Operation.SELF_UPDATE, module = Modules.User)
   public Uni<User> update(UpdateUser updateUser) {
     return service.update(userContext.getUserId(), updateUser);
   }
 
   @DELETE
   @Path("/{id}")
-  @ActionAbility(
-      role = {
-          Roles.ADMIN
-      },
-      action = Operation.DELETE, module = Modules.User)
+  @ActionAbility(action = Operation.DELETE, module = Modules.User)
   public Uni<SuccessResponse> delete(@PathParam("id") String id) {
     return service.delete(id);
   }

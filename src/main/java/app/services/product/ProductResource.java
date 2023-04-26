@@ -21,45 +21,32 @@ public class ProductResource {
   ProductService service;
 
   @GET
-  @ActionAbility(
-      role = {
-          Roles.USER,
-          Roles.ADMIN
-      },
-      action = Operation.LIST, module = Modules.Product)
+//  @ActionAbility(
+//      role = {
+//          Roles.USER,
+//          Roles.ADMIN
+//      },
+//      action = Operation.LIST, module = Modules.Product)
   public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
     return service.getList(wrapper);
   }
 
   @GET
   @Path("/{id}")
-  @ActionAbility(
-          role = {
-                  Roles.USER,
-                  Roles.ADMIN
-          },
-          action = Operation.READ, module = Modules.Product)
+  @ActionAbility(action = Operation.READ, module = Modules.Product)
   public Uni<Product> getById(@PathParam("id") String id) {
     return service.getById(id);
   }
 
   @POST
-  @ActionAbility(
-      role = {
-          Roles.ADMIN
-      },
-      action = Operation.CREATE, module = Modules.Product)
+  @ActionAbility(action = Operation.CREATE, module = Modules.Product)
   public Uni<Product> add(CreateProduct createProduct) {
     return service.add(createProduct);
   }
 
   @PUT
   @Path("/{id}")
-  @ActionAbility(
-          role = {
-                  Roles.ADMIN
-          },
-          action = Operation.UPDATE, module = Modules.Product)
+  @ActionAbility(action = Operation.UPDATE, module = Modules.Product)
   public Uni<Product> update(@PathParam("id") String id, UpdateProduct updateProduct) {
     return service.update(id, updateProduct);
 
@@ -67,11 +54,7 @@ public class ProductResource {
 
   @DELETE
   @Path("/{id}")
-  @ActionAbility(
-          role = {
-                  Roles.ADMIN
-          },
-          action = Operation.DELETE, module = Modules.Product)
+  @ActionAbility(action = Operation.DELETE, module = Modules.Product)
   public Uni<Void> delete(@PathParam("id") String id) {
     return service.delete(id);
   }

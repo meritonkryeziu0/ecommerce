@@ -21,45 +21,27 @@ public class CategoryResource {
   @Inject
   CategoryService service;
   @GET
-  @ActionAbility(
-          role = {
-                  Roles.USER,
-                  Roles.ADMIN
-          },
-          action = Operation.LIST, module = Modules.Category)
+  @ActionAbility(action = Operation.LIST, module = Modules.Category)
   public Uni<PaginatedResponse<Category>> getList(@BeanParam CategoryFilterWrapper wrapper){
     return service.getList(wrapper);
   }
 
   @GET
   @Path("/{id}")
-  @ActionAbility(
-          role = {
-                  Roles.USER,
-                  Roles.ADMIN
-          },
-          action = Operation.READ, module = Modules.Category)
+  @ActionAbility(action = Operation.READ, module = Modules.Category)
   public Uni<Category> getById(@PathParam("id") String id) {
     return service.getById(id);
   }
 
   @POST
-  @ActionAbility(
-          role = {
-                  Roles.ADMIN
-          },
-          action = Operation.CREATE, module = Modules.Category)
+  @ActionAbility(action = Operation.CREATE, module = Modules.Category)
   public Uni<Category> add(CreateCategory createCategory) {
     return service.add(createCategory);
   }
 
   @PUT
   @Path("/{id}")
-  @ActionAbility(
-          role = {
-                  Roles.ADMIN
-          },
-          action = Operation.UPDATE, module = Modules.Category)
+  @ActionAbility(action = Operation.UPDATE, module = Modules.Category)
   public Uni<Category> update(@PathParam("id") String id, UpdateCategory updateCategory) {
     return service.update(id, updateCategory);
 
@@ -67,11 +49,7 @@ public class CategoryResource {
 
   @DELETE
   @Path("/{id}")
-  @ActionAbility(
-          role = {
-                  Roles.ADMIN
-          },
-          action = Operation.DELETE, module = Modules.Category)
+  @ActionAbility(action = Operation.DELETE, module = Modules.Category)
   public Uni<Void> delete(@PathParam("id") String id) {
     return service.delete(id);
   }
