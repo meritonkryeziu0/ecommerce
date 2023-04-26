@@ -49,8 +49,11 @@ public class AuthorizationFilter {
 //  }
 
   private boolean abilityNotAllowed(UserContext userContext, Ability actionAbility){
-    return rolesService.getRolesWithAbilities().get(userContext.getRole())
-        .stream().noneMatch(roleAbility -> roleAbility.getId().equals(actionAbility.constructId()));
+    if(rolesService.getRolesWithAbilities().containsKey(userContext.getRole())){
+      return rolesService.getRolesWithAbilities().get(userContext.getRole())
+          .stream().noneMatch(roleAbility -> roleAbility.getId().equals(actionAbility.constructId()));
+    }
+    return false;
   }
 
 }

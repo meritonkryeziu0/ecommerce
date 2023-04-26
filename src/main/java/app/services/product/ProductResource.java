@@ -27,6 +27,7 @@ public class ProductResource {
 //          Roles.ADMIN
 //      },
 //      action = Operation.LIST, module = Modules.Product)
+  @ActionAbility(action = Operation.LIST, module = Modules.Product)
   public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
     return service.getList(wrapper);
   }
