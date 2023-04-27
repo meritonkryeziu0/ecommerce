@@ -13,7 +13,6 @@ import java.util.function.Function;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
   UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
-  @Mapping(target = "roles", expression = "java(List.of(app.services.accounts.models.Roles.Everyone))")
   @Mapping(target = "salt", expression = "java(app.utils.PasswordUtils.getSalt())")
   @Mapping(target = "hashedPassword", expression = "java(app.utils.PasswordUtils.hashPassword(createUser.getPassword(), app.utils.PasswordUtils.getSalt()))")
   User from(CreateUser createUser);
