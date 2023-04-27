@@ -52,8 +52,8 @@ public class ProductService {
 
   public Uni<Product> add(CreateProduct createProduct) {
     return validator.validate(createProduct)
-        .replaceWith(manufactureService.getById(createProduct.getManufacturer().get_id()))
-        .replaceWith(ProductMapper.from(createProduct))
+        .replaceWith(manufactureService.getById(createProduct.getManufacturer().getId()))
+        .replaceWith(ProductMapper.INSTANCE.from(createProduct))
         .call(MongoUtils::addEntity);
   }
 

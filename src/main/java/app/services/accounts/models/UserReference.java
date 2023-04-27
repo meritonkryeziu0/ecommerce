@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class UserReference {
   @NotBlank
-  public String _id;
+  public String id;
   @NotBlank
   private String firstName;
   @NotBlank

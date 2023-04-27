@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ManufacturerReference {
-  public String _id;
+  public String id;
   private String name;
   private BaseAddress address;
 

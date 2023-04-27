@@ -1,6 +1,5 @@
 package app.services.product;
 
-import app.mongodb.MongoUtils;
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
 import app.services.manufacturer.models.ManufacturerReference;
@@ -32,25 +31,13 @@ public class ProductRepository {
     return getCollection().find(Filters.eq(Product.FIELD_MANUFACTURER_ID, id)).collect().asList();
   }
 
-  public Uni<Product> getById(String id) {
-    return MongoUtils.getEntityById(getCollection(), id);
-  }
-
-  public Uni<Product> add(Product product) {
-    return MongoUtils.addEntity(product);
-  }
-
-  public Uni<Product> update(String id, Product product) {
-    return MongoUtils.updateEntity(product);
-  }
-
   public Uni<UpdateResult> updateManufactures(ManufacturerReference manufacturerReference) {
-    return getCollection().updateMany(Filters.eq(Product.FIELD_MANUFACTURER_ID, manufacturerReference.get_id()), Updates.set(Product.FIELD_MANUFACTURER, manufacturerReference));
+    return getCollection().updateMany(Filters.eq(Product.FIELD_MANUFACTURER_ID, manufacturerReference.getId()), Updates.set(Product.FIELD_MANUFACTURER, manufacturerReference));
   }
 
   public Uni<Void> increaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
     List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
-        Filters.eq(Product.FIELD_ID, productReference._id),
+        Filters.eq(Product.FIELD_ID, productReference.id),
         Updates.inc(Product.FIELD_STOCK_QUANTITY, productReference.getQuantity()))).collect(Collectors.toList());
 
     return getCollection().bulkWrite(session, updates).replaceWithVoid();
@@ -58,7 +45,7 @@ public class ProductRepository {
 
   public Uni<Void> decreaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
     List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
-        Filters.eq(Product.FIELD_ID, productReference._id),
+        Filters.eq(Product.FIELD_ID, productReference.id),
         Updates.inc(Product.FIELD_STOCK_QUANTITY, -productReference.getQuantity()))).collect(Collectors.toList());
 
     return getCollection().bulkWrite(session, updates).replaceWithVoid();

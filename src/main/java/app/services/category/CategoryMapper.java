@@ -1,35 +1,36 @@
 package app.services.category;
 
-import app.services.category.models.*;
+import app.services.category.models.Category;
+import app.services.category.models.CategoryReference;
+import app.services.category.models.CreateCategory;
+import app.services.category.models.UpdateCategory;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
 import java.util.function.Function;
 
-public class CategoryMapper {
-  public static Category from(CreateCategory createCategory){
-    Category category = new Category();
-    category.setName(createCategory.getName());
-    category.setDescription(createCategory.getDescription());
-    category.setImageUrl(createCategory.getImageUrl());
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface CategoryMapper {
 
-    if(createCategory.isSubcategory()){
-      category.setCategoryType(CategoryType.SUBCATEGORY);
-      category.setParentCategoryId(createCategory.getParentCategoryId());
-    } else{
-      category.setCategoryType(CategoryType.MAIN_CATEGORY);
-    }
+  CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
-    return category;
+  @Mapping(target = "categoryType", expression = "java(createCategory.isSubcategory() ? app.services.category.models.CategoryType.SUBCATEGORY : app.services.category.models.CategoryType.MAIN_CATEGORY)")
+  @Mapping(target = "parentCategoryId", source = "createCategory.parentCategoryId", conditionQualifiedByName = "isSubcategory")
+  Category from(CreateCategory createCategory);
+
+
+  @Named("isSubcategory")
+  default boolean isSubcategory(CreateCategory createCategory) {
+    return createCategory.isSubcategory();
   }
 
-  public static CategoryReference toCategoryReference(Category category){
-    CategoryReference categoryReference = new CategoryReference();
-    categoryReference._id = category.id;
-    categoryReference.setName(category.getName());
-    categoryReference.setDescription(category.getDescription());
-    return categoryReference;
-  }
+  CategoryReference toCategoryReference(Category category);
 
-  public static Function<Category, Category> from(UpdateCategory updateCategory){
+
+  static Function<Category, Category> from(UpdateCategory updateCategory){
     return category -> {
       category.setDescription(updateCategory.getDescription());
       category.setImageUrl(updateCategory.getImageUrl());

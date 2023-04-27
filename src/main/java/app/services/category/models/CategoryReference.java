@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class CategoryReference {
   @NotBlank
-  public String _id;
+  public String id;
   @NotBlank
   private String name;
   private String description;

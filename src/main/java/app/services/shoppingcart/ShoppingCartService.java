@@ -2,11 +2,11 @@ package app.services.shoppingcart;
 
 import app.common.CustomValidator;
 import app.exceptions.BaseException;
+import app.helpers.PaginatedResponse;
+import app.helpers.PaginationWrapper;
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
 import app.mongodb.MongoUtils;
-import app.helpers.PaginatedResponse;
-import app.helpers.PaginationWrapper;
 import app.services.product.ProductService;
 import app.services.product.exceptions.ProductException;
 import app.services.product.models.ProductReference;
@@ -53,16 +53,15 @@ public class ShoppingCartService {
         .map(Utils.mapTo(ShoppingCart.class));
   }
 
-  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<ShoppingCart> add(ClientSession session, CreateShoppingCart createShoppingCart) {
     return validator.validate(createShoppingCart)
-        .replaceWith(ShoppingCartMapper.from(createShoppingCart))
+        .replaceWith(ShoppingCartMapper.INSTANCE.from(createShoppingCart))
         .call(shoppingCart -> repository.add(session, shoppingCart));
   }
 
   private ShoppingCart updateShoppingCart(ShoppingCart shoppingCart, ProductReference productReference) {
     Optional<ProductReference> optionalProductReference = shoppingCart.getProducts().stream()
-        .filter(p -> p._id.equals(productReference._id)).findFirst();
+        .filter(p -> p.id.equals(productReference.id)).findFirst();
     if (optionalProductReference.isPresent()) {
       optionalProductReference.get().setQuantity(optionalProductReference.get().getQuantity() + productReference.getQuantity());
     } else {
@@ -72,10 +71,9 @@ public class ShoppingCartService {
     return shoppingCart;
   }
 
-  // TODO: 15.4.23 use @ReactiveTransactional
   public Uni<ShoppingCart> update(@Nullable ClientSession session, String userId, ProductReference productReference) {
     return validator.validate(productReference)
-        .replaceWith(productService.getById(productReference._id))
+        .replaceWith(productService.getById(productReference.id))
         .onFailure().transform(transformToBadRequest())
         .flatMap(product -> {
           if (productReference.getQuantity() > product.getStockQuantity()) {
@@ -88,7 +86,7 @@ public class ShoppingCartService {
         .map(shoppingCart -> this.updateShoppingCart(shoppingCart, productReference))
         .flatMap(shoppingCart -> {
           if(Utils.isNull(session)){
-            return repository.update(userId, shoppingCart);
+            return MongoUtils.updateEntity(shoppingCart);
           }
           return repository.update(session, userId, shoppingCart);
         });
