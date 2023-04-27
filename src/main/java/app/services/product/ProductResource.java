@@ -1,14 +1,15 @@
 package app.services.product;
 
 import app.helpers.PaginatedResponse;
-import app.services.accounts.models.Roles;
 import app.services.authorization.ability.ActionAbility;
-import app.services.authorization.roles.Operation;
-import app.services.authorization.roles.Modules;
+import app.services.roles.Operation;
+import app.services.roles.Modules;
 import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
 import app.services.product.models.UpdateProduct;
 import io.smallrye.mutiny.Uni;
+
+import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -27,14 +28,15 @@ public class ProductResource {
 //          Roles.ADMIN
 //      },
 //      action = Operation.LIST, module = Modules.Product)
-  @ActionAbility(action = Operation.LIST, module = Modules.Product)
+//  @ActionAbility(action = Operation.LIST, module = Modules.Product)
+  @PermitAll
   public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
     return service.getList(wrapper);
   }
 
   @GET
   @Path("/{id}")
-  @ActionAbility(action = Operation.READ, module = Modules.Product)
+  @PermitAll
   public Uni<Product> getById(@PathParam("id") String id) {
     return service.getById(id);
   }

@@ -2,7 +2,7 @@ package app.services.authorization;
 
 import app.context.UserContext;
 import app.services.authorization.ability.Ability;
-import app.services.authorization.roles.RolesService;
+import app.services.roles.RolesService;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import org.graalvm.collections.Pair;
@@ -45,7 +45,7 @@ public class AuthorizationService {
   }
 
   public Uni<AuthorizedResult> isAuthorized(UserContext userContext, String actionAbility){
-    Ability ability = Ability.fromShortId(actionAbility);
+    Ability ability = Ability.fromShortFormat(actionAbility);
     return isAuthorized(userContext, ability);
   }
 
@@ -57,12 +57,13 @@ public class AuthorizationService {
           .filter(roleAbility -> roleAbility.getId().equals(ability.constructId()))
           .findFirst();
       if(matchedAbility.isEmpty()){
-        return Uni.createFrom().item(new AuthorizedResult());
+        return Uni.createFrom().item(authorizedResult);
       }
       authorizedResult.setAuthorized(true);
       return Uni.createFrom().item(authorizedResult);
     }
     logger.warn("UserContext role is null");
-    return Uni.createFrom().failure(new AuthorizationException(AuthorizationException.USERCONTEXT_ROLE_NOT_SET, Response.Status.BAD_REQUEST));
+    return Uni.createFrom().failure(
+        new AuthorizationException(AuthorizationException.USERCONTEXT_ROLE_NOT_SET, Response.Status.BAD_REQUEST));
   }
 }

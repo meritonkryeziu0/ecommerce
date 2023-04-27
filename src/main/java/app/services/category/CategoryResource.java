@@ -1,10 +1,9 @@
 package app.services.category;
 
 import app.helpers.PaginatedResponse;
-import app.services.accounts.models.Roles;
 import app.services.authorization.ability.ActionAbility;
-import app.services.authorization.roles.Operation;
-import app.services.authorization.roles.Modules;
+import app.services.roles.Operation;
+import app.services.roles.Modules;
 import app.services.category.models.Category;
 import app.services.category.models.CreateCategory;
 import app.services.category.models.UpdateCategory;

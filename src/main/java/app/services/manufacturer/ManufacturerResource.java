@@ -1,10 +1,9 @@
 package app.services.manufacturer;
 
 import app.helpers.PaginatedResponse;
-import app.services.accounts.models.Roles;
 import app.services.authorization.ability.ActionAbility;
-import app.services.authorization.roles.Operation;
-import app.services.authorization.roles.Modules;
+import app.services.roles.Operation;
+import app.services.roles.Modules;
 import app.services.manufacturer.models.CreateManufacturer;
 import app.services.manufacturer.models.Manufacturer;
 import app.services.manufacturer.models.UpdateManufacturer;

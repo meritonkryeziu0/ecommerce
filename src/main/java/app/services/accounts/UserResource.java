@@ -4,8 +4,8 @@ import app.context.UserContext;
 import app.helpers.PaginatedResponse;
 import app.services.accounts.models.*;
 import app.services.authorization.ability.ActionAbility;
-import app.services.authorization.roles.Operation;
-import app.services.authorization.roles.Modules;
+import app.services.roles.Operation;
+import app.services.roles.Modules;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 

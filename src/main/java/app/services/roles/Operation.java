@@ -1,4 +1,4 @@
-package app.services.authorization.roles;
+package app.services.roles;
 
 public class Operation {
   public static final String CREATE = "CREATE";

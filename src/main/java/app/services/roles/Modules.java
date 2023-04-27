@@ -1,4 +1,4 @@
-package app.services.authorization.roles;
+package app.services.roles;
 
 public class Modules {
   public static final String Product = "Product";

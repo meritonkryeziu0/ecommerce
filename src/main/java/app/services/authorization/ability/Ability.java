@@ -5,13 +5,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Ability {
   private String id;
+  @NotBlank
   private String module;
+  @NotBlank
   private String action;
 
   public String constructId(ActionAbility actionAbility){
@@ -28,12 +32,17 @@ public class Ability {
     this.action = actionAbility.action();
   }
 
-  public static Ability fromShortId(String id){
+  public static Ability fromShortFormat(String id){
     String[] properties = id.split(":");
     Ability ability = new Ability();
     ability.setModule(properties[0]);
     ability.setAction(properties[1]);
     ability.setId(id);
     return ability;
+  }
+
+  public Ability fromLongFormat(){
+    this.id = this.constructId();
+    return this;
   }
 }
