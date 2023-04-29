@@ -1,14 +1,12 @@
 package app.services.auth;
 
-import app.services.accounts.models.CreateUser;
+import app.context.UserContext;
 import app.services.accounts.models.RegisterUser;
 import app.services.accounts.models.User;
 import app.services.auth.models.AuthResponse;
 import io.smallrye.mutiny.Uni;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
@@ -24,7 +22,7 @@ public class AuthenticationResource {
   @Inject
   AuthenticationService authenticationService;
   @Inject
-  JsonWebToken jwt;
+  UserContext userContext;
 
   @POST
   @Path("/register")
@@ -41,8 +39,7 @@ public class AuthenticationResource {
 
   @POST
   @Path("/logout")
-  @RolesAllowed({"Everyone"})
   public Uni<AuthResponse> logout() {
-    return authenticationService.userLogOut(jwt).map(token -> new AuthResponse());
+    return authenticationService.userLogOut(userContext).map(token -> new AuthResponse());
   }
 }
