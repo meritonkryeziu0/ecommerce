@@ -2,6 +2,7 @@ package app.services.auth;
 
 import app.services.accounts.UserService;
 import app.services.accounts.models.CreateUser;
+import app.services.accounts.models.RegisterUser;
 import app.services.accounts.models.User;
 import app.services.auth.exceptions.AuthenticationException;
 import app.services.auth.models.AuthResponse;
@@ -47,8 +48,8 @@ public class AuthenticationService {
         });
   }
 
-  public Uni<User> add(CreateUser createUser) {
-    return userService.add(createUser);
+  public Uni<User> register(RegisterUser registerUser) {
+    return userService.register(registerUser);
   }
 
   public Uni<AuthResponse> userLogOut(JsonWebToken jwt) {

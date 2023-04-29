@@ -1,6 +1,7 @@
 package app.services.auth;
 
 import app.services.accounts.models.CreateUser;
+import app.services.accounts.models.RegisterUser;
 import app.services.accounts.models.User;
 import app.services.auth.models.AuthResponse;
 import io.smallrye.mutiny.Uni;
@@ -27,8 +28,8 @@ public class AuthenticationResource {
 
   @POST
   @Path("/register")
-  public Uni<User> createUser(CreateUser createUser) {
-    return authenticationService.add(createUser);
+  public Uni<User> register(RegisterUser registerUser) {
+    return authenticationService.register(registerUser);
   }
 
   @POST

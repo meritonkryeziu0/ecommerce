@@ -7,9 +7,7 @@ import app.helpers.PaginationWrapper;
 import app.mongodb.MongoSessionWrapper;
 import app.mongodb.MongoUtils;
 import app.services.accounts.exceptions.UserException;
-import app.services.accounts.models.CreateUser;
-import app.services.accounts.models.UpdateUser;
-import app.services.accounts.models.User;
+import app.services.accounts.models.*;
 import app.services.auth.models.State;
 import app.services.shoppingcart.ShoppingCartService;
 import app.services.shoppingcart.models.CreateShoppingCart;
@@ -19,7 +17,6 @@ import app.shared.SuccessResponse;
 import app.utils.PasswordUtils;
 import app.utils.Utils;
 import io.smallrye.mutiny.Uni;
-import io.smallrye.mutiny.unchecked.Unchecked;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -61,16 +58,31 @@ public class UserService {
   public Uni<User> add(CreateUser createUser) {
     return PasswordUtils.validatePassword(createUser.getPassword())
         .replaceWith(validator.validate(createUser))
-        .flatMap(verifyUserEmailAndMapToUser())
-        .flatMap(user -> sessionWrapper.getSession().flatMap(
-            session ->
-                repository.add(session, user)
-                    .replaceWith(shoppingCartService.add(session, new CreateShoppingCart(user)))
-                    .replaceWith(wishlistService.add(session, new CreateWishlist(user)))
-                    .replaceWith(Uni.createFrom().publisher(session.commitTransaction()))
-                    .replaceWith(user)
-                    .eventually(session::close)
-        ));
+        .flatMap(verifyCreateUserEmail())
+        .map(validUser -> UserMapper.INSTANCE.from(createUser))
+        .flatMap(addUser());
+  }
+
+  public Uni<User> add(User user) {
+    return Uni.createFrom().item(user)
+        .flatMap(verifyUserEmail())
+        .flatMap(addUser());
+  }
+
+  private Function<User, Uni<? extends User>> addUser(){
+    return user -> sessionWrapper.getSession().flatMap(
+        session ->
+            repository.add(session, user)
+                .replaceWith(shoppingCartService.add(session, new CreateShoppingCart(user)))
+                .replaceWith(wishlistService.add(session, new CreateWishlist(user)))
+                .replaceWith(Uni.createFrom().publisher(session.commitTransaction()))
+                .replaceWith(user)
+                .eventually(session::close)
+    );
+  }
+
+  public Uni<User> register(RegisterUser registerUser) {
+    return add(UserMapper.INSTANCE.from(registerUser));
   }
 
   public Uni<User> update(String id, UpdateUser updateUser) {
@@ -88,15 +100,17 @@ public class UserService {
     return User.deleteById(id).replaceWith(SuccessResponse.toSuccessResponse());
   }
 
-  private Function<CreateUser, Uni<? extends User>> verifyUserEmailAndMapToUser() {
-    return createUser -> User.find(User.FIELD_EMAIL, createUser.getEmail()).firstResult().onItemOrFailure()
-        .transform(Unchecked.function((user, throwable) -> {
-          if (Utils.isNull(user)) {
-            return UserMapper.INSTANCE.from(createUser);
-          } else {
-            throw new UserException(UserException.USER_ALREADY_EXISTS, Response.Status.BAD_REQUEST);
-          }
-        }));
+  private Function<CreateUser, Uni<? extends CreateUser>> verifyCreateUserEmail() {
+    return createUser -> User.find(User.FIELD_EMAIL, createUser.getEmail()).firstResult()
+        .onItem().ifNull().failWith(new UserException(UserException.USER_ALREADY_EXISTS, Response.Status.BAD_REQUEST))
+        .map(panacheUser -> createUser);
+  }
+
+  private Function<User, Uni<? extends User>> verifyUserEmail() {
+    return user -> User.find(User.FIELD_EMAIL, user.getEmail()).firstResult()
+        .onItem().ifNotNull()
+        .failWith(new UserException(UserException.USER_ALREADY_EXISTS, Response.Status.BAD_REQUEST))
+        .map(panacheUser -> user);
   }
 
   private Function<Throwable, Throwable> transformToBadRequest(String message, Response.Status status) {
