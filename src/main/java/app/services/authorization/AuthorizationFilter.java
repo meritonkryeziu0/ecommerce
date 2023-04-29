@@ -7,6 +7,7 @@ import app.services.roles.RolesService;
 import io.quarkus.arc.Arc;
 import io.smallrye.jwt.auth.principal.DefaultJWTCallerPrincipal;
 import io.smallrye.mutiny.Uni;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.server.ServerRequestFilter;
 import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
@@ -14,9 +15,12 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Response;
 
+
 import static app.utils.Utils.notNull;
 
 public class AuthorizationFilter {
+  @Inject
+  Logger logger;
   @Inject
   RolesService rolesService;
   @ServerRequestFilter
@@ -28,8 +32,9 @@ public class AuthorizationFilter {
     }
     if(notNull(action) && requestContext.getSecurityContext().getUserPrincipal() instanceof DefaultJWTCallerPrincipal){
       UserContext userContext = Arc.container().instance(UserContext.class).get();
+      String userRole = userContext.getRole();
       Ability actionAbility = new Ability(action);
-      if(abilityNotAllowed(userContext, actionAbility)){
+      if(!userRoleMatchesAction(userRole, actionAbility)){
         return Uni.createFrom()
             .failure(new AuthorizationException(
                 AuthorizationException.FORBIDDEN, Response.Status.FORBIDDEN));
@@ -38,10 +43,10 @@ public class AuthorizationFilter {
     return Uni.createFrom().voidItem();
   }
 
-  private boolean abilityNotAllowed(UserContext userContext, Ability actionAbility){
-    if(notNull(rolesService.getAbilities(userContext.getRole()))){
-      return rolesService.getAbilities(userContext.getRole())
-          .stream().noneMatch(roleAbility -> roleAbility.getId().equals(actionAbility.constructId()));
+  private boolean userRoleMatchesAction(String role, Ability actionAbility){
+    if(notNull(role)){
+      return rolesService.getAbilities(role)
+          .stream().anyMatch(roleAbility -> roleAbility.getId().equals(actionAbility.constructId()));
     }
     return false;
   }

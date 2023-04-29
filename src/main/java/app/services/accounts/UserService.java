@@ -20,7 +20,6 @@ import app.utils.PasswordUtils;
 import app.utils.Utils;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
-import org.bson.types.ObjectId;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -48,9 +47,7 @@ public class UserService {
   }
 
   public Uni<User> getById(String id) {
-//    return User.findById(id)
-    return User.find(User.FIELD_ID, id).firstResult()
-//    return repository.getById(id)
+    return User.findById(id)
         .onItem().ifNull().failWith(new UserException(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST))
         .map(Utils.mapTo(User.class));
   }

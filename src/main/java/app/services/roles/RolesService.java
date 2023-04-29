@@ -38,7 +38,7 @@ public class RolesService {
     return null;
   }
   void onStart(@Observes StartupEvent ev) {
-    logger.info("Intializing roles");
+    logger.info("Intializing roles...");
     RoleWithAbilities.listAll().subscribe()
         .with(reactivePanacheMongoEntityBase -> {
           this.roleWithAbilities = reactivePanacheMongoEntityBase.stream()

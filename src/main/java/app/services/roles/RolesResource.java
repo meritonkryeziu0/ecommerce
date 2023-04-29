@@ -1,11 +1,8 @@
 package app.services.roles;
 
-import app.services.authorization.ability.Ability;
 import app.services.authorization.ability.RoleWithAbilities;
-import io.smallrye.common.constraint.NotNull;
 import io.smallrye.mutiny.Uni;
 
-import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -24,7 +21,6 @@ public class RolesResource {
     return RoleWithAbilities.listAll();
   }
 
-  //todo:add post to add roles:
   @POST
   public Uni<RoleWithAbilities> addAbilityToRole(@Valid RoleWithAbilityWrapper wrapper){
     return rolesService.addAbilityToRole(wrapper.getRole(), wrapper.getAbilities());
