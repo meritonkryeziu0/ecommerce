@@ -1,12 +1,14 @@
 package app.services.accounts;
 
+import app.context.UserContext;
 import app.helpers.PaginatedResponse;
 import app.services.accounts.models.*;
+import app.services.authorization.ability.ActionAbility;
+import app.services.roles.Actions;
+import app.services.roles.Modules;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -19,44 +21,44 @@ public class UserResource {
   UserService service;
 
   @Inject
-  JsonWebToken token;
+  UserContext userContext;
 
   @GET
-  @RolesAllowed({Roles.Fields.Admin})
+  @ActionAbility(action = Actions.LIST, module = Modules.User)
   public Uni<PaginatedResponse<User>> getList(@BeanParam UserFilterWrapper wrapper) {
     return service.getList(wrapper);
   }
 
   @GET
   @Path("/{id}")
-//  @RolesAllowed({Roles.Fields.Everyone})
+  @ActionAbility(action = Actions.READ, module = Modules.User)
   public Uni<User> getById(@PathParam("id") String id) {
     return service.getById(id);
   }
 
   @POST
-  @RolesAllowed({Roles.Fields.Admin})
+  @ActionAbility(action = Actions.CREATE, module = Modules.User)
   public Uni<User> add(CreateUser createUser) {
     return service.add(createUser);
   }
 
   @PUT
   @Path("/{id}")
-//  @RolesAllowed({Roles.Fields.Admin})
+  @ActionAbility(action = Actions.UPDATE, module = Modules.User)
   public Uni<User> update(@PathParam("id") String id, UpdateUser updateUser) {
     return service.update(id, updateUser);
   }
 
   //Users can update themselves
   @PUT
-  @RolesAllowed({Roles.Fields.Everyone})
+  @ActionAbility(action = Actions.SELF_UPDATE, module = Modules.User)
   public Uni<User> update(UpdateUser updateUser) {
-    return service.update(token.getClaim("userId"), updateUser);
+    return service.update(userContext.getUserId(), updateUser);
   }
 
   @DELETE
   @Path("/{id}")
-  @RolesAllowed({Roles.Fields.Admin})
+  @ActionAbility(action = Actions.DELETE, module = Modules.User)
   public Uni<SuccessResponse> delete(@PathParam("id") String id) {
     return service.delete(id);
   }
