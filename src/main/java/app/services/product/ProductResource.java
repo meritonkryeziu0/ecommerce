@@ -2,7 +2,7 @@ package app.services.product;
 
 import app.helpers.PaginatedResponse;
 import app.services.authorization.ability.ActionAbility;
-import app.services.roles.Operation;
+import app.services.roles.Actions;
 import app.services.roles.Modules;
 import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
@@ -42,14 +42,14 @@ public class ProductResource {
   }
 
   @POST
-  @ActionAbility(action = Operation.CREATE, module = Modules.Product)
+  @ActionAbility(action = Actions.CREATE, module = Modules.Product)
   public Uni<Product> add(CreateProduct createProduct) {
     return service.add(createProduct);
   }
 
   @PUT
   @Path("/{id}")
-  @ActionAbility(action = Operation.UPDATE, module = Modules.Product)
+  @ActionAbility(action = Actions.UPDATE, module = Modules.Product)
   public Uni<Product> update(@PathParam("id") String id, UpdateProduct updateProduct) {
     return service.update(id, updateProduct);
 
@@ -57,7 +57,7 @@ public class ProductResource {
 
   @DELETE
   @Path("/{id}")
-  @ActionAbility(action = Operation.DELETE, module = Modules.Product)
+  @ActionAbility(action = Actions.DELETE, module = Modules.Product)
   public Uni<Void> delete(@PathParam("id") String id) {
     return service.delete(id);
   }

@@ -8,4 +8,5 @@ public class Modules {
   public static final String Manufacturer = "Manufacturer";
   public static final String User = "User";
   public static final String Shoppingcart = "Shoppingcart";
+  public static final String Roles = "Roles";
 }

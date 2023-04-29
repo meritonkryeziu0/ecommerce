@@ -4,7 +4,7 @@ import app.context.UserContext;
 import app.helpers.PaginatedResponse;
 import app.services.accounts.models.*;
 import app.services.authorization.ability.ActionAbility;
-import app.services.roles.Operation;
+import app.services.roles.Actions;
 import app.services.roles.Modules;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
@@ -24,41 +24,41 @@ public class UserResource {
   UserContext userContext;
 
   @GET
-  @ActionAbility(action = Operation.LIST, module = Modules.User)
+  @ActionAbility(action = Actions.LIST, module = Modules.User)
   public Uni<PaginatedResponse<User>> getList(@BeanParam UserFilterWrapper wrapper) {
     return service.getList(wrapper);
   }
 
   @GET
   @Path("/{id}")
-  @ActionAbility(action = Operation.READ, module = Modules.User)
+  @ActionAbility(action = Actions.READ, module = Modules.User)
   public Uni<User> getById(@PathParam("id") String id) {
     return service.getById(id);
   }
 
   @POST
-  @ActionAbility(action = Operation.CREATE, module = Modules.User)
+  @ActionAbility(action = Actions.CREATE, module = Modules.User)
   public Uni<User> add(CreateUser createUser) {
     return service.add(createUser);
   }
 
   @PUT
   @Path("/{id}")
-  @ActionAbility(action = Operation.UPDATE, module = Modules.User)
+  @ActionAbility(action = Actions.UPDATE, module = Modules.User)
   public Uni<User> update(@PathParam("id") String id, UpdateUser updateUser) {
     return service.update(id, updateUser);
   }
 
   //Users can update themselves
   @PUT
-  @ActionAbility(action = Operation.SELF_UPDATE, module = Modules.User)
+  @ActionAbility(action = Actions.SELF_UPDATE, module = Modules.User)
   public Uni<User> update(UpdateUser updateUser) {
     return service.update(userContext.getUserId(), updateUser);
   }
 
   @DELETE
   @Path("/{id}")
-  @ActionAbility(action = Operation.DELETE, module = Modules.User)
+  @ActionAbility(action = Actions.DELETE, module = Modules.User)
   public Uni<SuccessResponse> delete(@PathParam("id") String id) {
     return service.delete(id);
   }
