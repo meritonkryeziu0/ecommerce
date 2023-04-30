@@ -26,10 +26,6 @@ public class UserRepository {
   }
 
 
-  public Uni<User> getWithEmail(String email) {
-    return getCollection().find(Filters.eq(User.FIELD_EMAIL, email)).toUni();
-  }
-
   public Uni<User> add(ClientSession session, User user) {
     return MongoUtils.addEntity(session, getCollection(), user);
   }

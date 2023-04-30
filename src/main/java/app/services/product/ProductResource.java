@@ -1,18 +1,18 @@
 package app.services.product;
 
 import app.helpers.PaginatedResponse;
-import app.services.accounts.models.Roles;
+import app.services.authorization.ability.ActionAbility;
+import app.services.roles.Actions;
+import app.services.roles.Modules;
 import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
 import app.services.product.models.UpdateProduct;
 import io.smallrye.mutiny.Uni;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 @Path("/products")
 @Produces(MediaType.APPLICATION_JSON)
@@ -22,6 +22,13 @@ public class ProductResource {
   ProductService service;
 
   @GET
+//  @ActionAbility(
+//      role = {
+//          Roles.USER,
+//          Roles.ADMIN
+//      },
+//      action = Operation.LIST, module = Modules.Product)
+//  @ActionAbility(action = Operation.LIST, module = Modules.Product)
   @PermitAll
   public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
     return service.getList(wrapper);
@@ -35,14 +42,14 @@ public class ProductResource {
   }
 
   @POST
-//  @RolesAllowed({Roles.Fields.Admin})
+  @ActionAbility(action = Actions.CREATE, module = Modules.Product)
   public Uni<Product> add(CreateProduct createProduct) {
     return service.add(createProduct);
   }
 
   @PUT
   @Path("/{id}")
-  @RolesAllowed({Roles.Fields.Admin})
+  @ActionAbility(action = Actions.UPDATE, module = Modules.Product)
   public Uni<Product> update(@PathParam("id") String id, UpdateProduct updateProduct) {
     return service.update(id, updateProduct);
 
@@ -50,7 +57,7 @@ public class ProductResource {
 
   @DELETE
   @Path("/{id}")
-  @RolesAllowed({Roles.Fields.Admin})
+  @ActionAbility(action = Actions.DELETE, module = Modules.Product)
   public Uni<Void> delete(@PathParam("id") String id) {
     return service.delete(id);
   }
