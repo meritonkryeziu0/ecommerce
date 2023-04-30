@@ -2,10 +2,10 @@ package app.services.seller;
 
 import app.context.UserContext;
 import app.services.authorization.ability.ActionAbility;
-import app.services.product.ProductService;
 import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
 import app.services.product.models.UpdateProduct;
+import app.services.promotion.PromotionService;
 import app.services.roles.models.Actions;
 import app.services.roles.models.Modules;
 import app.shared.SuccessResponse;
@@ -21,10 +21,10 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class SellerProductResource {
   @Inject
-  ProductService productService;
+  SellerService sellerService;
 
   @Inject
-  SellerService sellerService;
+  PromotionService promotionService;
 
   @Inject
   UserContext userContext;
@@ -43,6 +43,13 @@ public class SellerProductResource {
     return sellerService.getSellerProducts(sellerId);
   }
 
+  @GET
+  @Path("{sellerId}/promoted-products")
+  @ActionAbility(action = Actions.LIST, module = Modules.Promotion)
+  public Uni<List<Product>> getPromotedProducts(@PathParam("sellerId") String sellerId) {
+    return promotionService.getPromotedProducts(sellerId);
+  }
+
   @POST
   @Path("/products")
   @ActionAbility(action = Actions.CREATE, module = Modules.Product)
@@ -56,6 +63,7 @@ public class SellerProductResource {
   public Uni<SuccessResponse> update(@PathParam("productId") String productId, UpdateProduct updateProduct) {
     return sellerService.updateProduct(userContext, productId, updateProduct);
   }
+
 
   @DELETE
   @Path("/products/{productId}")

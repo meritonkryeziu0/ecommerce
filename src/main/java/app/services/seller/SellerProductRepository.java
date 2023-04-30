@@ -13,8 +13,9 @@ import org.bson.Document;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.List;
+
+import static app.common.CommonMethods.sellerProducts;
 
 @ApplicationScoped
 public class SellerProductRepository {
@@ -26,17 +27,7 @@ public class SellerProductRepository {
   }
 
   public Uni<List<Product>> getSellersProducts(String sellerId){
-    List<Document> pipeline = Arrays.asList(new Document("$match",
-            new Document(SellerProduct.FIELD_USER_REFERENCE_ID, sellerId)),
-        new Document("$lookup",
-            new Document("from", "products")
-                .append("localField", "productReferenceId")
-                .append("foreignField", "_id")
-                .append("as", "product")),
-        new Document("$unwind",
-            new Document("path", "$product")),
-        new Document("$replaceRoot",
-            new Document("newRoot", "$product")));
+    List<Document> pipeline = sellerProducts(sellerId);
     return getCollection().aggregate(pipeline, Product.class).collect().asList();
   }
 

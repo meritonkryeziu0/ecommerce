@@ -3,6 +3,8 @@ package app.shared;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.function.Function;
+
 @Getter
 @Setter
 public class SuccessResponse {
@@ -17,6 +19,10 @@ public class SuccessResponse {
 
   public static SuccessResponse toSuccessResponse() {
     return new SuccessResponse("Success", 200);
+  }
+
+  public static <T> Function<T, SuccessResponse> success() {
+    return item -> new SuccessResponse("Success", 200);
   }
 
 }
