@@ -27,9 +27,9 @@ public class RolesRepository {
 
   public Uni<RoleWithAbilities> addAbilityToRole(String role, List<Ability> abilities){
     return getCollection().findOneAndUpdate(
-            Filters.eq(RoleWithAbilities.FIELD_ROLE, role),
-            Updates.addEachToSet(RoleWithAbilities.FIELD_ABILITIES, abilities),
-            new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
+        Filters.eq(RoleWithAbilities.FIELD_ROLE, role),
+        Updates.addEachToSet(RoleWithAbilities.FIELD_ABILITIES, abilities),
+        new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
     );
   }
 

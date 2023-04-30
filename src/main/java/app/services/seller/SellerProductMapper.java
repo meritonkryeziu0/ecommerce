@@ -10,9 +10,9 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface SellerProductMapper {
-    SellerProductMapper INSTANCE = Mappers.getMapper(SellerProductMapper.class);
+  SellerProductMapper INSTANCE = Mappers.getMapper(SellerProductMapper.class);
 
-    @Mapping(target = "id", ignore = true)
-    SellerProduct from(UserReference userReference, ProductReference productReference);
+  @Mapping(target = "id", ignore = true)
+  SellerProduct from(UserReference userReference, ProductReference productReference);
 
 }

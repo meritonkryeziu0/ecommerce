@@ -20,41 +20,41 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class SellerResource {
-    @Inject
-    SellerService service;
-    @Inject
-    UserContext userContext;
+  @Inject
+  SellerService service;
+  @Inject
+  UserContext userContext;
 
-    @GET
-    @ActionAbility(action = Actions.LIST, module = Modules.Seller)
-    public Uni<PaginatedResponse<User>> getList(@BeanParam UserFilterWrapper wrapper) {
-        return service.getList(wrapper);
-    }
+  @GET
+  @ActionAbility(action = Actions.LIST, module = Modules.Seller)
+  public Uni<PaginatedResponse<User>> getList(@BeanParam UserFilterWrapper wrapper) {
+    return service.getList(wrapper);
+  }
 
-    @POST
-    @ActionAbility(action = Actions.CREATE, module = Modules.User)
-    public Uni<User> add(CreateUser createUser) {
-        return service.addSeller(createUser);
-    }
+  @POST
+  @ActionAbility(action = Actions.CREATE, module = Modules.User)
+  public Uni<User> add(CreateUser createUser) {
+    return service.addSeller(createUser);
+  }
 
-    @PUT
-    @Path("/{id}")
-    @ActionAbility(action = Actions.UPDATE, module = Modules.User)
-    public Uni<User> update(@PathParam("id") String id, UpdateUser updateUser) {
-        return service.update(id, updateUser);
-    }
+  @PUT
+  @Path("/{id}")
+  @ActionAbility(action = Actions.UPDATE, module = Modules.User)
+  public Uni<User> update(@PathParam("id") String id, UpdateUser updateUser) {
+    return service.update(id, updateUser);
+  }
 
-    //Sellers can update themselves
-    @PUT
-    @ActionAbility(action = Actions.SELF_UPDATE, module = Modules.User)
-    public Uni<User> update(UpdateUser updateUser) {
-        return service.update(userContext.getId(), updateUser);
-    }
+  //Sellers can update themselves
+  @PUT
+  @ActionAbility(action = Actions.SELF_UPDATE, module = Modules.User)
+  public Uni<User> update(UpdateUser updateUser) {
+    return service.update(userContext.getId(), updateUser);
+  }
 
-    @DELETE
-    @Path("/{id}")
-    @ActionAbility(action = Actions.DELETE, module = Modules.User)
-    public Uni<SuccessResponse> delete(@PathParam("id") String id) {
-        return service.delete(id);
-    }
+  @DELETE
+  @Path("/{id}")
+  @ActionAbility(action = Actions.DELETE, module = Modules.User)
+  public Uni<SuccessResponse> delete(@PathParam("id") String id) {
+    return service.delete(id);
+  }
 }

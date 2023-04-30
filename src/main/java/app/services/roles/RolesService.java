@@ -45,21 +45,21 @@ public class RolesService {
   void onStart(@Observes StartupEvent ev) {
     logger.info("Intializing roles...");
     RoleWithAbilities.listAll()
-            .subscribe()
-            .with(reactivePanacheMongoEntityBase -> {
-              this.roleWithAbilities = reactivePanacheMongoEntityBase.stream()
-                      .map(Utils.mapTo(RoleWithAbilities.class))
-                      .collect(Collectors.toMap(RoleWithAbilities::getRole, RoleWithAbilities::getAbilities));
-            });
+        .subscribe()
+        .with(reactivePanacheMongoEntityBase -> {
+          this.roleWithAbilities = reactivePanacheMongoEntityBase.stream()
+                  .map(Utils.mapTo(RoleWithAbilities.class))
+                  .collect(Collectors.toMap(RoleWithAbilities::getRole, RoleWithAbilities::getAbilities));
+        });
   }
 
   public Uni<RoleWithAbilities> addRoleWithAbility(@NotNull String role, @Valid List<Ability> abilities){
     return validator.validate(abilities)
-            .flatMap(validAbilities -> {
-              List<Ability> collect = abilities.stream().map(Ability::fromLongFormat).collect(Collectors.toList());
-              RoleWithAbilities roleWithAbilities = RoleWithAbilities.construct(role, collect);
-              return MongoUtils.addEntity(roleWithAbilities);
-            });
+        .flatMap(validAbilities -> {
+          List<Ability> collect = abilities.stream().map(Ability::fromLongFormat).collect(Collectors.toList());
+          RoleWithAbilities roleWithAbilities = RoleWithAbilities.construct(role, collect);
+          return MongoUtils.addEntity(roleWithAbilities);
+        });
   }
 
   public Uni<RoleWithAbilities> addAbilityToRole(@NotNull String role, @Valid List<Ability> abilities){

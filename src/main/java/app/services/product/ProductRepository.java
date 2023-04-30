@@ -38,16 +38,16 @@ public class ProductRepository {
 
   public Uni<Void> increaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
     List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
-            Filters.eq(Product.FIELD_ID, productReference.id),
-            Updates.inc(Product.FIELD_STOCK_QUANTITY, productReference.getQuantity()))).collect(Collectors.toList());
+        Filters.eq(Product.FIELD_ID, productReference.id),
+        Updates.inc(Product.FIELD_STOCK_QUANTITY, productReference.getQuantity()))).collect(Collectors.toList());
 
     return getCollection().bulkWrite(session, updates).replaceWithVoid();
   }
 
   public Uni<Void> decreaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
     List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
-            Filters.eq(Product.FIELD_ID, productReference.id),
-            Updates.inc(Product.FIELD_STOCK_QUANTITY, -productReference.getQuantity()))).collect(Collectors.toList());
+        Filters.eq(Product.FIELD_ID, productReference.id),
+        Updates.inc(Product.FIELD_STOCK_QUANTITY, -productReference.getQuantity()))).collect(Collectors.toList());
 
     return getCollection().bulkWrite(session, updates).replaceWithVoid();
   }
