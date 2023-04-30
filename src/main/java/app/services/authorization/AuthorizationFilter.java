@@ -16,6 +16,7 @@ import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Response;
 
 
+import static app.utils.Utils.notBlank;
 import static app.utils.Utils.notNull;
 
 public class AuthorizationFilter {
@@ -44,7 +45,7 @@ public class AuthorizationFilter {
   }
 
   private boolean userRoleMatchesAction(String role, Ability actionAbility){
-    if(notNull(role)){
+    if(notNull(role) && notBlank(rolesService.getAbilities(role))){
       return rolesService.getAbilities(role)
           .stream().anyMatch(roleAbility -> roleAbility.getId().equals(actionAbility.constructId()));
     }

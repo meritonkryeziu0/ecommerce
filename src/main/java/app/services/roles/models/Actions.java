@@ -1,4 +1,4 @@
-package app.services.roles;
+package app.services.roles.models;
 
 public class Actions {
   public static final String CREATE = "CREATE";

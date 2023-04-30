@@ -9,4 +9,6 @@ public class MongoCollections {
   public static final String WISHLIST_COLLECTION = "wishlists";
   public static final String CATEGORY_COLLECTION = "categories";
   public static final String ROLES_COLLECTION = "roles";
+  public static final String SELLER_PRODUCTS_COLLECTION = "seller-products";
+  public static final String PROMOTED_PRODUCTS_COLLECTION = "promoted-products";
 }

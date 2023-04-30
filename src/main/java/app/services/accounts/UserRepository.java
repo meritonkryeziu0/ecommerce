@@ -25,7 +25,6 @@ public class UserRepository {
     return mongoClient.getCollection(MongoCollections.USERS_COLLECTION, User.class);
   }
 
-
   public Uni<User> add(ClientSession session, User user) {
     return MongoUtils.addEntity(session, getCollection(), user);
   }

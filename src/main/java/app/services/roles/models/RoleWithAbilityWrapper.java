@@ -1,4 +1,4 @@
-package app.services.roles;
+package app.services.roles.models;
 
 import app.services.authorization.ability.Ability;
 import io.smallrye.common.constraint.NotNull;

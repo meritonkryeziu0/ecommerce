@@ -2,6 +2,7 @@ package app.services.product;
 
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
+import app.mongodb.MongoUtils;
 import app.services.category.models.Category;
 import app.services.manufacturer.models.ManufacturerReference;
 import app.services.product.models.Product;
@@ -80,7 +81,16 @@ public class ProductRepository {
             new Document(PARENT_CATEGORY_NAME, mainCategory)))).collect().asList();
   }
 
-  public Uni<Product> delete(String id) {
-    return getCollection().findOneAndDelete(Filters.eq(Product.FIELD_ID, id));
+  public Uni<Product> add(ClientSession session, Product product){
+    return MongoUtils.addEntity(session, getCollection(), product);
+  }
+
+  public Uni<Product> update(ClientSession session, Product product){
+    return MongoUtils.updateEntity(session, getCollection(), Filters.eq(Product.FIELD_ID, product.getId()), product);
+  }
+
+  public Uni<Void> delete(ClientSession session, String id) {
+    return getCollection().findOneAndDelete(session, Filters.eq(Product.FIELD_ID, id))
+            .replaceWithVoid();
   }
 }

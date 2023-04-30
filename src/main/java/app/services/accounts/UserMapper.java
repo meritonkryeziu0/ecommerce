@@ -1,9 +1,6 @@
 package app.services.accounts;
 
-import app.services.accounts.models.CreateUser;
-import app.services.accounts.models.RegisterUser;
-import app.services.accounts.models.UpdateUser;
-import app.services.accounts.models.User;
+import app.services.accounts.models.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -24,6 +21,7 @@ public interface UserMapper {
   @Mapping(target = "hashedPassword", expression = "java(app.utils.PasswordUtils.hashPassword(registerUser.getPassword(), app.utils.PasswordUtils.getSalt()))")
   User from(RegisterUser registerUser);
 
+  UserReference toUserReference(User user);
 
   static Function<User, User> from(UpdateUser updateUser) {
     return user -> {
