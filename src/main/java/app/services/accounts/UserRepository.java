@@ -25,14 +25,13 @@ public class UserRepository {
     return mongoClient.getCollection(MongoCollections.USERS_COLLECTION, User.class);
   }
 
-
   public Uni<User> add(ClientSession session, User user) {
     return MongoUtils.addEntity(session, getCollection(), user);
   }
 
   public Uni<User> updateState(String id, State state) {
     return getCollection().findOneAndUpdate(Filters.eq(User.FIELD_ID, id),
-        Updates.set(User.FIELD_STATE, state));
+            Updates.set(User.FIELD_STATE, state));
   }
 
   public Uni<DeleteResult> delete(String id) {

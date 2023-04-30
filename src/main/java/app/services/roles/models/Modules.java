@@ -1,4 +1,4 @@
-package app.services.roles;
+package app.services.roles.models;
 
 public class Modules {
   public static final String Product = "Product";
@@ -9,4 +9,5 @@ public class Modules {
   public static final String User = "User";
   public static final String Shoppingcart = "Shoppingcart";
   public static final String Roles = "Roles";
+  public static final String Seller = "Seller";
 }

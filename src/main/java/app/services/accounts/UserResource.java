@@ -4,8 +4,8 @@ import app.context.UserContext;
 import app.helpers.PaginatedResponse;
 import app.services.accounts.models.*;
 import app.services.authorization.ability.ActionAbility;
-import app.services.roles.Actions;
-import app.services.roles.Modules;
+import app.services.roles.models.Actions;
+import app.services.roles.models.Modules;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 
@@ -53,7 +53,7 @@ public class UserResource {
   @PUT
   @ActionAbility(action = Actions.SELF_UPDATE, module = Modules.User)
   public Uni<User> update(UpdateUser updateUser) {
-    return service.update(userContext.getUserId(), updateUser);
+    return service.update(userContext.getId(), updateUser);
   }
 
   @DELETE

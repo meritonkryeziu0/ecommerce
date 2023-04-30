@@ -2,6 +2,7 @@ package app.services.product;
 
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
+import app.mongodb.MongoUtils;
 import app.services.manufacturer.models.ManufacturerReference;
 import app.services.product.models.Product;
 import app.services.product.models.ProductReference;
@@ -37,21 +38,30 @@ public class ProductRepository {
 
   public Uni<Void> increaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
     List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
-        Filters.eq(Product.FIELD_ID, productReference.id),
-        Updates.inc(Product.FIELD_STOCK_QUANTITY, productReference.getQuantity()))).collect(Collectors.toList());
+            Filters.eq(Product.FIELD_ID, productReference.id),
+            Updates.inc(Product.FIELD_STOCK_QUANTITY, productReference.getQuantity()))).collect(Collectors.toList());
 
     return getCollection().bulkWrite(session, updates).replaceWithVoid();
   }
 
   public Uni<Void> decreaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
     List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
-        Filters.eq(Product.FIELD_ID, productReference.id),
-        Updates.inc(Product.FIELD_STOCK_QUANTITY, -productReference.getQuantity()))).collect(Collectors.toList());
+            Filters.eq(Product.FIELD_ID, productReference.id),
+            Updates.inc(Product.FIELD_STOCK_QUANTITY, -productReference.getQuantity()))).collect(Collectors.toList());
 
     return getCollection().bulkWrite(session, updates).replaceWithVoid();
   }
 
-  public Uni<Product> delete(String id) {
-    return getCollection().findOneAndDelete(Filters.eq(Product.FIELD_ID, id));
+  public Uni<Product> add(ClientSession session, Product product){
+    return MongoUtils.addEntity(session, getCollection(), product);
+  }
+
+  public Uni<Product> update(ClientSession session, Product product){
+    return MongoUtils.updateEntity(session, getCollection(), Filters.eq(Product.FIELD_ID, product.getId()), product);
+  }
+
+  public Uni<Void> delete(ClientSession session, String id) {
+    return getCollection().findOneAndDelete(session, Filters.eq(Product.FIELD_ID, id))
+            .replaceWithVoid();
   }
 }
