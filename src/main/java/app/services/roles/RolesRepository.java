@@ -3,7 +3,7 @@ package app.services.roles;
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
 import app.services.authorization.ability.Ability;
-import app.services.authorization.ability.RoleWithAbilities;
+import app.services.roles.models.RoleWithAbilities;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -30,7 +30,7 @@ public class RolesRepository {
         Filters.eq(RoleWithAbilities.FIELD_ROLE, role),
         Updates.addEachToSet(RoleWithAbilities.FIELD_ABILITIES, abilities),
         new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
-        );
+    );
   }
 
 }

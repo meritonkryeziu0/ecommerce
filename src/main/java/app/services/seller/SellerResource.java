@@ -1,8 +1,11 @@
-package app.services.accounts;
+package app.services.seller;
 
 import app.context.UserContext;
 import app.helpers.PaginatedResponse;
-import app.services.accounts.models.*;
+import app.services.accounts.models.CreateUser;
+import app.services.accounts.models.UpdateUser;
+import app.services.accounts.models.User;
+import app.services.accounts.models.UserFilterWrapper;
 import app.services.authorization.ability.ActionAbility;
 import app.services.roles.models.Actions;
 import app.services.roles.models.Modules;
@@ -13,33 +16,25 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-@Path("/user")
+@Path("/seller")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class UserResource {
+public class SellerResource {
   @Inject
-  UserService service;
-
+  SellerService service;
   @Inject
   UserContext userContext;
 
   @GET
-  @ActionAbility(action = Actions.LIST, module = Modules.User)
+  @ActionAbility(action = Actions.LIST, module = Modules.Seller)
   public Uni<PaginatedResponse<User>> getList(@BeanParam UserFilterWrapper wrapper) {
     return service.getList(wrapper);
-  }
-
-  @GET
-  @Path("/{id}")
-  @ActionAbility(action = Actions.READ, module = Modules.User)
-  public Uni<User> getById(@PathParam("id") String id) {
-    return service.getById(id);
   }
 
   @POST
   @ActionAbility(action = Actions.CREATE, module = Modules.User)
   public Uni<User> add(CreateUser createUser) {
-    return service.add(createUser);
+    return service.addSeller(createUser);
   }
 
   @PUT
@@ -49,7 +44,7 @@ public class UserResource {
     return service.update(id, updateUser);
   }
 
-  //Users can update themselves
+  //Sellers can update themselves
   @PUT
   @ActionAbility(action = Actions.SELF_UPDATE, module = Modules.User)
   public Uni<User> update(UpdateUser updateUser) {
