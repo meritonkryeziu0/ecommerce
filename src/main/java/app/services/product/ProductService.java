@@ -28,8 +28,6 @@ public class ProductService {
   @Inject
   CustomValidator validator;
   @Inject
-  ProductRepository productRepository;
-  @Inject
   ManufacturerService manufactureService;
   @Inject
   MongoCollectionWrapper mongoCollectionWrapper;
@@ -75,7 +73,7 @@ public class ProductService {
     return validator.validate(createProduct)
         .replaceWith(manufactureService.getById(createProduct.getManufacturer().getId()))
         .replaceWith(ProductMapper.INSTANCE.from(createProduct))
-        .call(product -> productRepository.add(session, product));
+        .call(product -> repository.add(session, product));
   }
 
   public Uni<Product> update(String id, UpdateProduct updateProduct) {
@@ -91,7 +89,7 @@ public class ProductService {
         .replaceWith(this.getById(id))
         .onFailure().transform(transformToBadRequest(ProductException.PRODUCT_NOT_FOUND))
         .map(ProductMapper.from(updateProduct))
-        .call(product -> productRepository.update(session, product));
+        .call(product -> repository.update(session, product));
   }
 
   public Uni<Void> delete(String id) {
@@ -99,7 +97,7 @@ public class ProductService {
   }
 
   public Uni<Void> delete(ClientSession session, String id) {
-    return productRepository.delete(session, id);
+    return repository.delete(session, id);
   }
 
   private Function<Throwable, Throwable> transformToBadRequest(String message) {
