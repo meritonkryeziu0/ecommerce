@@ -23,16 +23,16 @@ public class MongoUtils {
 
     Uni<Long> count = collection.countDocuments(paginationFilter.toBson());
     Uni<List<T>> res = collection.aggregate(Arrays.asList(new Document("$match", paginationFilter.toBson()),
-            new Document("$match", new Document(paginationFilter.getQ() != null
-                    ? new Document(Product.FIELD_NAME, new Document("$regex", paginationFilter.getQ()))
-                    : new Document(Product.FIELD_NAME, new Document("$regex", "")))),
-            new Document("$sort", (paginationFilter.getSortAscending() != null)
-                    ? new Document(paginationFilter.getSortAscending(), 1L)
-                    : ((paginationFilter.getSortDescending() != null)
-                    ? new Document(paginationFilter.getSortDescending(), -1L)
-                    : new Document("_id", 1L))),
-            new Document("$skip", (paginationFilter.getPage() - 1) * paginationFilter.getLimit()),
-            new Document("$limit", paginationFilter.getLimit()))).collect().asList();
+        new Document("$match", new Document(paginationFilter.getQ() != null
+            ? new Document(Product.FIELD_NAME, new Document("$regex", paginationFilter.getQ()))
+            : new Document(Product.FIELD_NAME, new Document("$regex", "")))),
+        new Document("$sort", (paginationFilter.getSortAscending() != null)
+            ? new Document(paginationFilter.getSortAscending(), 1L)
+            : ((paginationFilter.getSortDescending() != null)
+            ? new Document(paginationFilter.getSortDescending(), -1L)
+            : new Document("_id", 1L))),
+        new Document("$skip", (paginationFilter.getPage() - 1) * paginationFilter.getLimit()),
+        new Document("$limit", paginationFilter.getLimit()))).collect().asList();
 
     return Uni.combine().all().unis(count, res).combinedWith((countValue, data) -> {
       page.setTotalEntities(countValue.intValue());

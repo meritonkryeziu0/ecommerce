@@ -79,8 +79,8 @@ public class SellerService {
   }
 
   public Uni<SellerProduct> addProduct(ClientSession session,
-                                       UserReference userReference,
-                                       ProductReference productReference) {
+      UserReference userReference,
+      ProductReference productReference) {
     return validator.validate(userReference)
         .map(ignore -> SellerProductMapper.INSTANCE.from(userReference, productReference))
         .call(sellerProduct ->  sellerProductRepository.add(session, sellerProduct));
@@ -105,8 +105,8 @@ public class SellerService {
   }
 
   public Uni<SellerProduct> updateProduct(ClientSession session,
-                                          UserReference userReference,
-                                          ProductReference productReference){
+      UserReference userReference,
+      ProductReference productReference){
     return validator.validate(userReference)
         .map(ignore -> SellerProductMapper.INSTANCE.from(userReference, productReference))
         .call(sellerProduct -> sellerProductRepository.update(session, sellerProduct));

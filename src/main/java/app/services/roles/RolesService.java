@@ -46,11 +46,10 @@ public class RolesService {
     logger.info("Intializing roles...");
     RoleWithAbilities.listAll()
         .subscribe()
-        .with(reactivePanacheMongoEntityBase -> {
-          this.roleWithAbilities = reactivePanacheMongoEntityBase.stream()
-                  .map(Utils.mapTo(RoleWithAbilities.class))
-                  .collect(Collectors.toMap(RoleWithAbilities::getRole, RoleWithAbilities::getAbilities));
-        });
+        .with(reactivePanacheMongoEntityBase ->
+            this.roleWithAbilities = reactivePanacheMongoEntityBase.stream()
+            .map(Utils.mapTo(RoleWithAbilities.class))
+            .collect(Collectors.toMap(RoleWithAbilities::getRole, RoleWithAbilities::getAbilities)));
   }
 
   public Uni<RoleWithAbilities> addRoleWithAbility(@NotNull String role, @Valid List<Ability> abilities){
