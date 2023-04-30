@@ -43,7 +43,15 @@ public class CategoryService {
 
   public Uni<Category> add(CreateCategory createCategory) {
     return validator.validate(createCategory)
-        .replaceWith(CategoryMapper.INSTANCE.from(createCategory))
+        .map(CategoryMapper.INSTANCE::from)
+        .call(category -> {
+          if(createCategory.isSubcategory()){
+            return this.getById(category.getParentCategoryId())
+                .onItem().ifNull()
+                .failWith(new CategoryException(CategoryException.PARENT_CATEGORY_NOT_FOUND, Response.Status.BAD_REQUEST));
+          }
+          return Uni.createFrom().item(category);
+        })
         .call(MongoUtils::addEntity);
   }
 

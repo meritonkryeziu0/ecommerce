@@ -33,7 +33,7 @@ public class CategoryResource {
   }
 
   @POST
-  @ActionAbility(action = Actions.CREATE, module = Modules.Category)
+//  @ActionAbility(action = Actions.CREATE, module = Modules.Category)
   public Uni<Category> add(CreateCategory createCategory) {
     return service.add(createCategory);
   }
