@@ -1,9 +1,10 @@
 package app.services.product;
 
+import app.context.UserContext;
 import app.helpers.PaginatedResponse;
 import app.services.authorization.ability.ActionAbility;
-import app.services.roles.Actions;
-import app.services.roles.Modules;
+import app.services.roles.models.Actions;
+import app.services.roles.models.Modules;
 import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
 import app.services.product.models.UpdateProduct;
@@ -21,14 +22,10 @@ public class ProductResource {
   @Inject
   ProductService service;
 
+  @Inject
+  UserContext userContext;
+
   @GET
-//  @ActionAbility(
-//      role = {
-//          Roles.USER,
-//          Roles.ADMIN
-//      },
-//      action = Operation.LIST, module = Modules.Product)
-//  @ActionAbility(action = Operation.LIST, module = Modules.Product)
   @PermitAll
   public Uni<PaginatedResponse<Product>> getList(@BeanParam ProductFilterWrapper wrapper) {
     return service.getList(wrapper);

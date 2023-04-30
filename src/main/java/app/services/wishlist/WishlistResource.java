@@ -1,8 +1,8 @@
 package app.services.wishlist;
 
 import app.services.authorization.ability.ActionAbility;
-import app.services.roles.Actions;
-import app.services.roles.Modules;
+import app.services.roles.models.Actions;
+import app.services.roles.models.Modules;
 import app.services.product.models.ProductReference;
 import app.services.wishlist.models.Wishlist;
 import app.shared.SuccessResponse;

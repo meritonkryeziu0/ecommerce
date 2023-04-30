@@ -13,6 +13,7 @@ import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
 import app.services.product.models.UpdateProduct;
 import app.utils.Utils;
+import com.mongodb.reactivestreams.client.ClientSession;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
 
@@ -26,6 +27,8 @@ import java.util.function.Function;
 public class ProductService {
   @Inject
   CustomValidator validator;
+  @Inject
+  ProductRepository productRepository;
   @Inject
   ManufacturerService manufactureService;
   @Inject
@@ -57,6 +60,13 @@ public class ProductService {
         .call(MongoUtils::addEntity);
   }
 
+  public Uni<Product> add(ClientSession session, CreateProduct createProduct) {
+    return validator.validate(createProduct)
+        .replaceWith(manufactureService.getById(createProduct.getManufacturer().getId()))
+        .replaceWith(ProductMapper.INSTANCE.from(createProduct))
+        .call(product -> productRepository.add(session, product));
+  }
+
   public Uni<Product> update(String id, UpdateProduct updateProduct) {
     return validator.validate(updateProduct)
         .replaceWith(this.getById(id))
@@ -65,8 +75,20 @@ public class ProductService {
         .call(MongoUtils::updateEntity);
   }
 
+  public Uni<Product> update(ClientSession session, String id, UpdateProduct updateProduct) {
+    return validator.validate(updateProduct)
+        .replaceWith(this.getById(id))
+        .onFailure().transform(transformToBadRequest(ProductException.PRODUCT_NOT_FOUND))
+        .map(ProductMapper.from(updateProduct))
+        .call(product -> productRepository.update(session, product));
+  }
+
   public Uni<Void> delete(String id) {
     return Product.deleteById(id).replaceWithVoid();
+  }
+
+  public Uni<Void> delete(ClientSession session, String id) {
+    return productRepository.delete(session, id);
   }
 
   private Function<Throwable, Throwable> transformToBadRequest(String message) {
