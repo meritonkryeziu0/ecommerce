@@ -35,6 +35,15 @@ public class ProductResource {
   }
 
   @GET
+  @Path("/{main-category}/{subcategory}")
+  @PermitAll
+  public Uni<PaginatedResponse<Product>> getProductsByCategory(@PathParam("main-category") String mainCategory,
+                                                               @PathParam("subcategory") String subcategory,
+                                                               @BeanParam ProductFilterWrapper wrapper) {
+    return service.getListByCategory(mainCategory, subcategory, wrapper);
+  }
+
+  @GET
   @Path("/{id}")
   @PermitAll
   public Uni<Product> getById(@PathParam("id") String id) {

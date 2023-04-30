@@ -18,5 +18,5 @@ public class CreateCategory {
   private String description;
   @NotNull
   private boolean subcategory;
-  private String parentCategoryId;
+  private String parentCategoryName;
 }

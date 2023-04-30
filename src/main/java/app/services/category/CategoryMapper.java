@@ -25,8 +25,8 @@ public interface CategoryMapper {
     category.setName(createCategory.getName());
     category.setDescription(createCategory.getDescription());
 
-    if (category instanceof Subcategory && Utils.notBlank(createCategory.getParentCategoryId())) {
-      category.setParentCategoryId(createCategory.getParentCategoryId());
+    if (category instanceof Subcategory && Utils.notBlank(createCategory.getParentCategoryName())) {
+      category.setParentCategoryName(createCategory.getParentCategoryName());
       category.setCategoryType(CategoryType.SUBCATEGORY);
     } else {
       category.setCategoryType(CategoryType.MAIN_CATEGORY);

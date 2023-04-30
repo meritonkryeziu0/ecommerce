@@ -31,6 +31,9 @@ public class ProductService {
   @Inject
   MongoCollectionWrapper mongoCollectionWrapper;
 
+  @Inject
+  ProductRepository repository;
+
   public ReactiveMongoCollection<Product> getCollection() {
     return mongoCollectionWrapper.getCollection(MongoCollections.PRODUCTS_COLLECTION, Product.class);
   }
@@ -44,6 +47,10 @@ public class ProductService {
 
   public Uni<PaginatedResponse<Product>> getList(PaginationWrapper wrapper) {
     return MongoUtils.getPaginatedItems(getCollection(), wrapper);
+  }
+
+  public Uni<PaginatedResponse<Product>> getListByCategory(String mainCategory, String subcategory, ProductFilterWrapper wrapper) {
+    return MongoUtils.getPaginatedItemsFromList(repository.getListByCategory(mainCategory, subcategory), wrapper);
   }
 
   public Uni<List<Product>> getListByManufacturerId(String id) {
@@ -81,4 +88,5 @@ public class ProductService {
       return throwable;
     };
   }
+
 }

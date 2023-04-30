@@ -19,9 +19,9 @@ public class Category extends BaseModel {
   public static String FIELD_NAME = "name";
   public static String FIELD_DESCRIPTION = "description";
   public static String FIELD_CATEGORY_TYPE = "categoryType";
-  public static String FIELD_PARENT_CATEGORY_ID = "parentCategoryId";
+  public static String FIELD_PARENT_CATEGORY_NAME = "parentCategoryName";
   private String name;
   private String description;
   private CategoryType categoryType;
-  private String parentCategoryId;
+  private String parentCategoryName;
 }

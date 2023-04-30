@@ -47,12 +47,16 @@ public class CategoryService {
         .map(Utils.mapTo(Category.class));
   }
 
-  public Uni<List<Category>> getListByParentCategoryId(String parentCategoryId){
-      return Category.find(Category.FIELD_PARENT_CATEGORY_ID, parentCategoryId).list();
+  public Uni<Category> getByName(String name) {
+    return Category.find(Category.FIELD_NAME, name)
+        .firstResult()
+        .onItem().ifNull()
+        .failWith(new CategoryException(CategoryException.CATEGORY_NOT_FOUND, Response.Status.NOT_FOUND))
+        .map(Utils.mapTo(Category.class));
   }
 
-  public Uni<List<Product>> getProductsByCategoryId(String categoryId){
-    return productService.getListByCategoryId(categoryId);
+  public Uni<List<Category>> getListByParentCategoryName(String parentCategoryName){
+      return Category.find(Category.FIELD_PARENT_CATEGORY_NAME, parentCategoryName).list();
   }
 
   public Uni<Category> add(CreateCategory createCategory) {
@@ -60,8 +64,9 @@ public class CategoryService {
         .map(CategoryMapper.INSTANCE::from)
         .flatMap(category -> {
           if(createCategory.isSubcategory()){
-            return this.getById(category.getParentCategoryId())
-                .onFailure().transform(transformToBadRequest(CategoryException.PARENT_CATEGORY_NOT_FOUND, Response.Status.BAD_REQUEST));
+            return this.getByName(category.getParentCategoryName())
+                .onFailure().transform(transformToBadRequest(CategoryException.PARENT_CATEGORY_NOT_FOUND, Response.Status.BAD_REQUEST))
+                .map(subcategory -> category);
           }
           return Uni.createFrom().item(category);
         })
@@ -85,7 +90,7 @@ public class CategoryService {
   }
 
   private Uni<List<Category>> checkIfParentCategory(Category category) {
-    return this.getListByParentCategoryId(category.getId())
+    return this.getListByParentCategoryName(category.getName())
         .flatMap(categories -> {
           if (categories.size() == 0) {
             return Uni.createFrom().item(categories);
@@ -95,7 +100,7 @@ public class CategoryService {
   }
 
   private Uni<List<Product>> checkIfContainsProducts(Category category) {
-    return this.getProductsByCategoryId(category.getId())
+    return productService.getListByCategoryId(category.getId())
         .flatMap(products -> {
           if (products.size() == 0) {
             return Uni.createFrom().item(products);
