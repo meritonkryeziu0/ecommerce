@@ -16,9 +16,7 @@ public class CreateCategory {
   private String name;
   @Size(max = 1000)
   private String description;
-  @URL
-  private String imageUrl;
   @NotNull
   private boolean subcategory;
-  private String parentCategoryId;
+  private String parentCategoryName;
 }

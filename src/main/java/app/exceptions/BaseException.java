@@ -10,6 +10,8 @@ public class BaseException extends RuntimeException {
   private int statusCode;
   private Status status;
 
+  public BaseException(){}
+
   public BaseException(String message, int statusCode) {
     this.message = message;
     this.statusCode = statusCode;
