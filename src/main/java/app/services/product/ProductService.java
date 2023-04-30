@@ -50,6 +50,10 @@ public class ProductService {
     return Product.find(Product.FIELD_MANUFACTURER_ID, id).list();
   }
 
+  public Uni<List<Product>> getListByCategoryId(String id){
+    return Product.find(Product.FIELD_CATEGORY_ID, id).list();
+  }
+
   public Uni<Product> add(CreateProduct createProduct) {
     return validator.validate(createProduct)
         .replaceWith(manufactureService.getById(createProduct.getManufacturer().getId()))

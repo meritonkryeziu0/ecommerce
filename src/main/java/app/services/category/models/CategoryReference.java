@@ -16,5 +16,4 @@ public class CategoryReference {
   public String id;
   @NotBlank
   private String name;
-  private String description;
 }

@@ -7,6 +7,7 @@ import app.services.roles.Modules;
 import app.services.category.models.Category;
 import app.services.category.models.CreateCategory;
 import app.services.category.models.UpdateCategory;
+import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 
 import javax.inject.Inject;
@@ -33,7 +34,7 @@ public class CategoryResource {
   }
 
   @POST
-//  @ActionAbility(action = Actions.CREATE, module = Modules.Category)
+  @ActionAbility(action = Actions.CREATE, module = Modules.Category)
   public Uni<Category> add(CreateCategory createCategory) {
     return service.add(createCategory);
   }
@@ -43,13 +44,12 @@ public class CategoryResource {
   @ActionAbility(action = Actions.UPDATE, module = Modules.Category)
   public Uni<Category> update(@PathParam("id") String id, UpdateCategory updateCategory) {
     return service.update(id, updateCategory);
-
   }
 
   @DELETE
   @Path("/{id}")
   @ActionAbility(action = Actions.DELETE, module = Modules.Category)
-  public Uni<Void> delete(@PathParam("id") String id) {
-    return service.delete(id);
+  public Uni<SuccessResponse> delete(@PathParam("id") String id) {
+    return service.delete(id).map(unused -> SuccessResponse.toSuccessResponse());
   }
 }

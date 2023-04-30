@@ -11,6 +11,8 @@ import app.services.category.exceptions.CategoryException;
 import app.services.category.models.Category;
 import app.services.category.models.CreateCategory;
 import app.services.category.models.UpdateCategory;
+import app.services.product.ProductService;
+import app.services.product.models.Product;
 import app.utils.Utils;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
@@ -18,6 +20,7 @@ import io.smallrye.mutiny.Uni;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import java.util.List;
 import java.util.function.Function;
 
 @ApplicationScoped
@@ -26,6 +29,9 @@ public class CategoryService {
   CustomValidator validator;
   @Inject
   MongoCollectionWrapper mongoCollectionWrapper;
+
+  @Inject
+  ProductService productService;
 
   public ReactiveMongoCollection<Category> getCollection() {
     return mongoCollectionWrapper.getCollection(MongoCollections.CATEGORY_COLLECTION, Category.class);
@@ -41,14 +47,21 @@ public class CategoryService {
         .map(Utils.mapTo(Category.class));
   }
 
+  public Uni<List<Category>> getListByParentCategoryId(String parentCategoryId){
+      return Category.find(Category.FIELD_PARENT_CATEGORY_ID, parentCategoryId).list();
+  }
+
+  public Uni<List<Product>> getProductsByCategoryId(String categoryId){
+    return productService.getListByCategoryId(categoryId);
+  }
+
   public Uni<Category> add(CreateCategory createCategory) {
     return validator.validate(createCategory)
         .map(CategoryMapper.INSTANCE::from)
-        .call(category -> {
+        .flatMap(category -> {
           if(createCategory.isSubcategory()){
             return this.getById(category.getParentCategoryId())
-                .onItem().ifNull()
-                .failWith(new CategoryException(CategoryException.PARENT_CATEGORY_NOT_FOUND, Response.Status.BAD_REQUEST));
+                .onFailure().transform(transformToBadRequest(CategoryException.PARENT_CATEGORY_NOT_FOUND, Response.Status.BAD_REQUEST));
           }
           return Uni.createFrom().item(category);
         })
@@ -64,7 +77,31 @@ public class CategoryService {
   }
 
   public Uni<Void> delete(String id) {
-    return Category.deleteById(id).replaceWithVoid();
+    return this.getById(id)
+        .call(this::checkIfParentCategory)
+        .call(this::checkIfContainsProducts)
+        .onFailure().transform(transformToBadRequest(CategoryException.CATEGORY_CANNOT_BE_DELETED, Response.Status.BAD_REQUEST))
+        .flatMap(category -> Category.deleteById(id)).replaceWithVoid();
+  }
+
+  private Uni<List<Category>> checkIfParentCategory(Category category) {
+    return this.getListByParentCategoryId(category.getId())
+        .flatMap(categories -> {
+          if (categories.size() == 0) {
+            return Uni.createFrom().item(categories);
+          }
+          return Uni.createFrom().failure(new CategoryException());
+        });
+  }
+
+  private Uni<List<Product>> checkIfContainsProducts(Category category) {
+    return this.getProductsByCategoryId(category.getId())
+        .flatMap(products -> {
+          if (products.size() == 0) {
+            return Uni.createFrom().item(products);
+          }
+          return Uni.createFrom().failure(new CategoryException());
+        });
   }
 
   private static Function<Throwable, Throwable> transformToBadRequest(String message, Response.Status status) {

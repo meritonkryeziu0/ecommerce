@@ -23,6 +23,7 @@ public class Product extends BaseModel {
   public static final String FIELD_MANUFACTURER_NAME = "manufacturer.name";
   public static final String FIELD_MANUFACTURER = "manufacturer";
   public static final String FIELD_MANUFACTURER_ID = "manufacturer._id";
+  public static final String FIELD_CATEGORY_ID = "category._id";
 
   private String name;
   private Double price;
@@ -33,5 +34,4 @@ public class Product extends BaseModel {
   private ManufacturerReference manufacturer;
   private CreateProduct.PackageDetails packageDetails;
   private CategoryReference category;
-  private String typetTest;
 }
