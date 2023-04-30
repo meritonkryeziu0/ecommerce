@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BaseModel extends ReactivePanacheMongoEntityBase {
   public static final String FIELD_ID = "_id";
+  public static final String FIELD_CREATED_AT = "createdAt";
   public static final String FIELD_MODIFIED_AT = "modifiedAt";
   @BsonId
   public String id;
