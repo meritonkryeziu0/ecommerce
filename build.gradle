@@ -28,6 +28,7 @@ dependencies {
 
     implementation 'io.quarkus:quarkus-smallrye-jwt'
     implementation 'io.quarkus:quarkus-smallrye-jwt-build'
+    implementation 'io.quarkus:quarkus-mailer'
 }
 
 group 'org.fiek'
