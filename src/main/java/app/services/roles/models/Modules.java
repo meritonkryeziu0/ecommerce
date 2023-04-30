@@ -10,4 +10,5 @@ public class Modules {
   public static final String Shoppingcart = "Shoppingcart";
   public static final String Roles = "Roles";
   public static final String Seller = "Seller";
+  public static final String Promotion = "Promotion";
 }
