@@ -24,6 +24,7 @@ dependencies {
     implementation 'io.quarkus:quarkus-hibernate-validator'
     implementation 'io.quarkus:quarkus-mongodb-panache'
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    implementation 'io.quarkus:quarkus-scheduler'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
     implementation 'io.quarkus:quarkus-smallrye-jwt'
