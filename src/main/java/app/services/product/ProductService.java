@@ -28,11 +28,12 @@ public class ProductService {
   @Inject
   CustomValidator validator;
   @Inject
-  ProductRepository productRepository;
-  @Inject
   ManufacturerService manufactureService;
   @Inject
   MongoCollectionWrapper mongoCollectionWrapper;
+
+  @Inject
+  ProductRepository repository;
 
   public ReactiveMongoCollection<Product> getCollection() {
     return mongoCollectionWrapper.getCollection(MongoCollections.PRODUCTS_COLLECTION, Product.class);
@@ -49,8 +50,16 @@ public class ProductService {
     return MongoUtils.getPaginatedItems(getCollection(), wrapper);
   }
 
+  public Uni<PaginatedResponse<Product>> getListByCategory(String mainCategory, String subcategory, ProductFilterWrapper wrapper) {
+    return MongoUtils.getPaginatedItemsFromList(repository.getListByCategory(mainCategory, subcategory), wrapper);
+  }
+
   public Uni<List<Product>> getListByManufacturerId(String id) {
     return Product.find(Product.FIELD_MANUFACTURER_ID, id).list();
+  }
+
+  public Uni<List<Product>> getListByCategoryId(String id){
+    return Product.find(Product.FIELD_CATEGORY_ID, id).list();
   }
 
   public Uni<Product> add(CreateProduct createProduct) {
@@ -64,7 +73,7 @@ public class ProductService {
     return validator.validate(createProduct)
         .replaceWith(manufactureService.getById(createProduct.getManufacturer().getId()))
         .replaceWith(ProductMapper.INSTANCE.from(createProduct))
-        .call(product -> productRepository.add(session, product));
+        .call(product -> repository.add(session, product));
   }
 
   public Uni<Product> update(String id, UpdateProduct updateProduct) {
@@ -80,7 +89,7 @@ public class ProductService {
         .replaceWith(this.getById(id))
         .onFailure().transform(transformToBadRequest(ProductException.PRODUCT_NOT_FOUND))
         .map(ProductMapper.from(updateProduct))
-        .call(product -> productRepository.update(session, product));
+        .call(product -> repository.update(session, product));
   }
 
   public Uni<Void> delete(String id) {
@@ -88,7 +97,7 @@ public class ProductService {
   }
 
   public Uni<Void> delete(ClientSession session, String id) {
-    return productRepository.delete(session, id);
+    return repository.delete(session, id);
   }
 
   private Function<Throwable, Throwable> transformToBadRequest(String message) {
@@ -99,4 +108,5 @@ public class ProductService {
       return throwable;
     };
   }
+
 }

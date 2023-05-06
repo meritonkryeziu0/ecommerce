@@ -19,19 +19,19 @@ public class Product extends BaseModel {
   public static final String FIELD_PRICE = "price";
   public static final String FIELD_STOCK_QUANTITY = "stockQuantity";
   public static final String FIELD_DETAILS = "details";
-  public static final String FIELD_TYPE = "type";
   public static final String FIELD_MANUFACTURER_NAME = "manufacturer.name";
   public static final String FIELD_MANUFACTURER = "manufacturer";
   public static final String FIELD_MANUFACTURER_ID = "manufacturer._id";
+  public static final String FIELD_CATEGORY_ID = "category._id";
+  public static final String FIELD_CATEGORY_NAME = "category.name";
+  public static final String FIELD_CATEGORY_PARENT_NAME = "category.parentCategoryName";
 
   private String name;
   private Double price;
   private String description;
   private Integer stockQuantity;
-  private String type;
   private Map<String, String> details;
   private ManufacturerReference manufacturer;
   private CreateProduct.PackageDetails packageDetails;
   private CategoryReference category;
-  private String typetTest;
 }

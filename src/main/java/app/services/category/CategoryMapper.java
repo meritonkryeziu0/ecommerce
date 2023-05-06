@@ -1,12 +1,8 @@
 package app.services.category;
 
-import app.services.category.models.Category;
-import app.services.category.models.CategoryReference;
-import app.services.category.models.CreateCategory;
-import app.services.category.models.UpdateCategory;
+import app.services.category.models.*;
+import app.utils.Utils;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -17,23 +13,33 @@ public interface CategoryMapper {
 
   CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
-  @Mapping(target = "categoryType", expression = "java(createCategory.isSubcategory() ? app.services.category.models.CategoryType.SUBCATEGORY : app.services.category.models.CategoryType.MAIN_CATEGORY)")
-  @Mapping(target = "parentCategoryId", source = "createCategory.parentCategoryId", conditionQualifiedByName = "isSubcategory")
-  Category from(CreateCategory createCategory);
+  default Category from(CreateCategory createCategory) {
+    Category category;
 
+    if (createCategory.isSubcategory()) {
+      category = new Subcategory();
+    } else {
+      category = new MainCategory();
+    }
 
-  @Named("isSubcategory")
-  default boolean isSubcategory(CreateCategory createCategory) {
-    return createCategory.isSubcategory();
+    category.setName(createCategory.getName());
+    category.setDescription(createCategory.getDescription());
+
+    if (category instanceof Subcategory && Utils.notBlank(createCategory.getParentCategoryName())) {
+      category.setParentCategoryName(createCategory.getParentCategoryName());
+      category.setCategoryType(CategoryType.SUBCATEGORY);
+    } else {
+      category.setCategoryType(CategoryType.MAIN_CATEGORY);
+    }
+
+    return category;
   }
 
   CategoryReference toCategoryReference(Category category);
 
-
-  static Function<Category, Category> from(UpdateCategory updateCategory){
+  static Function<Category, Category> from(UpdateCategory updateCategory) {
     return category -> {
       category.setDescription(updateCategory.getDescription());
-      category.setImageUrl(updateCategory.getImageUrl());
       return category;
     };
   }
