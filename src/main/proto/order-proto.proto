@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "app.proto";
+option java_outer_classname = "OrderProto";
+
+package app;
+
+service OrderService {
+  rpc UpdateTracking (UpdateTrackingStatusRequest) returns (UpdateTrackingStatusResponse) {}
+}
+
+message UpdateTrackingStatusRequest {
+  string trackingNumber = 1;
+  string status = 2;
+}
+
+message UpdateTrackingStatusResponse {
+  string trackingNumber = 1;
+  string status = 2;
+}

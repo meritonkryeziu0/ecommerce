@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "app.proto";
+option java_outer_classname = "TrackingProto";
+
+package app;
+
+service Tracker {
+  rpc AddTracking (AddTrackingRequest) returns (TrackingReply) {}
+  rpc EditShippingAddress (EditShippingAddressRequest) returns (EditShippingAddressReply) {}
+}
+
+message AddTrackingRequest {
+  string shipmentType = 1;
+
+  UserReference userReference = 2;
+
+  message UserReference{
+    string id = 1;
+    string firstName = 2;
+    string lastName = 3;
+  }
+
+  ShippingAddress shippingAddress  = 3;
+}
+
+message TrackingReply {
+  string carrierCompany = 1;
+  string trackingNumber = 2;
+  string status = 3;
+  string estimatedDelivery = 4;
+}
+
+message EditShippingAddressRequest{
+  string trackingNumber = 1;
+  ShippingAddress shippingAddress = 2;
+}
+
+message EditShippingAddressReply {
+  string updateStatus = 1;
+}
+
+message ShippingAddress{
+  string street = 1;
+  string city = 2;
+  string zip = 3;
+}
