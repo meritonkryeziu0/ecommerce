@@ -102,7 +102,7 @@ public class ProductService {
   }
 
   public Uni<Void> increaseQuantity(ClientSession session, List<ProductReference> productReference) {
-    return repository.updateStockQuantity(session, true, productReference);
+    return repository.increaseStockQuantity(session, productReference);
   }
 
   private Function<Throwable, Throwable> transformToBadRequest(String message) {
