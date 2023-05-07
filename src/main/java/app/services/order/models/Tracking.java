@@ -1,5 +1,6 @@
 package app.services.order.models;
 
+import app.proto.TrackingReply;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +17,10 @@ public class Tracking {
   private String status;
   private String estimatedDelivery;
 
-//  public Tracking(TrackingReply trackingReply){
-//    this.carrierCompany = trackingReply.getCarrierCompany();
-//    this.trackingNumber = trackingReply.getTrackingNumber();
-//    this.status = trackingReply.getStatus();
-//    this.estimatedDelivery = trackingReply.getEstimatedDelivery();
-//  }
+  public Tracking(TrackingReply trackingReply){
+    this.carrierCompany = trackingReply.getCarrierCompany();
+    this.trackingNumber = trackingReply.getTrackingNumber();
+    this.status = trackingReply.getStatus();
+    this.estimatedDelivery = trackingReply.getEstimatedDelivery();
+  }
 }
