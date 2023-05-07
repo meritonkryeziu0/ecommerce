@@ -26,7 +26,7 @@ dependencies {
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     implementation 'io.quarkus:quarkus-scheduler'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-
+    implementation 'io.quarkus:quarkus-grpc'
     implementation 'io.quarkus:quarkus-smallrye-jwt'
     implementation 'io.quarkus:quarkus-smallrye-jwt-build'
     implementation 'io.quarkus:quarkus-mailer'

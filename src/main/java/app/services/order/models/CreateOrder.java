@@ -18,7 +18,7 @@ public class CreateOrder {
   @Valid
   private BaseAddress shippingAddress;
   @Valid
-  private PaymentMethod paymentMethod;
+  private CardDetails cardDetails;
   @NotNull
   @Valid
   private UserReference userReference;

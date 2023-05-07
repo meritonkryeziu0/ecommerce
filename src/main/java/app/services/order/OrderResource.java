@@ -2,10 +2,12 @@ package app.services.order;
 
 import app.helpers.PaginatedResponse;
 import app.services.authorization.ability.ActionAbility;
+import app.services.order.models.UpdateOrderStatus;
 import app.services.roles.models.Actions;
 import app.services.roles.models.Modules;
 import app.services.order.models.Order;
 import app.services.order.models.UpdateOrder;
+import app.shared.BaseAddress;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 
@@ -45,5 +47,23 @@ public class OrderResource {
   @ActionAbility(action = Actions.DELETE, module = Modules.Order)
   public Uni<SuccessResponse> delete(@PathParam("id") String id) {
     return service.delete(id);
+  }
+
+  @PUT
+  @Path("/{id}/shipping-address/")
+  public Uni<Order> editShippingAddress(@PathParam("id") String id, BaseAddress shippingAddress) {
+    return service.editShippingAddress(id, shippingAddress);
+  }
+
+  @PUT
+  @Path("/{id}/update-status")
+  public Uni<SuccessResponse> updateStatus(@PathParam("id") String id, UpdateOrderStatus status){
+    return service.updateStatus(id, status);
+  }
+
+  @DELETE
+  @Path("/{id}/cancel")
+  public Uni<SuccessResponse> cancelOrder(@PathParam("id") String id){
+    return service.cancelOrder(id);
   }
 }

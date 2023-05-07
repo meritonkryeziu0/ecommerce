@@ -13,7 +13,7 @@ public class OrderDetails {
   @Valid
   private BaseAddress shippingAddress;
   @Valid
-  private PaymentMethod paymentMethod;
+  private CardDetails cardDetails;
   @NotNull
   private String shipmentType;
 }
