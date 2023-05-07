@@ -2,10 +2,12 @@ package app.mongodb;
 
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
+import app.services.order.models.Order;
 import app.services.product.models.Product;
 import app.shared.BaseModel;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.model.Updates;
 import com.mongodb.reactivestreams.client.ClientSession;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
@@ -75,6 +77,12 @@ public class MongoUtils {
   public static <E extends BaseModel> Uni<E> updateEntity(E entity) {
     entity.setModifiedAt(LocalDateTime.now());
     return entity.update();
+  }
+
+  public static <E extends BaseModel> Uni<E> updateEntitiy(ReactiveMongoCollection<E> collection, Bson filter, Bson update) {
+    Bson modifiedAt = Updates.set(Order.FIELD_MODIFIED_AT, LocalDateTime.now());
+    Bson updates = Updates.combine(modifiedAt, update);
+    return collection.findOneAndUpdate(filter, updates);
   }
 
   public static <E extends BaseModel> Uni<E> updateEntity(ClientSession session, ReactiveMongoCollection<E> collection, Bson filter, E entity) {

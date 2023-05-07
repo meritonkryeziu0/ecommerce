@@ -11,6 +11,7 @@ import app.services.manufacturer.ManufacturerService;
 import app.services.product.exceptions.ProductException;
 import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
+import app.services.product.models.ProductReference;
 import app.services.product.models.UpdateProduct;
 import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
@@ -98,6 +99,10 @@ public class ProductService {
 
   public Uni<Void> delete(ClientSession session, String id) {
     return repository.delete(session, id);
+  }
+
+  public Uni<Void> increaseQuantity(ClientSession session, List<ProductReference> productReference) {
+    return repository.updateStockQuantity(session, true, productReference);
   }
 
   private Function<Throwable, Throwable> transformToBadRequest(String message) {

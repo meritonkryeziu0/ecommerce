@@ -39,21 +39,18 @@ public class ProductRepository {
     return getCollection().updateMany(Filters.eq(Product.FIELD_MANUFACTURER_ID, manufacturerReference.getId()), Updates.set(Product.FIELD_MANUFACTURER, manufacturerReference));
   }
 
-  public Uni<Void> increaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
-    List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
-        Filters.eq(Product.FIELD_ID, productReference.id),
-        Updates.inc(Product.FIELD_STOCK_QUANTITY, productReference.getQuantity()))).collect(Collectors.toList());
-
+  public Uni<Void> updateStockQuantity(ClientSession session, boolean sign, List<ProductReference> productReferences) {
+    List<UpdateOneModel<Product>> updates;
+    if (sign) {
+      updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(Filters.eq(Product.FIELD_ID, productReference.id),
+          Updates.inc(Product.FIELD_STOCK_QUANTITY, productReference.getQuantity()))).collect(Collectors.toList());
+    } else {
+      updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(Filters.eq(Product.FIELD_ID, productReference.id),
+          Updates.inc(Product.FIELD_STOCK_QUANTITY, -productReference.getQuantity()))).collect(Collectors.toList());
+    }
     return getCollection().bulkWrite(session, updates).replaceWithVoid();
   }
 
-  public Uni<Void> decreaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
-    List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference -> new UpdateOneModel<Product>(
-        Filters.eq(Product.FIELD_ID, productReference.id),
-        Updates.inc(Product.FIELD_STOCK_QUANTITY, -productReference.getQuantity()))).collect(Collectors.toList());
-
-    return getCollection().bulkWrite(session, updates).replaceWithVoid();
-  }
   public Uni<List<Product>> getListByCategory(String mainCategory, String subcategory){
     final String VALUE_ALL = "all";
     final String CATEGORY = "category";
@@ -91,6 +88,6 @@ public class ProductRepository {
 
   public Uni<Void> delete(ClientSession session, String id) {
     return getCollection().findOneAndDelete(session, Filters.eq(Product.FIELD_ID, id))
-            .replaceWithVoid();
+        .replaceWithVoid();
   }
 }
