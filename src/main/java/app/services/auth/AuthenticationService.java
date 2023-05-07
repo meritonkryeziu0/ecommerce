@@ -21,7 +21,6 @@ public class AuthenticationService {
   @Inject
   TokenService tokenService;
 
-
   public Uni<AuthResponse> authenticate(String email, String password) {
     return userService.getWithEmail(email)
         .flatMap(user -> this.verifySuccessfulLogin(password, user))
@@ -31,7 +30,7 @@ public class AuthenticationService {
         .map(userTokenPair -> new AuthResponse(State.LOGGED_IN, userTokenPair.getLeft().getEmail(), userTokenPair.getRight()));
   }
 
-  private Uni<User> verifySuccessfulLogin(String password, User user) {
+  public Uni<User> verifySuccessfulLogin(String password, User user) {
     boolean passwordResult = PasswordUtils.verifyPassword(password, user);
     if (passwordResult) {
       return Uni.createFrom().item(user);

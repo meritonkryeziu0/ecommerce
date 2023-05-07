@@ -19,7 +19,7 @@ public class TokenService {
 
   public Uni<String> generateToken(User user) {
     String token = Jwt.issuer(ISSUER)
-        .subject(SUBJECT)
+        .subject(user.getId())
         .expiresAt(System.currentTimeMillis() / 1000 + EXPIRY_TIME)
         .claim(USER_ID, user.getId())
         .claim(EMAIL, user.getEmail())
