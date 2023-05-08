@@ -18,14 +18,40 @@ import java.util.List;
 public class Order extends BaseModel {
 
   public static String FIELD_STATUS = "status";
+  public static String FIELD_SHIPPING_ADDRESS = "shippingAddress";
   public static String FIELD_TRACKINGNUMBER = "tracking.trackingNumber";
   public static String FIELD_USER_ID = "userReference._id";
 
   private String status;
   private UserReference userReference;
   private BaseAddress shippingAddress;
-  private PaymentMethod paymentMethod;
+  private PaymentType paymentType;
+  private CardDetails cardDetails;
   private List<ProductReference> products;
   private Double total;
+  private Tracking tracking;
   private String shipmentType;
+
+  public enum PaymentType {
+    CASH,
+    CARD
+  }
+
+  public enum OrderStatuses {
+    OPENED,
+    VERIFIED,
+    SHIPMENT_READY,
+    DISPATCHED,
+    DELIVERED,
+    CANCELLED;
+
+    public static boolean contains(String s){
+      for (OrderStatuses orderStatus:values()){
+        if (orderStatus.name().equalsIgnoreCase(s)){
+          return true;
+        }
+      }
+      return false;
+    }
+  }
 }

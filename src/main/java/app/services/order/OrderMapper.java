@@ -18,10 +18,11 @@ public interface OrderMapper {
   @Mapping(target = "shipmentType", expression = "java(!java.util.regex.Pattern.compile(\"standard|express\").matcher(createOrder.getShipmentType()).matches() ? \"standard\" : createOrder.getShipmentType())")
   Order from(CreateOrder createOrder);
 
-  public static Function<Order, Order> from(UpdateOrder updateOrder) {
+  static Function<Order, Order> from(UpdateOrder updateOrder) {
     return order -> {
       order.setShippingAddress(updateOrder.getShippingAddress());
       return order;
     };
   }
+
 }

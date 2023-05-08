@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "app.proto";
+option java_outer_classname = "NotificationProto";
+
+package app;
+
+service Notification {
+  rpc UpdateStatusNotification (NotifyUserRequest) returns (NotifyUserReply) {}
+}
+
+message NotifyUserRequest {
+
+  UserReference userReference = 1;
+
+  message UserReference{
+    string firstName = 1;
+    string lastName = 2;
+    string email = 3;
+  }
+
+  string orderNumber = 2;
+  string status = 3;
+}
+
+message NotifyUserReply {
+  string message = 1;
+}
