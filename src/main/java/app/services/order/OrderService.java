@@ -4,6 +4,7 @@ import app.common.CustomValidator;
 import app.exceptions.BaseException;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
+import app.helpers.ProductUpdateHelper;
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
 import app.mongodb.MongoSessionWrapper;
@@ -16,6 +17,7 @@ import app.services.order.models.Order;
 import app.services.order.models.UpdateOrder;
 import app.services.order.models.UpdateOrderStatus;
 import app.services.product.ProductService;
+import app.services.product.models.ProductReference;
 import app.services.product.models.Rating;
 import app.shared.BaseAddress;
 import app.shared.BaseAddress;
@@ -38,6 +40,8 @@ public class OrderService {
   CustomValidator validator;
   @Inject
   OrderRepository repository;
+  @Inject
+  ProductUpdateHelper productUpdateHelper;
   @GrpcClient(value = "tracker")
   @Inject
   MutinyTrackerGrpc.MutinyTrackerStub trackerStub;
@@ -69,6 +73,11 @@ public class OrderService {
         .map(Utils.mapTo(Order.class));
   }
 
+  public Uni<Order> getByTrackingNumber(String trackingNumber) {
+    return repository.getByTrackingNumber(trackingNumber)
+        .onItem().ifNull().failWith(new OrderException(OrderException.ORDER_NOT_FOUND, Response.Status.NOT_FOUND));
+  }
+
   public Uni<Order> add(CreateOrder createOrder) {
     return validator.validate(createOrder)
         .replaceWith(OrderMapper.INSTANCE.from(createOrder))
@@ -91,6 +100,10 @@ public class OrderService {
         .onFailure().transform(transformToBadRequest())
         .map(OrderMapper.from(updateOrder))
         .call(MongoUtils::updateEntity);
+  }
+
+  public Uni<Void> updateAllOrders(ClientSession session, ProductReference productReference) {
+    return productUpdateHelper.updateProductOccurrences(session, MongoCollections.ORDERS_COLLECTION, Order.class, productReference);
   }
 
   public Uni<Order> editShippingAddress(String id, BaseAddress shippingAddress) {
@@ -151,6 +164,20 @@ public class OrderService {
           return Uni.createFrom().failure(new OrderException(OrderException.ORDER_NOT_DELIVERED, Response.Status.BAD_REQUEST));
         })
         .flatMap(order -> productService.rateProduct(productId, rating))
+        .replaceWithVoid();
+  }
+
+  public Uni<Void> updateStatusFromTracking(String trackingNumber, String status) {
+    if (Order.OrderStatuses.contains(status)) {
+      return repository.updateStatusFromTracking(trackingNumber, status)
+          .replaceWith(this.getByTrackingNumber(trackingNumber))
+          .flatMap(order -> notificationStub.updateStatusNotification(OrderGrpcMapper.toNotifyUserRequest(order)))
+          .replaceWith(repository.updateStatus(trackingNumber, status))
+          .replaceWithVoid();
+    }
+    return repository.updateStatusFromTracking(trackingNumber, status)
+        .replaceWith(this.getByTrackingNumber(trackingNumber))
+        .flatMap(order -> notificationStub.updateStatusNotification(OrderGrpcMapper.toNotifyUserRequest(order)))
         .replaceWithVoid();
   }
 
