@@ -5,6 +5,7 @@ import app.services.product.models.Product;
 import app.services.product.models.ProductReference;
 import app.services.product.models.UpdateProduct;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -14,6 +15,8 @@ import java.util.function.Function;
 public interface ProductMapper {
   ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
+  @Mapping(target = "averageRating", constant = "0.0")
+  @Mapping(target = "numberOfReviewers", constant = "0")
   Product from(CreateProduct createProduct);
 
   ProductReference toProductReference(Product product);
