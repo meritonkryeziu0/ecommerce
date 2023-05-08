@@ -32,6 +32,8 @@ public class Product extends BaseModel {
   private Integer stockQuantity;
   private Map<String, String> details;
   private ManufacturerReference manufacturer;
+  private double averageRating;
+  private int numberOfReviewers;
   private CreateProduct.PackageDetails packageDetails;
   private CategoryReference category;
 }
