@@ -4,18 +4,23 @@ import app.common.CustomValidator;
 import app.exceptions.BaseException;
 import app.helpers.PaginatedResponse;
 import app.helpers.PaginationWrapper;
-import app.mongodb.MongoCollectionWrapper;
+import app.helpers.ProductUpdateHelper;
 import app.mongodb.MongoCollections;
+import app.mongodb.MongoSessionWrapper;
 import app.mongodb.MongoUtils;
+import app.services.order.OrderService;
+import app.services.order.models.CreateOrder;
+import app.services.order.models.OrderDetails;
 import app.services.product.ProductService;
 import app.services.product.exceptions.ProductException;
 import app.services.product.models.ProductReference;
 import app.services.shoppingcart.exceptions.ShoppingCartException;
 import app.services.shoppingcart.models.CreateShoppingCart;
 import app.services.shoppingcart.models.ShoppingCart;
+import app.shared.SuccessResponse;
 import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
-import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
+import io.quarkus.scheduler.Scheduled;
 import io.smallrye.common.constraint.Nullable;
 import io.smallrye.mutiny.Uni;
 
@@ -37,14 +42,22 @@ public class ShoppingCartService {
   ProductService productService;
 
   @Inject
-  MongoCollectionWrapper mongoCollectionWrapper;
+  OrderService orderService;
 
-  public ReactiveMongoCollection<ShoppingCart> getCollection() {
-    return mongoCollectionWrapper.getCollection(MongoCollections.SHOPPING_CARTS_COLLECTION, ShoppingCart.class);
+  @Inject
+  ProductUpdateHelper productUpdateHelper;
+
+  @Inject
+  MongoSessionWrapper sessionWrapper;
+
+  public Uni<ShoppingCart> getById(String id) {
+    return ShoppingCart.findById(id)
+        .onItem().ifNull().failWith(new ShoppingCartException(ShoppingCartException.SHOPPING_CART_NOT_FOUND, Response.Status.NOT_FOUND))
+        .map(Utils.mapTo(ShoppingCart.class));
   }
 
   public Uni<PaginatedResponse<ShoppingCart>> getList(PaginationWrapper wrapper) {
-    return MongoUtils.getPaginatedItems(getCollection(), wrapper);
+    return MongoUtils.getPaginatedItems(repository.getCollection(), wrapper);
   }
 
   public Uni<ShoppingCart> getByUserId(String userId) {
@@ -58,6 +71,12 @@ public class ShoppingCartService {
         .replaceWith(ShoppingCartMapper.INSTANCE.from(createShoppingCart))
         .call(shoppingCart -> repository.add(session, shoppingCart));
   }
+
+  @Scheduled(every = "15m")
+  public Uni<Void> clearNotUpdatedCarts() {
+    return repository.clearNotUpdatedCarts();
+  }
+
 
   private ShoppingCart updateShoppingCart(ShoppingCart shoppingCart, ProductReference productReference) {
     Optional<ProductReference> optionalProductReference = shoppingCart.getProducts().stream()
@@ -89,6 +108,32 @@ public class ShoppingCartService {
             return MongoUtils.updateEntity(shoppingCart);
           }
           return repository.update(session, userId, shoppingCart);
+        });
+  }
+
+  public Uni<Void> updateAllCarts(ClientSession session, ProductReference product) {
+    return productUpdateHelper.updateProductOccurrences(session, MongoCollections.SHOPPING_CARTS_COLLECTION, ShoppingCart.class, product);
+  }
+
+  public Uni<SuccessResponse> emptyShoppingCart(String userId) {
+    return repository.emptyShoppingCart(userId)
+        .onFailure().transform(transformToBadRequest())
+        .replaceWith(SuccessResponse.toSuccessResponse());
+  }
+
+  public Uni<ShoppingCart> buyShoppingCart(String userId, OrderDetails orderDetails) {
+    return this.getById(userId).onFailure().transform(transformToBadRequest())
+        .flatMap(shoppingCart -> {
+          CreateOrder createOrder = ShoppingCartMapper.from(shoppingCart, orderDetails);
+          return Uni.createFrom().item(createOrder)
+              .flatMap(orderToCreate -> sessionWrapper.getSession()
+                  .flatMap(
+                      session -> orderService.add(session, orderToCreate)
+                          .replaceWith(this.emptyShoppingCart(userId))
+                          .replaceWith(Uni.createFrom().publisher(session.commitTransaction()))
+                          .replaceWith(shoppingCart)
+                          .eventually(session::close)
+                  ));
         });
   }
 
