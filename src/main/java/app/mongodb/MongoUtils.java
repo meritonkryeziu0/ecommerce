@@ -79,7 +79,7 @@ public class MongoUtils {
     return entity.update();
   }
 
-  public static <E extends BaseModel> Uni<E> updateEntitiy(ReactiveMongoCollection<E> collection, Bson filter, Bson update) {
+  public static <E extends BaseModel> Uni<E> updateEntity(ReactiveMongoCollection<E> collection, Bson filter, Bson update) {
     Bson modifiedAt = Updates.set(Order.FIELD_MODIFIED_AT, LocalDateTime.now());
     Bson updates = Updates.combine(modifiedAt, update);
     return collection.findOneAndUpdate(filter, updates);

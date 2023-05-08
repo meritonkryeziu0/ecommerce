@@ -16,6 +16,7 @@ import app.services.order.models.Order;
 import app.services.order.models.UpdateOrder;
 import app.services.order.models.UpdateOrderStatus;
 import app.services.product.ProductService;
+import app.services.product.models.Rating;
 import app.shared.BaseAddress;
 import app.shared.SuccessResponse;
 import app.utils.Utils;
@@ -97,7 +98,7 @@ public class OrderService {
         })
         .flatMap(order -> repository.updateShippingAddress(order.getTracking().getTrackingNumber(), shippingAddress))
         .flatMap(order -> trackerStub.editShippingAddress(
-                OrderMapper.toEditShippingAddressRequest(
+                OrderGrpcMapper.toEditShippingAddressRequest(
                     order.getTracking().getTrackingNumber(),
                     shippingAddress))
             .map(ignore -> order));
@@ -107,7 +108,7 @@ public class OrderService {
     if (Order.OrderStatuses.contains(status.getStatus())) {
       return validator.validate(status)
           .replaceWith(this.getById(id))
-          .flatMap(order -> notificationStub.updateStatusNotification(OrderMapper.toNotifyUserRequest(order)))
+          .flatMap(order -> notificationStub.updateStatusNotification(OrderGrpcMapper.toNotifyUserRequest(order)))
           .replaceWith(repository.updateStatus(id, status.getStatus().toUpperCase())
               .map(ignore -> SuccessResponse.toSuccessResponse()));
     }
@@ -120,7 +121,7 @@ public class OrderService {
           if (!order.getStatus().equals(Order.OrderStatuses.DISPATCHED.name()) && !(order.getStatus().equals(Order.OrderStatuses.DELIVERED.name()))) {
             order.setStatus(Order.OrderStatuses.CANCELLED.name());
             return sessionWrapper.getSession()
-                .flatMap(clientSession -> notificationStub.updateStatusNotification(OrderMapper.toNotifyUserRequest(order))
+                .flatMap(clientSession -> notificationStub.updateStatusNotification(OrderGrpcMapper.toNotifyUserRequest(order))
                     .flatMap(ignore -> repository.archive(clientSession, order))
                     .flatMap(ignore -> productService.increaseQuantity(clientSession, order.getProducts()))
                     .flatMap(ignore -> repository.delete(clientSession, id))
@@ -132,6 +133,19 @@ public class OrderService {
         });
   }
 
+  public Uni<Void> rateProduct(String id, String productId, Rating rating) {
+    return validator.validate(rating)
+        .flatMap(ratingItem -> this.getById(id))
+        .flatMap(order -> {
+          if (order.getStatus().equals(Order.OrderStatuses.DELIVERED.name())) {
+            return Uni.createFrom().item(order);
+          }
+          return Uni.createFrom().failure(new OrderException(OrderException.ORDER_NOT_DELIVERED, Response.Status.BAD_REQUEST));
+        })
+        .flatMap(order -> productService.rateProduct(productId, rating))
+        .replaceWithVoid();
+  }
+
   private Function<Throwable, Throwable> transformToBadRequest() {
     return throwable -> {
       if (throwable instanceof BaseException) {
@@ -140,4 +154,5 @@ public class OrderService {
       return throwable;
     };
   }
+
 }

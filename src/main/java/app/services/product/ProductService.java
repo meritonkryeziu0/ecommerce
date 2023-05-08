@@ -9,10 +9,7 @@ import app.mongodb.MongoCollections;
 import app.mongodb.MongoUtils;
 import app.services.manufacturer.ManufacturerService;
 import app.services.product.exceptions.ProductException;
-import app.services.product.models.CreateProduct;
-import app.services.product.models.Product;
-import app.services.product.models.ProductReference;
-import app.services.product.models.UpdateProduct;
+import app.services.product.models.*;
 import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
@@ -91,6 +88,18 @@ public class ProductService {
         .onFailure().transform(transformToBadRequest(ProductException.PRODUCT_NOT_FOUND))
         .map(ProductMapper.from(updateProduct))
         .call(product -> repository.update(session, product));
+  }
+
+  public Uni<Product> rateProduct(String id, Rating rating) {
+    return this.getById(id)
+        .map(product -> rate(product, rating.getAmount()))
+        .call(MongoUtils::updateEntity);
+  }
+
+  public Product rate(Product product, int rating) {
+    product.setAverageRating((product.getAverageRating() + rating) / (product.getNumberOfReviewers() + 1));
+    product.setNumberOfReviewers(product.getNumberOfReviewers() + 1);
+    return product;
   }
 
   public Uni<Void> delete(String id) {

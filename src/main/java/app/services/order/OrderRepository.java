@@ -15,7 +15,6 @@ import org.bson.conversions.Bson;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.time.LocalDateTime;
 
 @ApplicationScoped
 public class OrderRepository {
@@ -28,13 +27,13 @@ public class OrderRepository {
   public Uni<Order> updateShippingAddress(String trackingNumber, BaseAddress shippingAddress) {
     Bson filter = Filters.eq(Order.FIELD_TRACKINGNUMBER, trackingNumber);
     Bson update = Updates.set(Order.FIELD_SHIPPING_ADDRESS, shippingAddress);
-    return MongoUtils.updateEntitiy(getCollection(), filter, update);
+    return MongoUtils.updateEntity(getCollection(), filter, update);
   }
 
   public Uni<Order> updateStatus(String id, String status) {
     Bson filter = Filters.eq(Order.FIELD_ID, id);
     Bson update = Updates.set(Order.FIELD_STATUS, status);
-    return MongoUtils.updateEntitiy(getCollection(), filter, update);
+    return MongoUtils.updateEntity(getCollection(), filter, update);
   }
 
   public Uni<Order> archive(ClientSession session, Order order) {
