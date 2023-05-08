@@ -97,7 +97,7 @@ public class OrderService {
         })
         .flatMap(order -> repository.updateShippingAddress(order.getTracking().getTrackingNumber(), shippingAddress))
         .flatMap(order -> trackerStub.editShippingAddress(
-                OrderMapper.toEditShippingAddressRequest(
+                OrderGrpcMapper.toEditShippingAddressRequest(
                     order.getTracking().getTrackingNumber(),
                     shippingAddress))
             .map(ignore -> order));
@@ -107,7 +107,7 @@ public class OrderService {
     if (Order.OrderStatuses.contains(status.getStatus())) {
       return validator.validate(status)
           .replaceWith(this.getById(id))
-          .flatMap(order -> notificationStub.updateStatusNotification(OrderMapper.toNotifyUserRequest(order)))
+          .flatMap(order -> notificationStub.updateStatusNotification(OrderGrpcMapper.toNotifyUserRequest(order)))
           .replaceWith(repository.updateStatus(id, status.getStatus().toUpperCase())
               .map(ignore -> SuccessResponse.toSuccessResponse()));
     }
@@ -120,7 +120,7 @@ public class OrderService {
           if (!order.getStatus().equals(Order.OrderStatuses.DISPATCHED.name()) && !(order.getStatus().equals(Order.OrderStatuses.DELIVERED.name()))) {
             order.setStatus(Order.OrderStatuses.CANCELLED.name());
             return sessionWrapper.getSession()
-                .flatMap(clientSession -> notificationStub.updateStatusNotification(OrderMapper.toNotifyUserRequest(order))
+                .flatMap(clientSession -> notificationStub.updateStatusNotification(OrderGrpcMapper.toNotifyUserRequest(order))
                     .flatMap(ignore -> repository.archive(clientSession, order))
                     .flatMap(ignore -> productService.increaseQuantity(clientSession, order.getProducts()))
                     .flatMap(ignore -> repository.delete(clientSession, id))
