@@ -85,11 +85,6 @@ public class OrderService {
     return Order.deleteById(id).replaceWith(SuccessResponse.toSuccessResponse());
   }
 
-  // will be changed on tracking service implementation
-  public Uni<SuccessResponse> cancelOrder(String id) {
-    return Order.deleteById(id).replaceWith(SuccessResponse::toSuccessResponse);
-  }
-
   public Uni<Order> update(String id, UpdateOrder updateOrder) {
     return validator.validate(updateOrder)
         .replaceWith(this.getById(id))
@@ -159,14 +154,6 @@ public class OrderService {
         .replaceWithVoid();
   }
 
-  public Uni<Order> editShippingAddress(String id, BaseAddress shippingAddress) {
-    return validator.validate(shippingAddress).replaceWith(this.getById(id))
-        .onFailure().transform(transformToBadRequest())
-        .map(order -> {
-          order.setShippingAddress(shippingAddress);
-          return order;
-        }).flatMap(MongoUtils::updateEntity);
-  }
 
   private Function<Throwable, Throwable> transformToBadRequest() {
     return throwable -> {

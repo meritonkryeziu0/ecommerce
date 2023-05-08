@@ -12,5 +12,4 @@ public class MongoCollections {
   public static final String ROLES_COLLECTION = "roles";
   public static final String SELLER_PRODUCTS_COLLECTION = "seller-products";
   public static final String PROMOTED_PRODUCTS_COLLECTION = "promoted-products";
-  public static final String ORDERS_ARCHIVE_COLLECTION = "orders-archive";
 }

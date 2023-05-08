@@ -17,6 +17,8 @@ public class CreateOrder {
   @NotNull
   @Valid
   private BaseAddress shippingAddress;
+  @NotNull
+  private Order.PaymentType paymentType;
   @Valid
   private CardDetails cardDetails;
   @NotNull

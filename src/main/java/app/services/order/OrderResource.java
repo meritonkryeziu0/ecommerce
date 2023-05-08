@@ -14,8 +14,11 @@ import io.smallrye.mutiny.Uni;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 
 @Path("/order")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class OrderResource {
   @Inject
   OrderService service;
@@ -60,11 +63,6 @@ public class OrderResource {
     return service.delete(id);
   }
 
-  @PUT
-  @Path("/{id}/shipping-address/")
-  public Uni<Order> editShippingAddress(@PathParam("id") String id, BaseAddress shippingAddress) {
-    return service.editShippingAddress(id, shippingAddress);
-  }
 
   @PUT
   @Path("/{id}/update-status")
@@ -78,9 +76,4 @@ public class OrderResource {
     return service.rateProduct(id, productId, rating).map(unused -> SuccessResponse.toSuccessResponse());
   }
 
-  @DELETE
-  @Path("/{id}/cancel")
-  public Uni<SuccessResponse> cancelOrder(@PathParam("id") String id){
-    return service.cancelOrder(id);
-  }
 }

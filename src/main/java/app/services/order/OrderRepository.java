@@ -54,21 +54,14 @@ public class OrderRepository {
         .replaceWithVoid();
   }
 
-  public Uni<Void> updateStatus(String id, String status) {
-    return getCollection().updateOne(Filters.eq(Order.FIELD_ID, id), Updates.combine(
-            Updates.set(Order.FIELD_MODIFIED_AT, LocalDateTime.now()),
-            Updates.set(Order.FIELD_STATUS, status)))
-        .replaceWithVoid();
-  }
+
   public Uni<Void> updateStatus(ClientSession session, String id, String status) {
     return getCollection().updateOne(session, Filters.eq(Order.FIELD_ID, id), Updates.combine(
             Updates.set(Order.FIELD_MODIFIED_AT, LocalDateTime.now()),
             Updates.set(Order.FIELD_STATUS, status)))
         .replaceWithVoid();
   }
-  public ReactiveMongoCollection<Order> getCollection() {
-    return mongoClient.getCollection(MongoCollections.ORDERS_COLLECTION, Order.class);
-  }
+
   public Uni<Order> updateShippingAddress(String trackingNumber, BaseAddress shippingAddress) {
     Bson filter = Filters.eq(Order.FIELD_TRACKINGNUMBER, trackingNumber);
     Bson update = Updates.set(Order.FIELD_SHIPPING_ADDRESS, shippingAddress);
@@ -92,7 +85,5 @@ public class OrderRepository {
     return getCollection().deleteOne(Filters.eq(Order.FIELD_ID, id));
   }
 
-  public Uni<DeleteResult> delete(ClientSession session, String id) {
-    return getCollection().deleteOne(session, Filters.eq(Order.FIELD_ID, id));
-  }
+
 }
