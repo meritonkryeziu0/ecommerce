@@ -1,8 +1,7 @@
 package app.services.authorization;
 
-import app.services.authorization.AuthorizationException;
-import app.services.authorization.AuthorizedResult;
 import app.services.authorization.ability.Ability;
+import app.services.roles.RolesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
@@ -11,7 +10,9 @@ import io.smallrye.mutiny.helpers.test.UniAssertSubscriber;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,9 @@ import static app.utils.Utils.notBlank;
 public class AuthorizationUnitTest {
   static String abilityObject = "{\"id\":\"User:ADD\",\"module\":\"User\",\"action\":\"ADD\"},";
   static ObjectMapper mapper = new ObjectMapper();
+
+  @Inject
+  RolesService rolesService;
 
   @Test
   public void authorizationTest() throws JsonProcessingException {

@@ -19,7 +19,8 @@ import java.util.List;
 public class AuthorizationResource {
   @Inject
   UserContext userContext;
-  @Inject AuthorizationService service;
+  @Inject
+  AuthorizationService service;
 
   @POST
   public Uni<HashMap<String, AuthorizedResult>> isAuthorized(List<String> actionAbilityIds){

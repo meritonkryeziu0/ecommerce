@@ -4,6 +4,7 @@ import app.context.UserContext;
 import app.services.accounts.models.RegisterUser;
 import app.services.accounts.models.User;
 import app.services.auth.models.AuthResponse;
+import io.smallrye.common.constraint.NotNull;
 import io.smallrye.mutiny.Uni;
 
 import javax.annotation.security.PermitAll;
