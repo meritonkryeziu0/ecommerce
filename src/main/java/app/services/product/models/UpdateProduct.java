@@ -4,6 +4,7 @@ import app.services.category.models.CategoryReference;
 import app.services.manufacturer.models.ManufacturerReference;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
@@ -21,6 +22,8 @@ public class UpdateProduct {
   private String description;
   @DecimalMin(value = "0.0")
   private Double price;
+  @URL
+  private String imageUrl;
   @Min(value = 1)
   private Integer stockQuantity;
   private ManufacturerReference manufacturer;

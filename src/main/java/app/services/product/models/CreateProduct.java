@@ -3,6 +3,7 @@ package app.services.product.models;
 import app.services.category.models.CategoryReference;
 import app.services.manufacturer.models.ManufacturerReference;
 import lombok.Data;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
@@ -13,6 +14,9 @@ public class CreateProduct {
   @NotBlank
   @Size(max = 250)
   private String name;
+  @NotBlank
+  @URL
+  private String imageUrl;
   @Size(max = 1000)
   private String description;
   @NotNull
