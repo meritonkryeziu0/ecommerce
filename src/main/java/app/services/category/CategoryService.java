@@ -9,6 +9,7 @@ import app.mongodb.MongoCollections;
 import app.mongodb.MongoUtils;
 import app.services.category.exceptions.CategoryException;
 import app.services.category.models.Category;
+import app.services.category.models.CategoryType;
 import app.services.category.models.CreateCategory;
 import app.services.category.models.UpdateCategory;
 import app.services.product.ProductService;
@@ -53,6 +54,10 @@ public class CategoryService {
         .onItem().ifNull()
         .failWith(new CategoryException(CategoryException.CATEGORY_NOT_FOUND, Response.Status.NOT_FOUND))
         .map(Utils.mapTo(Category.class));
+  }
+
+  public Uni<List<Category>> getMainCategories() {
+    return Category.find(Category.FIELD_CATEGORY_TYPE, CategoryType.MAIN_CATEGORY.name()).list();
   }
 
   public Uni<List<Category>> getListByParentCategoryName(String parentCategoryName){
