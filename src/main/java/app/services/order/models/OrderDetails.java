@@ -12,6 +12,8 @@ import javax.validation.constraints.NotNull;
 public class OrderDetails {
   @Valid
   private BaseAddress shippingAddress;
+  @NotNull
+  private Order.PaymentType paymentType;
   @Valid
   private CardDetails cardDetails;
   @NotNull

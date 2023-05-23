@@ -17,6 +17,7 @@ public class Product extends BaseModel {
   public static final String FIELD_NAME = "name";
   public static final String FIELD_DESCRIPTION = "description";
   public static final String FIELD_PRICE = "price";
+  public static final String FIELD_IMAGE_URL = "imageUrl";
   public static final String FIELD_STOCK_QUANTITY = "stockQuantity";
   public static final String FIELD_DETAILS = "details";
   public static final String FIELD_MANUFACTURER_NAME = "manufacturer.name";
@@ -28,6 +29,7 @@ public class Product extends BaseModel {
 
   private String name;
   private Double price;
+  private String imageUrl;
   private String description;
   private Integer stockQuantity;
   private Map<String, String> details;

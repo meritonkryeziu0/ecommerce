@@ -43,6 +43,19 @@ public class OrderResource {
     return service.update(id, updateOrder);
   }
 
+  @PUT
+  @Path("/{id}/shipping-address/")
+  public Uni<Order> editShippingAddress(@PathParam("id") String id, BaseAddress shippingAddress) {
+    return service.editShippingAddress(id, shippingAddress);
+  }
+
+
+  @DELETE
+  @Path("/{id}/cancel")
+  public Uni<SuccessResponse> cancelOrder(@PathParam("id") String id){
+    return service.cancelOrder(id);
+  }
+
   @DELETE
   @Path("/{id}")
   @ActionAbility(action = Actions.DELETE, module = Modules.Order)
@@ -50,11 +63,6 @@ public class OrderResource {
     return service.delete(id);
   }
 
-  @PUT
-  @Path("/{id}/shipping-address/")
-  public Uni<Order> editShippingAddress(@PathParam("id") String id, BaseAddress shippingAddress) {
-    return service.editShippingAddress(id, shippingAddress);
-  }
 
   @PUT
   @Path("/{id}/update-status")
@@ -68,9 +76,4 @@ public class OrderResource {
     return service.rateProduct(id, productId, rating).map(unused -> SuccessResponse.toSuccessResponse());
   }
 
-  @DELETE
-  @Path("/{id}/cancel")
-  public Uni<SuccessResponse> cancelOrder(@PathParam("id") String id){
-    return service.cancelOrder(id);
-  }
 }

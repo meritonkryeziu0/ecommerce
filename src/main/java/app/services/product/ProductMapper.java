@@ -25,6 +25,7 @@ public interface ProductMapper {
     return product -> {
       product.setName(updateProduct.getName());
       product.setDescription(updateProduct.getDescription());
+      product.setImageUrl(updateProduct.getImageUrl());
       product.setPrice(updateProduct.getPrice());
       product.setStockQuantity(updateProduct.getStockQuantity());
       product.setDetails(updateProduct.getDetails());
