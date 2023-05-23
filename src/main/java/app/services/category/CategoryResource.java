@@ -10,9 +10,11 @@ import app.services.category.models.UpdateCategory;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 
+import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 @Path("/category")
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,6 +26,20 @@ public class CategoryResource {
   @ActionAbility(action = Actions.LIST, module = Modules.Category)
   public Uni<PaginatedResponse<Category>> getList(@BeanParam CategoryFilterWrapper wrapper){
     return service.getList(wrapper);
+  }
+
+  @GET
+  @Path("mainCategories")
+  @PermitAll
+  public Uni<List<Category>> getMainCategories() {
+    return service.getMainCategories();
+  }
+
+  @GET
+  @Path("{mainCategoryName}/subcategories")
+  @PermitAll
+  public Uni<List<Category>> getSubcategories(@PathParam("mainCategoryName") String mainCategoryName) {
+    return service.getListByParentCategoryName(mainCategoryName);
   }
 
   @GET

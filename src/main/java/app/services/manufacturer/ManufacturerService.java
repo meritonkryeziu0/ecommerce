@@ -32,7 +32,7 @@ public class ManufacturerService {
   MongoCollectionWrapper mongoCollectionWrapper;
 
   public ReactiveMongoCollection<Manufacturer> getCollection() {
-    return mongoCollectionWrapper.getCollection(MongoCollections.PRODUCTS_COLLECTION, Manufacturer.class);
+    return mongoCollectionWrapper.getCollection(MongoCollections.MANUFACTURERS_COLLECTION, Manufacturer.class);
   }
 
   public Uni<PaginatedResponse<Manufacturer>> getList(PaginationWrapper wrapper) {
