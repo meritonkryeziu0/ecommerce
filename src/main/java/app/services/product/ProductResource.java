@@ -74,7 +74,6 @@ public class ProductResource {
   @ActionAbility(action = Actions.UPDATE, module = Modules.Product)
   public Uni<Product> update(@PathParam("id") String id, UpdateProduct updateProduct) {
     return service.update(id, updateProduct);
-
   }
 
   @DELETE

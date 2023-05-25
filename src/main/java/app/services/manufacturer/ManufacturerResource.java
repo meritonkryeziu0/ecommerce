@@ -8,6 +8,7 @@ import app.services.manufacturer.models.CreateManufacturer;
 import app.services.manufacturer.models.Manufacturer;
 import app.services.manufacturer.models.UpdateManufacturer;
 import app.shared.SuccessResponse;
+import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 
 import javax.inject.Inject;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/manufacturer")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class ManufacturerResource {
 
   @Inject
@@ -54,5 +56,4 @@ public class ManufacturerResource {
   public Uni<SuccessResponse> delete(@PathParam("id") String id) {
     return service.delete(id);
   }
-
 }

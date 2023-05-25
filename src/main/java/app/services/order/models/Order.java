@@ -6,6 +6,7 @@ import app.services.accounts.models.UserReference;
 import app.services.product.models.ProductReference;
 import app.shared.BaseAddress;
 import app.shared.BaseModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,7 @@ public class Order extends BaseModel {
   private UserReference userReference;
   private BaseAddress shippingAddress;
   private PaymentType paymentType;
+  @JsonIgnore
   private CardDetails cardDetails;
   private List<ProductReference> products;
   private Double total;
