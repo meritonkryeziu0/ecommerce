@@ -15,6 +15,7 @@ import java.util.List;
 public class RoleWithAbilities extends BaseModel {
   public static final String FIELD_ROLE = "role";
   public static final String FIELD_ABILITIES = "abilities";
+  public static final String FIELD_ABILITY_ID = "_id";
   private String role;
   private List<Ability> abilities;
 

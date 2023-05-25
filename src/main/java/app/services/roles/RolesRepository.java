@@ -4,6 +4,7 @@ import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
 import app.services.authorization.ability.Ability;
 import app.services.roles.models.RoleWithAbilities;
+import app.shared.SuccessResponse;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -33,4 +34,9 @@ public class RolesRepository {
     );
   }
 
+  public Uni<RoleWithAbilities> removeAbilityFromRole(String role, String abilityId){
+    return getCollection().findOneAndUpdate(Filters.eq(RoleWithAbilities.FIELD_ROLE, role),
+        Updates.pull(RoleWithAbilities.FIELD_ABILITIES, Filters.eq(RoleWithAbilities.FIELD_ABILITY_ID, abilityId)),
+        new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
+  }
 }
