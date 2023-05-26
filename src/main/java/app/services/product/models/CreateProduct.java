@@ -25,8 +25,6 @@ public class CreateProduct {
   @NotNull
   @Min(value = 1)
   private Integer stockQuantity;
-  @NotBlank
-  private String type;
   @Valid
   private ManufacturerReference manufacturer;
   @Valid

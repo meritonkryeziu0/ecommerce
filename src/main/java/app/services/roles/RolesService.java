@@ -4,7 +4,12 @@ import app.common.CustomValidator;
 import app.mongodb.MongoUtils;
 import app.services.authorization.ability.Ability;
 import app.services.roles.models.RoleWithAbilities;
+import app.shared.SuccessResponse;
 import app.utils.Utils;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.model.ReturnDocument;
+import com.mongodb.client.model.Updates;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.smallrye.common.constraint.NotNull;
@@ -64,5 +69,13 @@ public class RolesService {
   public Uni<RoleWithAbilities> addAbilityToRole(@NotNull String role, @Valid List<Ability> abilities){
     List<Ability> collect = abilities.stream().map(Ability::fromLongFormat).collect(Collectors.toList());
     return repository.addAbilityToRole(role, collect);
+  }
+
+  public Uni<RoleWithAbilities> removeAbilityFromRole(String role, String abilityId){
+    return repository.removeAbilityFromRole(role, abilityId);
+  }
+
+  public Uni<SuccessResponse> delete(String role){
+    return RoleWithAbilities.delete(RoleWithAbilities.FIELD_ROLE, role).map(SuccessResponse.success());
   }
 }
