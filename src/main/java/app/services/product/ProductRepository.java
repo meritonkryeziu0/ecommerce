@@ -94,4 +94,10 @@ public class ProductRepository {
     return getCollection().findOneAndDelete(session, Filters.eq(Product.FIELD_ID, id))
         .replaceWithVoid();
   }
+
+  public Uni<Void> delete(String name, String description) {
+    return getCollection().findOneAndDelete(Filters.and(Filters.eq(Product.FIELD_NAME, name),
+        Filters.eq(Product.FIELD_DESCRIPTION, description)))
+        .replaceWithVoid();
+  }
 }
