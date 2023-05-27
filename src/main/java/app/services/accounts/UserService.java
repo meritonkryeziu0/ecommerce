@@ -17,10 +17,13 @@ import app.shared.SuccessResponse;
 import app.utils.PasswordUtils;
 import app.utils.Utils;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
+import org.bson.types.ObjectId;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import java.util.Objects;
 import java.util.function.Function;
 
 @ApplicationScoped
@@ -111,6 +114,33 @@ public class UserService {
         .onItem().ifNotNull()
         .failWith(new UserException(UserException.USER_ALREADY_EXISTS, Response.Status.BAD_REQUEST))
         .map(panacheUser -> user);
+  }
+
+  public Uni<User> addShippingAddress(String id, ShippingAddress shippingAddress) {
+    shippingAddress.setId(new ObjectId().toString());
+    return validator.validate(shippingAddress)
+        .map(valid -> this.getById(id))
+        .onFailure().transform(transformToBadRequest(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST))
+        .flatMap(user -> repository.addShippingAddress(id, shippingAddress));
+  }
+
+  public Uni<User> editShippingAddress(String id, String shippingId, ShippingAddress shippingAddress) {
+    return this.getById(id).map(User::getShippingAddresses)
+        .map(Unchecked.function(list ->
+            list.stream().filter(item -> Objects.equals(item.getId(), shippingId))
+                .findFirst().orElseThrow(() -> new UserException(UserException.SHIPPING_ADDRESS_NOT_FOUND, Response.Status.BAD_REQUEST))))
+        .flatMap(
+            shippingAddressOld -> {
+              shippingAddressOld.setCity(shippingAddress.getCity());
+              shippingAddressOld.setStreet(shippingAddress.getStreet());
+              shippingAddressOld.setZip(shippingAddress.getZip());
+              return repository.editShippingAddress(id, shippingId, shippingAddressOld);
+            }
+        );
+  }
+
+  public Uni<User> deleteShippingAddress(String id, String shippingId) {
+    return repository.deleteShippingAddress(id, shippingId);
   }
 
   private Function<Throwable, Throwable> transformToBadRequest(String message, Response.Status status) {
