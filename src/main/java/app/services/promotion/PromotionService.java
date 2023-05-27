@@ -41,7 +41,7 @@ public class PromotionService {
           if(Utils.notNull(promotedProduct)){
             return promotedProduct.persist();
           }
-          return Uni.createFrom().item(new BaseException("Product doesnt exist", Response.Status.BAD_REQUEST));
+          return Uni.createFrom().failure(new BaseException("Product doesnt exist", Response.Status.BAD_REQUEST));
         })
         .map(SuccessResponse.success());
   }
