@@ -17,7 +17,6 @@ public class AddProductAndDeleteIntegrationTest {
       "  \"description\": \"testproduct\",\n" +
       "  \"price\": 142,\n" +
       "  \"stockQuantity\": 10,\n" +
-      "  \"type\": \"testtype\",\n" +
       "  \"imageUrl\": \"https://alaskabeacon.com/wp-content/uploads/2022/07/main_image_deep_field_smacs0723-1280.jpeg\",\n" +
       "  \"manufacturer\": {\n" +
       "  \"id\": \"6439deba2e64982ffad87e45\",\n" +
@@ -30,7 +29,6 @@ public class AddProductAndDeleteIntegrationTest {
       "},\n" +
       "  \"category\":{\n" +
       "  \"id\": \"6437eb9a4a72d04fab5ff3c3\",\n" +
-      "  \"description\": \"testttttt\",\n" +
       "  \"name\": \"TestCategory\"\n" +
       "},\n" +
       "  \"details\": {\n" +
@@ -51,16 +49,16 @@ public class AddProductAndDeleteIntegrationTest {
   public void addProductIntegrationTest() throws JsonProcessingException {
     CreateProduct product = mapper.readValue(newProduct, CreateProduct.class);
     UniAssertSubscriber<Object> tester = productService.add(product)
-        .invoke(Assertions::assertNotNull)
+        .invoke(addedProduct -> Assertions.assertEquals(product.getName(), addedProduct.getName()))
         .subscribe().withSubscriber(UniAssertSubscriber.create());
-    tester.assertCompleted();
+    tester.awaitItem();
   }
 
   @Test
   public void deleteAddedProduct() {
     UniAssertSubscriber<Object> tester = productService.delete("TEST", "testproduct")
         .subscribe().withSubscriber(UniAssertSubscriber.create());
-    tester.assertCompleted();
+    tester.awaitItem();
   }
 
 }
