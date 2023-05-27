@@ -21,8 +21,6 @@ import static app.utils.Utils.notNull;
 
 public class AuthorizationFilter {
   @Inject
-  Logger logger;
-  @Inject
   RolesService rolesService;
   @ServerRequestFilter
   public Uni<Void> filter(ContainerRequestContext requestContext, ResourceInfo resourceInfo){
@@ -35,13 +33,11 @@ public class AuthorizationFilter {
       UserContext userContext = Arc.container().instance(UserContext.class).get();
       String userRole = userContext.getRole();
       Ability actionAbility = new Ability(action);
-      if(!userRoleMatchesAction(userRole, actionAbility)){
-        return Uni.createFrom()
-            .failure(new AuthorizationException(
-                AuthorizationException.FORBIDDEN, Response.Status.FORBIDDEN));
+      if(userRoleMatchesAction(userRole, actionAbility)){
+        return Uni.createFrom().voidItem();
       }
     }
-    return Uni.createFrom().voidItem();
+    return Uni.createFrom().failure(new AuthorizationException(AuthorizationException.FORBIDDEN, Response.Status.FORBIDDEN));
   }
 
   private boolean userRoleMatchesAction(String role, Ability actionAbility){
