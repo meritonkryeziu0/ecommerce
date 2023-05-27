@@ -36,6 +36,13 @@ public class UserResource {
     return service.getById(id);
   }
 
+  @GET
+  @Path("/my-profile")
+  @ActionAbility(action = Actions.SELF_READ, module = Modules.User)
+  public Uni<User> getProfile() {
+    return service.getById(userContext.getId());
+  }
+
   @POST
   @ActionAbility(action = Actions.CREATE, module = Modules.User)
   public Uni<User> add(CreateUser createUser) {
@@ -62,4 +69,23 @@ public class UserResource {
   public Uni<SuccessResponse> delete(@PathParam("id") String id) {
     return service.delete(id);
   }
+
+  @PUT
+  @Path("/{userId}/shipping-address/")
+  public Uni<User> addShippingAddress(@PathParam("userId") String userId, ShippingAddress shippingAddress) {
+    return service.addShippingAddress(userId, shippingAddress);
+  }
+
+  @PUT
+  @Path("/{userId}/shipping-address/{shippingId}")
+  public Uni<User> editShippingAddress(@PathParam("userId") String userId, @PathParam("shippingId") String shippingId, ShippingAddress shippingAddress) {
+    return service.editShippingAddress(userId, shippingId, shippingAddress);
+  }
+
+  @DELETE
+  @Path("/{userId}/shipping-address/{shippingId}")
+  public Uni<User> deleteShippingAddress(@PathParam("userId") String userId, @PathParam("shippingId") String shippingId) {
+    return service.deleteShippingAddress(userId, shippingId);
+  }
+
 }
