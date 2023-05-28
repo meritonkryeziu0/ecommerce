@@ -56,6 +56,14 @@ public class UserResource {
     return service.update(id, updateUser);
   }
 
+  @PUT
+  @Path("/{id}/role")
+  @ActionAbility(action = Actions.UPDATE, module = Modules.User)
+  public Uni<User> updateRole(@PathParam("id") String id, UpdateRole updateRole) {
+    return service.updateRole(id, updateRole);
+  }
+
+
   //Users can update themselves
   @PUT
   @ActionAbility(action = Actions.SELF_UPDATE, module = Modules.User)

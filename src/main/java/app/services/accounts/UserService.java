@@ -95,6 +95,13 @@ public class UserService {
         .call(MongoUtils::updateEntity);
   }
 
+  public Uni<User> updateRole(String id, UpdateRole updateRole) {
+    return validator.validate(updateRole)
+        .replaceWith(this.getById(id))
+        .map(UserMapper.from(updateRole))
+        .call(MongoUtils::updateEntity);
+  }
+
   public Uni<User> updateState(String id, State state) {
     return repository.updateState(id, state);
   }
