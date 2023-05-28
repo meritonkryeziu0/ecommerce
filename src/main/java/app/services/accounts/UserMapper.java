@@ -30,4 +30,11 @@ public interface UserMapper {
       return user;
     };
   }
+
+  static Function<User, User> from(UpdateRole updateRole) {
+    return user -> {
+      user.setRole(updateRole.getRole());
+      return user;
+    };
+  }
 }
