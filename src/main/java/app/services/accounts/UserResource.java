@@ -82,23 +82,43 @@ public class UserResource {
 
   @PUT
   @Path("/{userId}/shipping-address/")
-  @PermitAll
+  @ActionAbility(action = Actions.UPDATE, module = Modules.User)
   public Uni<User> addShippingAddress(@PathParam("userId") String userId, ShippingAddress shippingAddress) {
     return service.addShippingAddress(userId, shippingAddress);
   }
 
   @PUT
+  @Path("/my-profile/shipping-address")
+  @ActionAbility(action = Actions.SELF_UPDATE, module = Modules.User)
+  public Uni<User> addShippingAddressSelf(ShippingAddress shippingAddress) {
+    return service.addShippingAddress(userContext.getId(), shippingAddress);
+  }
+
+  @PUT
   @Path("/{userId}/shipping-address/{shippingId}")
-  @PermitAll
+  @ActionAbility(action = Actions.UPDATE, module = Modules.User)
   public Uni<User> editShippingAddress(@PathParam("userId") String userId, @PathParam("shippingId") String shippingId, ShippingAddress shippingAddress) {
     return service.editShippingAddress(userId, shippingId, shippingAddress);
   }
 
+  @PUT
+  @Path("/my-profile/shipping-address/{shippingId}")
+  @ActionAbility(action = Actions.SELF_UPDATE, module = Modules.User)
+  public Uni<User> editShippingAddressSelf(@PathParam("shippingId") String shippingId, ShippingAddress shippingAddress) {
+    return service.editShippingAddress(userContext.getId(), shippingId, shippingAddress);
+  }
+
   @DELETE
   @Path("/{userId}/shipping-address/")
-  @PermitAll
+  @ActionAbility(action = Actions.UPDATE, module = Modules.User)
   public Uni<User> deleteShippingAddress(@PathParam("userId") String userId, ShippingAddress shippingAddress) {
     return service.deleteShippingAddress(userId, shippingAddress);
   }
 
+  @DELETE
+  @Path("/my-profile/shipping-address/")
+  @ActionAbility(action = Actions.SELF_UPDATE, module = Modules.User)
+  public Uni<User> deleteShippingAddressSelf(ShippingAddress shippingAddress) {
+    return service.deleteShippingAddress(userContext.getId(), shippingAddress);
+  }
 }
