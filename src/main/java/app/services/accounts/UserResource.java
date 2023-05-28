@@ -9,6 +9,7 @@ import app.services.roles.models.Modules;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 
+import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -30,8 +31,9 @@ public class UserResource {
   }
 
   @GET
-  @Path("/{id}")
-  @ActionAbility(action = Actions.READ, module = Modules.User)
+  @Path("/my-profile/{id}")
+//  @ActionAbility(action = Actions.READ, module = Modules.User)
+  @PermitAll
   public Uni<User> getById(@PathParam("id") String id) {
     return service.getById(id);
   }
@@ -80,20 +82,23 @@ public class UserResource {
 
   @PUT
   @Path("/{userId}/shipping-address/")
+  @PermitAll
   public Uni<User> addShippingAddress(@PathParam("userId") String userId, ShippingAddress shippingAddress) {
     return service.addShippingAddress(userId, shippingAddress);
   }
 
   @PUT
   @Path("/{userId}/shipping-address/{shippingId}")
+  @PermitAll
   public Uni<User> editShippingAddress(@PathParam("userId") String userId, @PathParam("shippingId") String shippingId, ShippingAddress shippingAddress) {
     return service.editShippingAddress(userId, shippingId, shippingAddress);
   }
 
   @DELETE
-  @Path("/{userId}/shipping-address/{shippingId}")
-  public Uni<User> deleteShippingAddress(@PathParam("userId") String userId, @PathParam("shippingId") String shippingId) {
-    return service.deleteShippingAddress(userId, shippingId);
+  @Path("/{userId}/shipping-address/")
+  @PermitAll
+  public Uni<User> deleteShippingAddress(@PathParam("userId") String userId, ShippingAddress shippingAddress) {
+    return service.deleteShippingAddress(userId, shippingAddress);
   }
 
 }

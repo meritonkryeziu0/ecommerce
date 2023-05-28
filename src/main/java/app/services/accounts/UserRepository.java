@@ -6,10 +6,7 @@ import app.mongodb.MongoUtils;
 import app.services.accounts.models.ShippingAddress;
 import app.services.accounts.models.User;
 import app.services.auth.models.State;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.FindOneAndUpdateOptions;
-import com.mongodb.client.model.ReturnDocument;
-import com.mongodb.client.model.Updates;
+import com.mongodb.client.model.*;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.reactivestreams.client.ClientSession;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
@@ -56,10 +53,15 @@ public class UserRepository {
             .returnDocument(ReturnDocument.AFTER));
   }
 
-  public Uni<User> deleteShippingAddress(String id, String shippingId) {
+  public Uni<User> deleteShippingAddress(String id, ShippingAddress shippingAddress) {
     return getCollection().findOneAndUpdate(Filters.eq(User.FIELD_ID, id),
-        Updates.pull(User.FIELD_SHIPPING_ADDRESSES, Filters.eq(User.FIELD_SHIPPING_ADDRESSES_ID, shippingId)),
+        Updates.pull(User.FIELD_SHIPPING_ADDRESSES, shippingAddress),
         new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
   }
 
+  public Uni<User> setUserShippingAddresses(String userId, List<ShippingAddress> addresses) {
+    return getCollection().findOneAndUpdate(Filters.eq(User.FIELD_ID, userId),
+        Updates.set(User.FIELD_SHIPPING_ADDRESSES, addresses),
+        new FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER));
+  }
 }
