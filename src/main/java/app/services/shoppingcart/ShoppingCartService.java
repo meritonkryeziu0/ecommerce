@@ -129,6 +129,7 @@ public class ShoppingCartService {
               .flatMap(orderToCreate -> sessionWrapper.getSession()
                   .flatMap(
                       session -> orderService.add(session, orderToCreate)
+                          .replaceWith(() -> productService.decreaseQuantity(session, orderToCreate.getProducts()))
                           .replaceWith(this.emptyShoppingCart(userId))
                           .replaceWith(Uni.createFrom().publisher(session.commitTransaction()))
                           .replaceWith(shoppingCart)

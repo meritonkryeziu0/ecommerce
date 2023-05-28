@@ -87,6 +87,7 @@ public class MongoUtils {
     return collection.findOneAndUpdate(filter, updates);
   }
 
+
   public static <E extends BaseModel> Uni<E> updateEntity(ClientSession session, ReactiveMongoCollection<E> collection, Bson filter, E entity) {
     entity.setModifiedAt(LocalDateTime.now());
     return collection.findOneAndReplace(session, filter, entity, new FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER));
