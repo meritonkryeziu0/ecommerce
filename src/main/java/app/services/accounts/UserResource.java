@@ -32,8 +32,7 @@ public class UserResource {
 
   @GET
   @Path("/my-profile/{id}")
-//  @ActionAbility(action = Actions.READ, module = Modules.User)
-  @PermitAll
+  @ActionAbility(action = Actions.READ, module = Modules.User)
   public Uni<User> getById(@PathParam("id") String id) {
     return service.getById(id);
   }
