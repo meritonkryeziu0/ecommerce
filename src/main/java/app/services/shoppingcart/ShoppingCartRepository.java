@@ -3,6 +3,7 @@ package app.services.shoppingcart;
 import app.mongodb.MongoUtils;
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
+import app.services.product.models.ProductReference;
 import app.services.shoppingcart.models.ShoppingCart;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
@@ -30,6 +31,14 @@ public class ShoppingCartRepository {
 
   public Uni<ShoppingCart> update(ClientSession session, String userId, ShoppingCart shoppingCart) {
     return MongoUtils.updateEntity(session, getCollection(), Filters.eq(ShoppingCart.FIELD_USER_ID, userId), shoppingCart);
+  }
+
+  public Uni<ShoppingCart> removeProductFromCart(String userId, ProductReference productReference) {
+    return getCollection().findOneAndUpdate(
+        Filters.eq(ShoppingCart.FIELD_USER_ID, userId),
+        Updates.combine(
+            Updates.inc(ShoppingCart.FIELD_TOTAL, -(productReference.getPrice()) * productReference.getQuantity()),
+            Updates.pull(ShoppingCart.FIELD_PRODUCTS, productReference)));
   }
 
   public Uni<Void> clearNotUpdatedCarts() {

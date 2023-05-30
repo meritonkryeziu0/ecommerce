@@ -115,6 +115,10 @@ public class ShoppingCartService {
     return productUpdateHelper.updateProductOccurrences(session, MongoCollections.SHOPPING_CARTS_COLLECTION, ShoppingCart.class, product);
   }
 
+  public Uni<ShoppingCart> removeProductFromCart(String userId, ProductReference productReference) {
+    return repository.removeProductFromCart(userId, productReference);
+  }
+
   public Uni<SuccessResponse> emptyShoppingCart(String userId) {
     return repository.emptyShoppingCart(userId)
         .onFailure().transform(transformToBadRequest())
