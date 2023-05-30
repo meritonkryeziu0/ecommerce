@@ -5,6 +5,7 @@ import app.helpers.PaginationWrapper;
 import app.services.order.models.Order;
 import app.services.product.models.Product;
 import app.shared.BaseModel;
+import app.utils.Utils;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.client.model.Updates;
@@ -24,10 +25,11 @@ public class MongoUtils {
     PaginatedResponse<T> page = new PaginatedResponse<>();
 
     Uni<Long> count = collection.countDocuments(paginationFilter.toBson());
-    Uni<List<T>> res = collection.aggregate(Arrays.asList(new Document("$match", paginationFilter.toBson()),
-        new Document("$match", new Document(paginationFilter.getQ() != null
+    Uni<List<T>> res = collection.aggregate(Arrays.asList(
+        new Document("$match", paginationFilter.toBson()),
+        new Document("$match", new Document(Utils.notBlank(paginationFilter.getQ())
             ? new Document(Product.FIELD_NAME, new Document("$regex", paginationFilter.getQ()))
-            : new Document(Product.FIELD_NAME, new Document("$regex", "")))),
+            : new Document())),
         new Document("$sort", (paginationFilter.getSortAscending() != null)
             ? new Document(paginationFilter.getSortAscending(), 1L)
             : ((paginationFilter.getSortDescending() != null)
@@ -84,6 +86,7 @@ public class MongoUtils {
     Bson updates = Updates.combine(modifiedAt, update);
     return collection.findOneAndUpdate(filter, updates);
   }
+
 
   public static <E extends BaseModel> Uni<E> updateEntity(ClientSession session, ReactiveMongoCollection<E> collection, Bson filter, E entity) {
     entity.setModifiedAt(LocalDateTime.now());

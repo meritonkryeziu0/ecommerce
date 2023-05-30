@@ -17,11 +17,16 @@ import app.shared.SuccessResponse;
 import app.utils.PasswordUtils;
 import app.utils.Utils;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.unchecked.Unchecked;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UserService {
@@ -92,6 +97,13 @@ public class UserService {
         .call(MongoUtils::updateEntity);
   }
 
+  public Uni<User> updateRole(String id, UpdateRole updateRole) {
+    return validator.validate(updateRole)
+        .replaceWith(this.getById(id))
+        .map(UserMapper.from(updateRole))
+        .call(MongoUtils::updateEntity);
+  }
+
   public Uni<User> updateState(String id, State state) {
     return repository.updateState(id, state);
   }
@@ -111,6 +123,44 @@ public class UserService {
         .onItem().ifNotNull()
         .failWith(new UserException(UserException.USER_ALREADY_EXISTS, Response.Status.BAD_REQUEST))
         .map(panacheUser -> user);
+  }
+
+  public Uni<User> addShippingAddress(String id, ShippingAddress shippingAddress) {
+    return validator.validate(shippingAddress)
+        .map(valid -> this.getById(id))
+        .onFailure().transform(transformToBadRequest(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST))
+        .flatMap(user -> repository.addShippingAddress(id, shippingAddress));
+  }
+
+  public Uni<User> editShippingAddress(String id, String shippingId, ShippingAddress shippingAddress) {
+    return this.getById(id).map(User::getShippingAddresses)
+        .map(Unchecked.function(list ->
+            list.stream().filter(item -> Objects.equals(item.getId(), shippingId))
+                .findFirst().orElseThrow(() -> new UserException(UserException.SHIPPING_ADDRESS_NOT_FOUND, Response.Status.BAD_REQUEST))))
+        .flatMap(
+            shippingAddressOld -> {
+              shippingAddressOld.setCity(shippingAddress.getCity());
+              shippingAddressOld.setStreet(shippingAddress.getStreet());
+              shippingAddressOld.setZip(shippingAddress.getZip());
+              return repository.editShippingAddress(id, shippingId, shippingAddressOld);
+            }
+        );
+  }
+
+  public Uni<User> deleteShippingAddress(String id, ShippingAddress shippingAddress) {
+    return repository.deleteShippingAddress(id, shippingAddress)
+        .flatMap(user -> reorderShippingAddresses(user.id, user.getShippingAddresses()));
+  }
+
+  private Uni<User> reorderShippingAddresses(String userId, List<ShippingAddress> shippingAddresses) {
+    AtomicInteger minIndex = new AtomicInteger(1);
+
+    List<ShippingAddress> addresses = shippingAddresses.stream().map(shippingAddress -> {
+      shippingAddress.setId(String.valueOf(minIndex.getAndIncrement()));
+      return shippingAddress;
+    }).collect(Collectors.toList());
+
+    return repository.setUserShippingAddresses(userId, addresses);
   }
 
   private Function<Throwable, Throwable> transformToBadRequest(String message, Response.Status status) {

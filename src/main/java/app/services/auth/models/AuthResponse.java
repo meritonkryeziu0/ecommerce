@@ -13,5 +13,4 @@ public class AuthResponse {
   private State state;
   private String email;
   private String token;
-
 }

@@ -1,5 +1,6 @@
 package app.services.promotion;
 
+import app.exceptions.BaseException;
 import app.services.product.models.Product;
 import app.services.seller.SellerProductMapper;
 import app.services.seller.models.SellerProduct;
@@ -10,6 +11,7 @@ import org.bson.Document;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 @ApplicationScoped
@@ -35,7 +37,12 @@ public class PromotionService {
         .map(Utils.mapTo(SellerProduct.class))
         .map(sellerProduct ->
             SellerProductMapper.INSTANCE.toPromotedProduct(sellerProduct, FIXED_FEE_PERCENTAGE))
-        .flatMap(promotedProduct -> promotedProduct.persist())
+        .call(promotedProduct -> {
+          if(Utils.notNull(promotedProduct)){
+            return promotedProduct.persist();
+          }
+          return Uni.createFrom().failure(new BaseException("Product doesnt exist", Response.Status.BAD_REQUEST));
+        })
         .map(SuccessResponse.success());
   }
 

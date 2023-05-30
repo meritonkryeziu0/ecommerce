@@ -77,16 +77,15 @@ public class ShoppingCartService {
     return repository.clearNotUpdatedCarts();
   }
 
-
   private ShoppingCart updateShoppingCart(ShoppingCart shoppingCart, ProductReference productReference) {
     Optional<ProductReference> optionalProductReference = shoppingCart.getProducts().stream()
         .filter(p -> p.id.equals(productReference.id)).findFirst();
     if (optionalProductReference.isPresent()) {
-      optionalProductReference.get().setQuantity(optionalProductReference.get().getQuantity() + productReference.getQuantity());
+      optionalProductReference.get().setQuantity(productReference.getQuantity());
     } else {
       shoppingCart.getProducts().add(productReference);
     }
-    shoppingCart.setTotal(shoppingCart.getTotal() + productReference.getQuantity() * productReference.getPrice());
+    shoppingCart.setTotal(productReference.getQuantity() * productReference.getPrice());
     return shoppingCart;
   }
 
@@ -115,6 +114,10 @@ public class ShoppingCartService {
     return productUpdateHelper.updateProductOccurrences(session, MongoCollections.SHOPPING_CARTS_COLLECTION, ShoppingCart.class, product);
   }
 
+  public Uni<ShoppingCart> removeProductFromCart(String userId, ProductReference productReference) {
+    return repository.removeProductFromCart(userId, productReference);
+  }
+
   public Uni<SuccessResponse> emptyShoppingCart(String userId) {
     return repository.emptyShoppingCart(userId)
         .onFailure().transform(transformToBadRequest())
@@ -122,13 +125,14 @@ public class ShoppingCartService {
   }
 
   public Uni<ShoppingCart> buyShoppingCart(String userId, OrderDetails orderDetails) {
-    return this.getById(userId).onFailure().transform(transformToBadRequest())
+    return this.getByUserId(userId).onFailure().transform(transformToBadRequest())
         .flatMap(shoppingCart -> {
           CreateOrder createOrder = ShoppingCartMapper.from(shoppingCart, orderDetails);
           return Uni.createFrom().item(createOrder)
               .flatMap(orderToCreate -> sessionWrapper.getSession()
                   .flatMap(
                       session -> orderService.add(session, orderToCreate)
+                          .replaceWith(() -> productService.decreaseQuantity(session, orderToCreate.getProducts()))
                           .replaceWith(this.emptyShoppingCart(userId))
                           .replaceWith(Uni.createFrom().publisher(session.commitTransaction()))
                           .replaceWith(shoppingCart)

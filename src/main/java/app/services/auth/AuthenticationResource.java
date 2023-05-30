@@ -27,6 +27,7 @@ public class AuthenticationResource {
 
   @POST
   @Path("/register")
+  @PermitAll
   public Uni<User> register(RegisterUser registerUser) {
     return authenticationService.register(registerUser);
   }
