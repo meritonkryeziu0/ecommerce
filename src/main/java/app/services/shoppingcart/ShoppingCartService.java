@@ -125,7 +125,7 @@ public class ShoppingCartService {
   }
 
   public Uni<ShoppingCart> buyShoppingCart(String userId, OrderDetails orderDetails) {
-    return this.getById(userId).onFailure().transform(transformToBadRequest())
+    return this.getByUserId(userId).onFailure().transform(transformToBadRequest())
         .flatMap(shoppingCart -> {
           CreateOrder createOrder = ShoppingCartMapper.from(shoppingCart, orderDetails);
           return Uni.createFrom().item(createOrder)

@@ -48,7 +48,10 @@ public class ProductRepository {
   }
 
   public Uni<Void> decreaseStockQuantity(ClientSession session, List<ProductReference> productReferences) {
-    List<UpdateOneModel<Product>> updates =productReferences.stream().map(productReference ->
+    if(productReferences.isEmpty()) {
+      return Uni.createFrom().voidItem();
+    }
+    List<UpdateOneModel<Product>> updates = productReferences.stream().map(productReference ->
         new UpdateOneModel<Product>(Filters.eq(Product.FIELD_ID, productReference.id),
           Updates.inc(Product.FIELD_STOCK_QUANTITY, -productReference.getQuantity()))).collect(Collectors.toList());
 
