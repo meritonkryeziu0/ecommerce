@@ -18,13 +18,15 @@ import app.utils.PasswordUtils;
 import app.utils.Utils;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.unchecked.Unchecked;
-import org.bson.types.ObjectId;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UserService {
@@ -124,7 +126,6 @@ public class UserService {
   }
 
   public Uni<User> addShippingAddress(String id, ShippingAddress shippingAddress) {
-    shippingAddress.setId(new ObjectId().toString());
     return validator.validate(shippingAddress)
         .map(valid -> this.getById(id))
         .onFailure().transform(transformToBadRequest(UserException.USER_NOT_FOUND, Response.Status.BAD_REQUEST))
@@ -146,8 +147,20 @@ public class UserService {
         );
   }
 
-  public Uni<User> deleteShippingAddress(String id, String shippingId) {
-    return repository.deleteShippingAddress(id, shippingId);
+  public Uni<User> deleteShippingAddress(String id, ShippingAddress shippingAddress) {
+    return repository.deleteShippingAddress(id, shippingAddress)
+        .flatMap(user -> reorderShippingAddresses(user.id, user.getShippingAddresses()));
+  }
+
+  private Uni<User> reorderShippingAddresses(String userId, List<ShippingAddress> shippingAddresses) {
+    AtomicInteger minIndex = new AtomicInteger(1);
+
+    List<ShippingAddress> addresses = shippingAddresses.stream().map(shippingAddress -> {
+      shippingAddress.setId(String.valueOf(minIndex.getAndIncrement()));
+      return shippingAddress;
+    }).collect(Collectors.toList());
+
+    return repository.setUserShippingAddresses(userId, addresses);
   }
 
   private Function<Throwable, Throwable> transformToBadRequest(String message, Response.Status status) {
