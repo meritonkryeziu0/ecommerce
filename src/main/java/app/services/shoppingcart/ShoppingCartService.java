@@ -77,12 +77,11 @@ public class ShoppingCartService {
     return repository.clearNotUpdatedCarts();
   }
 
-
   private ShoppingCart updateShoppingCart(ShoppingCart shoppingCart, ProductReference productReference) {
     Optional<ProductReference> optionalProductReference = shoppingCart.getProducts().stream()
         .filter(p -> p.id.equals(productReference.id)).findFirst();
     if (optionalProductReference.isPresent()) {
-      optionalProductReference.get().setQuantity(optionalProductReference.get().getQuantity() + productReference.getQuantity());
+      optionalProductReference.get().setQuantity(productReference.getQuantity());
     } else {
       shoppingCart.getProducts().add(productReference);
     }
