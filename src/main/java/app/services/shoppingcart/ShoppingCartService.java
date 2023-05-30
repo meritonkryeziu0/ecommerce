@@ -85,7 +85,7 @@ public class ShoppingCartService {
     } else {
       shoppingCart.getProducts().add(productReference);
     }
-    shoppingCart.setTotal(shoppingCart.getTotal() + productReference.getQuantity() * productReference.getPrice());
+    shoppingCart.setTotal(productReference.getQuantity() * productReference.getPrice());
     return shoppingCart;
   }
 
