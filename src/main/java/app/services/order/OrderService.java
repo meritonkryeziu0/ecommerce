@@ -20,7 +20,6 @@ import app.services.product.ProductService;
 import app.services.product.models.ProductReference;
 import app.services.product.models.Rating;
 import app.shared.BaseAddress;
-import app.shared.BaseAddress;
 import app.shared.SuccessResponse;
 import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
@@ -67,8 +66,18 @@ public class OrderService {
     return MongoUtils.getPaginatedItems(getCollection(), wrapper);
   }
 
+  public Uni<List<Order>> getList(String userId) {
+    return Order.find(Order.FIELD_USER_ID, userId).list();
+  }
+
   public Uni<Order> getById(String id) {
     return Order.findById(id)
+        .onItem().ifNull().failWith(new OrderException(OrderException.ORDER_NOT_FOUND, Response.Status.NOT_FOUND))
+        .map(Utils.mapTo(Order.class));
+  }
+
+  public Uni<Order> getById(String userId, String id) {
+    return repository.getById(userId, id)
         .onItem().ifNull().failWith(new OrderException(OrderException.ORDER_NOT_FOUND, Response.Status.NOT_FOUND))
         .map(Utils.mapTo(Order.class));
   }
