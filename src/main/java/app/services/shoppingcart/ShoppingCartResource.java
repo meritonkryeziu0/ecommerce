@@ -32,7 +32,7 @@ public class ShoppingCartResource {
   @PUT
   @ActionAbility(action = Actions.UPDATE, module = Modules.Shoppingcart)
   public Uni<ShoppingCart> update(ProductReference productReference) {
-    return service.update(null, userContext.getId(), productReference);
+    return service.update(userContext.getId(), productReference);
   }
 
   @POST
