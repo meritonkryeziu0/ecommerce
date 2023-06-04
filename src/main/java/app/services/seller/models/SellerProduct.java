@@ -4,6 +4,7 @@ import app.mongodb.MongoCollections;
 import app.services.accounts.models.UserReference;
 import app.services.product.models.ProductReference;
 import app.shared.BaseModel;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,11 +21,13 @@ public class SellerProduct extends BaseModel {
 
   private UserReference userReference;
   private ProductReference productReference;
+  private Boolean isPromoted;
 
+  @JsonIgnore
   public String getUserId(){
     return getUserReference().getId();
   }
-
+  @JsonIgnore
   public String getProductReferenceId(){
     return productReference.getId();
   }

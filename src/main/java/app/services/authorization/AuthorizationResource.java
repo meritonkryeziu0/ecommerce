@@ -4,6 +4,7 @@ import app.context.UserContext;
 import io.smallrye.mutiny.Uni;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import javax.annotation.security.PermitAll;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -23,6 +24,7 @@ public class AuthorizationResource {
   AuthorizationService service;
 
   @POST
+  @PermitAll
   public Uni<HashMap<String, AuthorizedResult>> isAuthorized(List<String> actionAbilityIds){
     return service.isAuthorized(userContext, actionAbilityIds);
   }

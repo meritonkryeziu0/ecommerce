@@ -1,6 +1,7 @@
 package app.utils;
 
 import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
+import io.smallrye.mutiny.Uni;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -69,5 +70,9 @@ public class Utils {
 
   public static <T extends ReactivePanacheMongoEntityBase, R> Function<T, R> mapTo(Class<R> clazz){
     return clazz::cast;
+  }
+
+  public static <T extends ReactivePanacheMongoEntityBase, R> Function<T, Uni<? extends R>> mapToUni(Class<R> clazz){
+    return entity -> Uni.createFrom().item(clazz.cast(entity));
   }
 }

@@ -1,5 +1,6 @@
 package app.shared;
 
+import io.smallrye.mutiny.Uni;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +24,10 @@ public class SuccessResponse {
 
   public static <T> Function<T, SuccessResponse> success() {
     return item -> new SuccessResponse("Success", 200);
+  }
+
+  public static <T> Function<T, Uni<? extends SuccessResponse>> successAsUni() {
+    return item -> Uni.createFrom().item(new SuccessResponse("Success", 200));
   }
 
 }

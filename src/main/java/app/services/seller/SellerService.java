@@ -17,6 +17,7 @@ import app.services.product.models.CreateProduct;
 import app.services.product.models.Product;
 import app.services.product.models.ProductReference;
 import app.services.product.models.UpdateProduct;
+import app.services.promotion.PromotionService;
 import app.services.seller.models.SellerProduct;
 import app.shared.SuccessResponse;
 import app.utils.Utils;
@@ -39,6 +40,8 @@ public class SellerService {
   MongoSessionWrapper sessionWrapper;
   @Inject
   SellerProductRepository sellerProductRepository;
+  @Inject
+  PromotionService promotionService;
   @Inject
   CustomValidator validator;
 
@@ -121,6 +124,7 @@ public class SellerService {
         .flatMap(sellerProduct -> sessionWrapper.getSession()
             .flatMap(session -> productService.delete(session, sellerProduct.getProductReferenceId())
                 .call(ignore -> sellerProductRepository.delete(session, productId))
+                .call(ignore -> promotionService.delete(session, productId))
                 .replaceWith(Uni.createFrom().publisher(session.commitTransaction()))
                 .eventually(session::close))
         ).map(aVoid -> SuccessResponse.toSuccessResponse());
