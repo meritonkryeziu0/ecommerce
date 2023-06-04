@@ -20,7 +20,6 @@ import app.services.shoppingcart.models.ShoppingCart;
 import app.shared.SuccessResponse;
 import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
-import io.quarkus.scheduler.Scheduled;
 import io.smallrye.common.constraint.Nullable;
 import io.smallrye.mutiny.Uni;
 
@@ -72,12 +71,12 @@ public class ShoppingCartService {
         .call(shoppingCart -> repository.add(session, shoppingCart));
   }
 
-  @Scheduled(every = "15m")
+//  @Scheduled(every = "15m")
   public Uni<Void> clearNotUpdatedCarts() {
     return repository.clearNotUpdatedCarts();
   }
 
-  private ShoppingCart updateShoppingCart(ShoppingCart shoppingCart, ProductReference productReference) {
+  public ShoppingCart updateShoppingCart(ShoppingCart shoppingCart, ProductReference productReference) {
     Optional<ProductReference> optionalProductReference = shoppingCart.getProducts().stream()
         .filter(p -> p.id.equals(productReference.id)).findFirst();
     if (optionalProductReference.isPresent()) {
