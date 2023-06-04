@@ -118,6 +118,10 @@ public class ProductService {
     return Product.deleteById(id).replaceWithVoid();
   }
 
+  public Uni<Void> delete(String name, String description) {
+    return repository.delete(name, description);
+  }
+
   public Uni<Void> delete(ClientSession session, String id) {
     return repository.delete(session, id);
   }

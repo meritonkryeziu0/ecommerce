@@ -20,7 +20,8 @@ import java.util.List;
 public class AuthorizationResource {
   @Inject
   UserContext userContext;
-  @Inject AuthorizationService service;
+  @Inject
+  AuthorizationService service;
 
   @POST
   @PermitAll

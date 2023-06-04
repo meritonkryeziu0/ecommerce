@@ -3,6 +3,8 @@ package app.services.promotion;
 import app.mongodb.MongoCollectionWrapper;
 import app.mongodb.MongoCollections;
 import app.services.product.models.Product;
+import com.mongodb.client.model.Filters;
+import com.mongodb.reactivestreams.client.ClientSession;
 import io.quarkus.mongodb.reactive.ReactiveMongoCollection;
 import io.smallrye.mutiny.Uni;
 import org.bson.Document;
@@ -32,6 +34,11 @@ public class PromotionRepository {
   public Uni<List<Product>> getPromotedProducts(String sellerId){
     List<Document> pipeline = sellerProducts(sellerId);
     return getCollection().aggregate(pipeline, Product.class).collect().asList();
+  }
+
+  public Uni<Void> delete(ClientSession session, String productId) {
+    return getCollection().findOneAndDelete(session, Filters.eq(PromotedProduct.FIELD_PRODUCT_REFERENCE_ID, productId))
+        .replaceWithVoid();
   }
 
 }

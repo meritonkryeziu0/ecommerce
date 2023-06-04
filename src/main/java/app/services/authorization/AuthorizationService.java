@@ -46,12 +46,11 @@ public class AuthorizationService {
 
   public Uni<AuthorizedResult> isAuthorized(UserContext userContext, String actionAbility){
     Ability ability = Ability.fromShortFormat(actionAbility);
-    return isAuthorized(userContext, ability);
+    return isAuthorized(userContext.getRole(), ability);
   }
 
-  public Uni<AuthorizedResult> isAuthorized(UserContext userContext, Ability ability){
+  public Uni<AuthorizedResult> isAuthorized(String role, Ability ability){
     AuthorizedResult authorizedResult = new AuthorizedResult(false);
-    String role = userContext.getRole();
     if(notBlank(role)){
       Optional<Ability> matchedAbility =  rolesService.getAbilities(role).stream()
           .filter(roleAbility -> roleAbility.getId().equals(ability.constructId()))
