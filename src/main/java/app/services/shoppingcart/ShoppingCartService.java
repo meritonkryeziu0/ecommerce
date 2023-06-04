@@ -84,7 +84,12 @@ public class ShoppingCartService {
     } else {
       shoppingCart.getProducts().add(productReference);
     }
-    shoppingCart.setTotal(productReference.getQuantity() * productReference.getPrice());
+
+    double totalPrice = shoppingCart.getProducts().stream()
+        .mapToDouble(item -> item.getQuantity() * item.getPrice())
+        .sum();
+
+    shoppingCart.setTotal(totalPrice);
     return shoppingCart;
   }
 
