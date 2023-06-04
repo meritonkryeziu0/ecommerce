@@ -6,19 +6,17 @@ import app.services.authorization.ability.Ability;
 import app.services.roles.models.RoleWithAbilities;
 import app.shared.SuccessResponse;
 import app.utils.Utils;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.FindOneAndUpdateOptions;
-import com.mongodb.client.model.ReturnDocument;
-import com.mongodb.client.model.Updates;
 import io.quarkus.runtime.Startup;
 import io.quarkus.runtime.StartupEvent;
 import io.smallrye.common.constraint.NotNull;
 import io.smallrye.mutiny.Uni;
+import org.bson.Document;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,20 +24,11 @@ import java.util.stream.Collectors;
 
 @Startup
 public class RolesService {
-
-  @Inject
-  Logger logger;
-  @Inject
-  RolesRepository repository;
-
-  @Inject
-  CustomValidator validator;
+  @Inject Logger logger;
+  @Inject RolesRepository repository;
+  @Inject CustomValidator validator;
 
   public Map<String, List<Ability>> roleWithAbilities = new HashMap<>();
-
-  public Map<String, List<Ability>> getRolesWithAbilities(){
-    return this.roleWithAbilities;
-  }
 
   public List<Ability> getAbilities(String role){
     if(this.roleWithAbilities.containsKey(role)){
@@ -48,7 +37,7 @@ public class RolesService {
     return null;
   }
   void onStart(@Observes StartupEvent ev) {
-    logger.info("Intializing roles...");
+    logger.info("Initializing roles...");
     RoleWithAbilities.listAll()
         .subscribe()
         .with(reactivePanacheMongoEntityBase ->
@@ -58,7 +47,11 @@ public class RolesService {
   }
 
   public Uni<RoleWithAbilities> addRoleWithAbility(@NotNull String role, @Valid List<Ability> abilities){
-    return validator.validate(abilities)
+    Document filter = new Document(RoleWithAbilities.FIELD_ROLE, role);
+    return RoleWithAbilities.find(filter).firstResult().onItem()
+        .ifNotNull()
+        .failWith(new RolesException(RolesException.ROLE_ALREADY_EXISTS, Response.Status.BAD_REQUEST))
+        .replaceWith(validator.validate(abilities))
         .flatMap(validAbilities -> {
           List<Ability> collect = abilities.stream().map(Ability::fromLongFormat).collect(Collectors.toList());
           RoleWithAbilities roleWithAbilities = RoleWithAbilities.construct(role, collect);

@@ -2,6 +2,7 @@ package app.services.roles.models;
 
 public class Actions {
   public static final String CREATE = "CREATE";
+  public static final String CANCEL = "CREATE";
   public static final String READ = "READ";
   public static final String LIST = "LIST";
   public static final String UPDATE = "UPDATE";

@@ -11,6 +11,7 @@ import app.mongodb.MongoSessionWrapper;
 import app.mongodb.MongoUtils;
 import app.proto.MutinyNotificationGrpc;
 import app.proto.MutinyTrackerGrpc;
+import app.services.authorization.AuthorizationException;
 import app.services.order.exceptions.OrderException;
 import app.services.order.models.*;
 import app.services.product.ProductService;
@@ -147,16 +148,18 @@ public class OrderService {
     return Uni.createFrom().failure(new OrderException(OrderException.ORDER_STATUS_INVALID, Response.Status.BAD_REQUEST));
   }
 
-  public Uni<SuccessResponse> cancelOrder(String id) {
-    return this.getById(id)
+  public Uni<SuccessResponse> cancelOrder(String userId, String orderId) {
+    return this.getById(orderId)
         .flatMap(order -> {
+          if(order.getUserReference().getId().equals(userId))
+            return Uni.createFrom().failure(new AuthorizationException(AuthorizationException.FORBIDDEN, Response.Status.FORBIDDEN));
           if (!order.getStatus().equals(Order.OrderStatuses.DISPATCHED.name()) && !(order.getStatus().equals(Order.OrderStatuses.DELIVERED.name()))) {
             order.setStatus(Order.OrderStatuses.CANCELLED.name());
             return sessionWrapper.getSession()
                 .flatMap(clientSession -> notificationStub.updateStatusNotification(OrderGrpcMapper.toNotifyUserRequest(order))
                     .flatMap(ignore -> repository.archive(clientSession, order))
                     .flatMap(ignore -> productService.increaseQuantity(clientSession, order.getProducts()))
-                    .flatMap(ignore -> repository.delete(clientSession, id))
+                    .flatMap(ignore -> repository.delete(clientSession, orderId))
                     .replaceWith(Uni.createFrom().publisher(clientSession.commitTransaction())
                         .eventually(clientSession::close)
                         .replaceWith(SuccessResponse.toSuccessResponse())));
