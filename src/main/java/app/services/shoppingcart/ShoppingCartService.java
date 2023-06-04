@@ -21,7 +21,6 @@ import app.shared.SuccessResponse;
 import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
 import io.quarkus.scheduler.Scheduled;
-import io.smallrye.common.constraint.Nullable;
 import io.smallrye.mutiny.Uni;
 
 import javax.enterprise.context.ApplicationScoped;
