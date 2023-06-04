@@ -94,7 +94,7 @@ public class SellerService {
         .append(SellerProduct.FIELD_PRODUCT_REFERENCE_ID, productId);
     return SellerProduct.find(filter)
         .firstResult()
-        .map(Utils.mapTo(SellerProduct.class))
+        .flatMap(Utils.mapToUni(SellerProduct.class))
         .flatMap(sellerProduct -> sessionWrapper.getSession()
             .flatMap(session -> productService.update(session, sellerProduct.getProductReferenceId(), updateProduct)//update product
                 .call(product -> {
@@ -120,7 +120,7 @@ public class SellerService {
         .append(SellerProduct.FIELD_PRODUCT_REFERENCE_ID, productId);
     return SellerProduct.find(filter)
         .firstResult()
-        .map(Utils.mapTo(SellerProduct.class))
+        .flatMap(Utils.mapToUni(SellerProduct.class))
         .flatMap(sellerProduct -> sessionWrapper.getSession()
             .flatMap(session -> productService.delete(session, sellerProduct.getProductReferenceId())
                 .call(ignore -> sellerProductRepository.delete(session, productId))
