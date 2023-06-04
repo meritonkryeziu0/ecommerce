@@ -12,14 +12,10 @@ import app.mongodb.MongoUtils;
 import app.proto.MutinyNotificationGrpc;
 import app.proto.MutinyTrackerGrpc;
 import app.services.order.exceptions.OrderException;
-import app.services.order.models.CreateOrder;
-import app.services.order.models.Order;
-import app.services.order.models.UpdateOrder;
-import app.services.order.models.UpdateOrderStatus;
+import app.services.order.models.*;
 import app.services.product.ProductService;
 import app.services.product.models.ProductReference;
 import app.services.product.models.Rating;
-import app.shared.BaseAddress;
 import app.shared.BaseAddress;
 import app.shared.SuccessResponse;
 import app.utils.Utils;
@@ -67,8 +63,18 @@ public class OrderService {
     return MongoUtils.getPaginatedItems(getCollection(), wrapper);
   }
 
+  public Uni<List<Order>> getList(String userId) {
+    return Order.find(Order.FIELD_USER_ID, userId).list();
+  }
+
   public Uni<Order> getById(String id) {
     return Order.findById(id)
+        .onItem().ifNull().failWith(new OrderException(OrderException.ORDER_NOT_FOUND, Response.Status.NOT_FOUND))
+        .map(Utils.mapTo(Order.class));
+  }
+
+  public Uni<Order> getById(String userId, String id) {
+    return repository.getById(userId, id)
         .onItem().ifNull().failWith(new OrderException(OrderException.ORDER_NOT_FOUND, Response.Status.NOT_FOUND))
         .map(Utils.mapTo(Order.class));
   }
@@ -87,6 +93,11 @@ public class OrderService {
   public Uni<Order> add(ClientSession session, CreateOrder createOrder) {
     return validator.validate(createOrder)
         .replaceWith(OrderMapper.INSTANCE.from(createOrder))
+        .flatMap(order -> trackerStub.addTracking(OrderMapper.toTracking(order))
+            .map(trackingReply -> {
+              order.setTracking(new Tracking(trackingReply));
+              return order;
+            }))
         .flatMap(order -> repository.add(session, order));
   }
 
@@ -169,8 +180,8 @@ public class OrderService {
 
   public Uni<Void> updateStatusFromTracking(String trackingNumber, String status) {
     if (Order.OrderStatuses.contains(status)) {
-      return repository.updateStatusFromTracking(trackingNumber, status)
-          .replaceWith(this.getByTrackingNumber(trackingNumber))
+      return this.getByTrackingNumber(trackingNumber)
+          .call(order -> repository.updateStatusFromTracking(trackingNumber, status))
           .flatMap(order -> notificationStub.updateStatusNotification(OrderGrpcMapper.toNotifyUserRequest(order)))
           .replaceWith(repository.updateStatus(trackingNumber, status))
           .replaceWithVoid();
@@ -192,3 +203,4 @@ public class OrderService {
   }
 
 }
+

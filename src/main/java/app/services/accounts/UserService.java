@@ -114,7 +114,7 @@ public class UserService {
 
   private Function<CreateUser, Uni<? extends CreateUser>> verifyCreateUserEmail() {
     return createUser -> User.find(User.FIELD_EMAIL, createUser.getEmail()).firstResult()
-        .onItem().ifNull().failWith(new UserException(UserException.USER_ALREADY_EXISTS, Response.Status.BAD_REQUEST))
+        .onItem().ifNotNull().failWith(new UserException(UserException.USER_ALREADY_EXISTS, Response.Status.BAD_REQUEST))
         .map(panacheUser -> createUser);
   }
 

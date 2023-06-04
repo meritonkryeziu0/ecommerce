@@ -20,6 +20,7 @@ import app.services.shoppingcart.models.ShoppingCart;
 import app.shared.SuccessResponse;
 import app.utils.Utils;
 import com.mongodb.reactivestreams.client.ClientSession;
+import io.quarkus.scheduler.Scheduled;
 import io.smallrye.common.constraint.Nullable;
 import io.smallrye.mutiny.Uni;
 
@@ -84,11 +85,26 @@ public class ShoppingCartService {
     } else {
       shoppingCart.getProducts().add(productReference);
     }
-    shoppingCart.setTotal(productReference.getQuantity() * productReference.getPrice());
+
+    double totalPrice = shoppingCart.getProducts().stream()
+        .mapToDouble(item -> item.getQuantity() * item.getPrice())
+        .sum();
+
+    shoppingCart.setTotal(totalPrice);
     return shoppingCart;
   }
 
-  public Uni<ShoppingCart> update(@Nullable ClientSession session, String userId, ProductReference productReference) {
+  public Uni<ShoppingCart> update(ClientSession session, String userId, ProductReference productReference) {
+    return validateAndUpdate(userId, productReference)
+        .flatMap(shoppingCart -> repository.update(session, userId, shoppingCart));
+  }
+
+  public Uni<ShoppingCart> update(String userId, ProductReference productReference) {
+    return  validateAndUpdate(userId, productReference)
+        .flatMap(MongoUtils::updateEntity);
+  }
+
+  private Uni<ShoppingCart> validateAndUpdate(String userId, ProductReference productReference) {
     return validator.validate(productReference)
         .replaceWith(productService.getById(productReference.id))
         .onFailure().transform(transformToBadRequest())
@@ -100,13 +116,7 @@ public class ShoppingCartService {
         })
         .replaceWith(this.getByUserId(userId))
         .onFailure().transform(transformToBadRequest())
-        .map(shoppingCart -> this.updateShoppingCart(shoppingCart, productReference))
-        .flatMap(shoppingCart -> {
-          if(Utils.isNull(session)){
-            return MongoUtils.updateEntity(shoppingCart);
-          }
-          return repository.update(session, userId, shoppingCart);
-        });
+        .map(shoppingCart -> this.updateShoppingCart(shoppingCart, productReference));
   }
 
   public Uni<Void> updateAllCarts(ClientSession session, ProductReference product) {

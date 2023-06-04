@@ -9,6 +9,7 @@ import app.services.promotion.PromotionService;
 import app.services.roles.models.Actions;
 import app.services.roles.models.Modules;
 import app.shared.SuccessResponse;
+import io.quarkus.security.Authenticated;
 import io.smallrye.mutiny.Uni;
 
 import javax.annotation.security.PermitAll;

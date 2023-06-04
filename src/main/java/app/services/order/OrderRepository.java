@@ -35,6 +35,10 @@ public class OrderRepository {
     return getCollection().find(Filters.eq(Order.FIELD_ID, id)).toUni();
   }
 
+  public Uni<Order> getById(String userId, String id) {
+    return getCollection().find(Filters.and(Filters.eq(Order.FIELD_ID, id), Filters.eq(Order.FIELD_USER_ID, userId))).toUni();
+  }
+
   public Uni<Order> getByTrackingNumber(String trackingNumber) {
     return getCollection().find(Filters.eq(Order.FIELD_TRACKINGNUMBER, trackingNumber)).toUni();
   }

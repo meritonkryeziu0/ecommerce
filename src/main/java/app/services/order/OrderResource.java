@@ -1,5 +1,6 @@
 package app.services.order;
 
+import app.context.UserContext;
 import app.helpers.PaginatedResponse;
 import app.services.authorization.ability.ActionAbility;
 import app.services.order.models.UpdateOrderStatus;
@@ -12,9 +13,11 @@ import app.shared.BaseAddress;
 import app.shared.SuccessResponse;
 import io.smallrye.mutiny.Uni;
 
+import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 @Path("/order")
 @Produces(MediaType.APPLICATION_JSON)
@@ -23,6 +26,9 @@ public class OrderResource {
   @Inject
   OrderService service;
 
+  @Inject
+  UserContext userContext;
+
   @GET
   @ActionAbility(action = Actions.LIST, module = Modules.Order)
   public Uni<PaginatedResponse<Order>> getList(@BeanParam OrderFilterWrapper wrapper) {
@@ -30,10 +36,17 @@ public class OrderResource {
   }
 
   @GET
+  @Path("my-orders")
+  @ActionAbility(action = Actions.LIST, module = Modules.Order)
+  public Uni<List<Order>> getUserOrders() {
+    return service.getList(userContext.getId());
+  }
+
+  @GET
   @Path("/{id}")
   @ActionAbility(action = Actions.READ, module = Modules.Order)
   public Uni<Order> getById(@PathParam("id") String id) {
-    return service.getById(id);
+    return service.getById(userContext.getId(), id);
   }
 
   @PUT
@@ -52,6 +65,7 @@ public class OrderResource {
 
   @DELETE
   @Path("/{id}/cancel")
+  @PermitAll
   public Uni<SuccessResponse> cancelOrder(@PathParam("id") String id){
     return service.cancelOrder(id);
   }

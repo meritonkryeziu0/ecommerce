@@ -29,7 +29,7 @@ public class OrderGrpcMapper {
           .setLastName(order.getUserReference().getEmail()).build());
     }
 
-    if(order.getTracking().getTrackingNumber() != null){
+    if(order.getTracking() != null && order.getTracking().getTrackingNumber() != null){
       builder.setOrderNumber(order.getTracking().getTrackingNumber());
     }
 
